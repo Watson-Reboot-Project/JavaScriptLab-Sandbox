@@ -14,9 +14,6 @@ function Controller(sandboxNum) {
 	var outputTable;
 	var varBox;
 	var varTable;
-	var editorTable = document.getElementById("fig" + sandboxNum + "Editor");
-	var editor = new Editor(editorTable, sandboxNum);
-	var editorTable;
 	var haltFlag;
 	var lastLine = -1;
 	var firstMove = true;
@@ -31,10 +28,88 @@ function Controller(sandboxNum) {
 	var dummyVar = 0;
 	var showVarBox = true;
 	var showScope = false;
+	var figDiv = document.getElementById("fig" + sandboxNum + "Div");
+	
+	figDiv.innerHTML = '<div id="selector" style="text-align:center"></div> \
+		 <h4 id="codeTitle">Code Window</h4> \
+		 <div> \
+		 <div id="programCode"> \
+			<table id="fig' + sandboxNum + 'Editor"></table> \
+		 </div> \
+		 <div id="buttons"> \
+			<div><button id="fig' + sandboxNum + 'AddVar"        type="button">Variable</button></div> \
+			<div><button id="fig' + sandboxNum + 'AddArr"        type="button" onclick="figure.getEditor().addVariable("array")">Array</button></div> \
+			<div><button id="fig' + sandboxNum + 'AddFunc"       type="button" onclick="figure.getEditor().addFunction()">Declare Function</button></div> \
+			<div><button id="fig' + sandboxNum + 'Assign"        type="button" onclick="figure.getEditor().addOneLineElement("assignment")">Assign</button></div> \
+			<div><button id="fig' + sandboxNum + 'Write"         type="button" onclick="figure.getEditor().addOneLineElement("write")">Write</button></div> \
+			<div><button id="fig' + sandboxNum + 'Writeln"       type="button" onclick="figure.getEditor().addOneLineElement("writeln")">Writeln</button></div> \
+			<div><button id="fig' + sandboxNum + 'StringPrompt"  type="button" onclick="figure.getEditor().addOneLineElement("stringPrompt")">String Prompt</button></div> \
+			<div><button id="fig' + sandboxNum + 'NumericPrompt" type="button" onclick="figure.getEditor().addOneLineElement("numericPrompt")">Numeric Prompt</button></div> \
+			<div><button id="fig' + sandboxNum + 'While"         type="button" onclick="figure.getEditor().addWhile()">While</button></div> \
+			<div><button id="fig' + sandboxNum + 'AddFor"        type="button" onclick="figure.getEditor().addFor()">For</button></div> \
+			<div><button id="fig' + sandboxNum + 'AddIfThen"     type="button" onclick="figure.getEditor().addIfThen()">If...Then</button></div> \
+			<div><button id="fig' + sandboxNum + 'AddIfElse"     type="button" onclick="figure.getEditor().addIfElse()">If...Else</button></div> \
+			<div><button id="fig' + sandboxNum + 'FuncCall"      type="button" onclick="figure.getEditor().addOneLineElement("functionCall")">Call Function</button></div> \
+			<div><button id="fig' + sandboxNum + 'Return"        type="button" onclick="figure.getEditor().addOneLineElement("return")">Return</button></div> \
+		 </div> \
+	</div> \
+    <div id="fig1OutVarBox" class="outterDiv"> \
+      <h4 id="varTitle">Variables</h4> \
+	  <div id="fig1VarBox" class="varDiv"> \
+		<table id="varTable"></table> \
+	  </div> \
+   </div> \
+   <div class="outterDiv"> \
+		<h4 id="outTitle">Output</h4> \
+		<div id="outputBox" class="varDiv"> \
+			<table id="outputTable"></table> \
+		</div> \
+   </div> \
+   <div id="runWalk" align="center"> \
+      <button type="button" onClick="figure.runButton()">Run</button> \
+      <button type="button" onClick="figure.walkButton()">Walk</button> \
+   </div>';
+   
+   	var editorTable = document.getElementById("fig" + sandboxNum + "Editor");
+	var editor = new Editor(sandboxNum);
 	
 	this.walkButton = walkButton;
 	this.runButton = runButton;
 	this.updateVariables = updateVariables;
+	
+	var addVarButton = document.getElementById("fig" + sandboxNum + "AddVar");
+	var addArrButton = document.getElementById("fig" + sandboxNum + "AddArr");
+	var addFuncButton = document.getElementById("fig" + sandboxNum + "AddFunc");
+	var assignButton = document.getElementById("fig" + sandboxNum + "Assign");
+	var writeButton = document.getElementById("fig" + sandboxNum + "Write");
+	var writelnButton = document.getElementById("fig" + sandboxNum + "Writeln");
+	var stringPromptButton = document.getElementById("fig" + sandboxNum + "StringPrompt");
+	var numericPromptButton = document.getElementById("fig" + sandboxNum + "NumericPrompt");
+	var whileButton = document.getElementById("fig" + sandboxNum + "While");
+	var forButton = document.getElementById("fig" + sandboxNum + "AddFor");
+	var ifThenButton = document.getElementById("fig" + sandboxNum + "AddIfThen");
+	var ifElseButton = document.getElementById("fig" + sandboxNum + "AddIfElse");
+	var funcCallButton = document.getElementById("fig" + sandboxNum + "FuncCall");
+	var returnButton = document.getElementById("fig" + sandboxNum + "Return");
+	
+	addVarButton.onclick = function () { editor.addVariable("variable"); };
+	addArrButton.onclick = function () { editor.addVariable("array"); };
+	addFuncButton.onclick = function () { editor.addFunction(); };
+	assignButton.onclick = function () { editor.addOneLineElement("assignment"); };
+	writeButton.onclick = function () { editor.addOneLineElement("write"); };
+	writelnButton.onclick = function () { editor.addOneLineElement("writeln"); };
+	stringPromptButton.onclick = function () { editor.addOneLineElement("stringPrompt"); };
+	numericPromptButton.onclick = function () { editor.addOneLineElement("numericPrompt"); };
+	whileButton.onclick = function() { editor.addWhile(); };
+	forButton.onclick = function() { editor.addFor(); };
+	ifThenButton.onclick = function() { editor.addIfThen(); };
+	ifElseButton.onclick = function() { editor.addIfElse(); };
+	funcCallButton.onclick = function () { editor.addOneLineElement("functionCall"); };
+	returnButton.onclick = function () { editor.addOneLineElement("return"); };
+	
+	$(document).ready(function() {
+            $("#fig" + sandboxNum + "OutVarBox").hide(); 
+	 });
 	
 	function init(interpreter, scope) {
 		var wrapper = function (text) {
@@ -240,6 +315,9 @@ function Controller(sandboxNum) {
 	function walkButton() {
 		slideVarBox("down");
 		
+		var text = editor.getEditorText();
+		console.log(text);
+		
 		return;
 		if (done == true) { reset(); return; }
 		if (attemptingToRun == true || runMode == true) {
@@ -336,14 +414,12 @@ function Controller(sandboxNum) {
 		if (showVarBox == false) return;
 		
 		if (!slidDown && dir == "down") {
-			console.log("Here.");
 			$("#fig" + sandboxNum + "OutVarBox").slideDown("medium", function() {
 				//varBox.scrollTop = varBox.scrollHeight;
 				slidDown = true;
 			});
 		}
 		else if (slidDown && dir == "up") {
-			console.log("here.");
 			$("#fig" + sandboxNum + "OutVarBox").slideUp("medium");
 			slidDown = false;
 		}

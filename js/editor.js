@@ -6,8 +6,8 @@
 *			is to mimic Watson as it is now.
 ************************************************************************************/
 
-function Editor() {
-	var codeTable = document.getElementById('fig1Editor');		// the main table
+function Editor(sandboxNum) {
+	var codeTable = document.getElementById('fig' + sandboxNum + 'Editor');		// the main table
 	var selRow = 0;											// the current selected row
 	var blank = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";			// blank template for unselected row
 	var arrow = "&nbsp;&#8594;&nbsp;&nbsp;&nbsp;";			// arrow template for selected row
@@ -22,8 +22,16 @@ function Editor() {
 	var green = "#007500";
 	var blue = "#0000FF";
 	var black = "#000000";
+	var brown = "#a52a2a";
 	var functionList = [];									// an array of currently declared functions
-
+	
+	var rowType = [];
+	var dummyRows = [];
+	var lineNums = [];
+	var charCountStart = [ ];
+	var charCountEnd = [ ];
+	var codeStrLen;
+	
 	/* Weston variables */
 	var vFuns = [];
 	var nFuns = [];
@@ -38,6 +46,8 @@ function Editor() {
 	var innerTablet;
 	var clickedCell;
 	var dial = document.getElementById('selector');
+	var dialOKButton;
+	var dialCancelButton;
 	
 	this.addVariable = addVariable;
 	this.addFunction = addFunction;
@@ -105,7 +115,9 @@ function Editor() {
 			cellVal = $(this).text();							// grab the hovered cell's value
 			colNum = ($(this).index());							// grab the hovered cell's index
 			var rowNum = ($(this).parent().parent().parent().parent().parent().index());	// grab the row number from codeTable (this is a silly way of doing it, but it works)
-
+			
+			var innerTable = codeTable.rows[rowNum].cells[0].children[0];
+			var numCells = innerTable.rows[0].cells.length;
 			// depending on what cell the mouse if over, highlight accordingly
 			// go look at the functions getting called here to understand what is going on
 			// we pass rowNum and colNum to tell the function where start highlighting
@@ -118,6 +130,7 @@ function Editor() {
 			else if (cellVal.indexOf('}') >= 0) highlightControlStructureBackwards(rowNum, colNum);
 			else if (cellVal.indexOf(')') >= 0)	highlightParenthesisBackwards('(', ')', rowNum, colNum);
 			else if(cellVal.indexOf('var') >= 0 || cellVal.indexOf(';') >= 0 || cellVal.indexOf('//') >= 0) highlightLine(rowNum, colNum);
+			else if(numCells >= colNum + 2 && innerTable.rows[0].cells[colNum + 1].textContent.indexOf("(") >= 0) highlightParenthesis("(", ")", rowNum, colNum);
 			else highlightCell(rowNum, colNum);
 		});
 
@@ -136,21 +149,19 @@ function Editor() {
 				}
 				else if (numCells >= 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("function") >= 0) {		// a function declaration? function needs to be blue
 					for (var j = 0; j < numCells; j++) {
-						if (j == 2) innerTable.rows[0].cells[j].style.color = blue;								// color "function" blue
-						else if (j == 5 || j == 6) innerTable.rows[0].cells[j].style.color = green;				// the comment at the end of function needs to be green
+						if (j == 2 || j == 5 || j == 6 || j == 7) innerTable.rows[0].cells[j].style.color = blue;								// color "function" blue
 						else innerTable.rows[0].cells[j].style.color = black;									// the rest black
 					}
 				}
-				else if (numCells == 7 && innerTable.rows[0].cells[2].innerHTML.indexOf("var") >= 0) {			// a variable declaration? (num cells = 7) var needs to be blue
+				else if (numCells == 9 && innerTable.rows[0].cells[2].innerHTML.indexOf("var") >= 0) {			// a variable declaration? (num cells = 7) var needs to be blue
 					for (var j = 0; j < numCells; j++) {
-						if (j == 2) innerTable.rows[0].cells[j].style.color = blue;								// make var blue
-						else if (j == 5 || j == 6) innerTable.rows[0].cells[j].style.color = green;				// the comment needs to be green
+						if (j == 2 || j == 6 || j == 7 || j == 8) innerTable.rows[0].cells[j].style.color = blue;								// make var blue
 						else innerTable.rows[0].cells[j].style.color = black;									// the rest black
 					}
 				}
-				else if (numCells > 7 && innerTable.rows[0].cells[2].innerHTML.indexOf("var") >= 0) {			// an array declaration? (num cells > 7) var needs to be blue, new needs to be blue
+				else if (numCells > 9 && innerTable.rows[0].cells[2].innerHTML.indexOf("var") >= 0) {			// an array declaration? (num cells > 7) var needs to be blue, new needs to be blue
 					for (var j = 0; j < numCells; j++) {
-						if (j == 2 || j == 5) innerTable.rows[0].cells[j].style.color = blue;					// make var and new blue
+						if (j == 2 || j == 6 || j == 12 || j == 13 || j == 14) innerTable.rows[0].cells[j].style.color = blue;					// make var and new blue
 						else if (j == 11 || j == 12) innerTable.rows[0].cells[j].style.color = green;			// make comment green
 						else innerTable.rows[0].cells[j].style.color = black;									// the rest black
 					}
@@ -159,6 +170,36 @@ function Editor() {
 					for (var j = 0; j < numCells; j++) {
 						if (j == 2) innerTable.rows[0].cells[j].style.color = blue;								// make the keyword blue
 						else innerTable.rows[0].cells[j].style.color = black;									// the rest black
+					}
+				}
+				else if (numCells > 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("write") >= 0) {
+					for (var j = 0; j < numCells; j++) {
+						if (j == 2)	innerTable.rows[0].cells[j].style.color = blue;
+						else if (j == 4) {
+							if (innerTable.rows[0].cells[2].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
+							else innerTable.rows[0].cells[j].style.color = black;
+						}
+						else innerTable.rows[0].cells[j].style.color = black;
+					}
+				}
+				else if (numCells > 5 && innerTable.rows[0].cells[6].innerHTML.indexOf("parse") >= 0) {
+					for (var j = 0; j < numCells; j++) {
+						if (j == 6 || j == 8) innerTable.rows[0].cells[j].style.color = blue;
+						else if (j == 10 || j == 12) {
+							if (innerTable.rows[0].cells[j].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
+							else innerTable.rows[0].cells[j].style.color = black;
+						}
+						else innerTable.rows[0].cells[j].style.color = black;
+					}
+				}
+				else if (numCells > 5 && innerTable.rows[0].cells[6].innerHTML.indexOf("prompt") >= 0) {
+					for (var j = 0; j < numCells; j++) {
+						if (j == 6) innerTable.rows[0].cells[j].style.color = blue;
+						else if (j == 8 || j == 10) {
+							if (innerTable.rows[0].cells[j].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
+							else innerTable.rows[0].cells[j].style.color = black;
+						}
+						else innerTable.rows[0].cells[j].style.color = black;
 					}
 				}
 				else {
@@ -344,24 +385,46 @@ function Editor() {
 			/* Weston's dialogs */
 			else if (cellVal == 'TYPE') {
 					$("#selector").empty();
-					dial.innerHTML = generateSelectionHTML(vtypes, "type");
+					generateSelectionHTML(vtypes, "type");
 					$("#selector").dialog('open');
 			}
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'var') {
 					$("#selector").empty();
-					dial.innerHTML = "<textarea id=\"varID\" size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button type=\"button\" onclick=\"nameDialogConfirm(varID.value)\" style=\"width:4em;height:2em\">Okay</button> <button type=\"button\" onclick=\"selectorCancel()\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+					dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+					
+					dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+					dialOKButton.onclick = function() {
+						console.log("Here.");
+						var textArea = document.getElementById("dial" + sandboxNum + "Text");
+						console.log(textArea.value);
+						nameDialogConfirm(textArea.value);
+					};
+					
+					dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
+					dialCancelButton.onclick = function() {	selectorCancel(); };
+					
 					$("#selector").dialog('open');
 			}
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[4].textContent == '=')
 			{
 					$("#selector").empty();
-					dial.innerHTML = generateSelectionHTML(namesUsed, "id");
+					generateSelectionHTML(namesUsed, "id");
 					$("#selector").dialog('open');
 			}
 			
 			if (foundIn(cellVal, tvars) == 1) {
 					$("#selector").empty();
-					dial.innerHTML = "<textarea id=\"varID\" size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button type=\"button\" onclick=\"nameDialogConfirm(varID.value)\" style=\"width:4em;height:2em\">Okay</button> <button type=\"button\" onclick=\"selectorCancel()\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+					dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+					
+					dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+					dialOKButton.onclick = function() {
+						var textArea = document.getElementById("dial" + sandboxNum + "Text");
+						nameDialogConfirm(textArea.value);
+					};
+					
+					dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
+					dialCancelButton.onclick = function() {	selectorCancel(); };
+					
 					$("#selector").dialog('open');
 					
 					console.log(innerTablet.rows[0].cells[2].textContent);
@@ -576,12 +639,12 @@ function Editor() {
 
 		// if the element is a variable
 		if (element == "variable") {
-			addRow(innerTable, ["<b>var</b>", "&nbsp;", "ID", ";&nbsp;", "&nbsp;/*", "TYPE", "*/" ], 2);	// add the row
-			addRowStyle(innerTable, [ blue, black, black, green, green ], 2);							// style the row accordingly
+			addRow(innerTable, ["var", "&nbsp;", "ID", ";&nbsp;", "&nbsp;/*", "TYPE", "*/" ], 2);	// add the row
+			addRowStyle(innerTable, [ blue, black, black, black, blue, blue, blue ], 2);							// style the row accordingly
 		}
 		else if (element == "array") {	// if its an array
-			addRow(innerTable, ["<b>var</b>", "&nbsp;", "ID", "&nbsp;=&nbsp;", "<b>new</b>&nbsp;", "Array", "(", "size", ")", ";", "&nbsp;/*", "TYPE", "*/"], 2);	// add the row
-			addRowStyle(innerTable, [ blue, black, black, blue, black, black, black, black, black, green, green ], 2);											// style it accordingly
+			addRow(innerTable, ["var", "&nbsp;", "ID", "&nbsp;=&nbsp;", "new&nbsp;", "Array", "(", "size", ")", ";", "&nbsp;/*", "TYPE", "*/"], 2);	// add the row
+			addRowStyle(innerTable, [ blue, black, black, black, blue, black, black, black, black, black, blue, blue, blue ], 2);											// style it accordingly
 		}
 
 		selRow++;			// increase the selected row
@@ -609,11 +672,25 @@ function Editor() {
 
 		// depending on which element it is, format the row correspondingly
 		if (element == "assignment") addRow(innerTable, [ indentStr + "ID", "&nbsp;", "=", "&nbsp", "EXPR", ";"], 2);
-		else if (element == "write") addRow(innerTable, [ indentStr + "document.write(", "EXPR", ")", ";" ], 2);
-		else if (element == "writeln") addRow(innerTable, [ indentStr + "document.writeln(", "EXPR", ")", ";" ], 2);
-		else if (element == "stringPrompt") addRow(innerTable, [ indentStr + "ID", "&nbsp;", "=", "&nbsp;", "prompt(", "EXPR", ",&nbsp;", "EXPR", ")", ";" ], 2);
-		else if (element == "numericPrompt") addRow(innerTable, [ indentStr + "ID", "&nbsp;", "=", "&nbsp;", "parseFloat(", "prompt(", "EXPR", ",", "EXPR", ")", ")", ";" ], 2);
-		else if (element == "functionCall") addRow(innerTable, [ indentStr + "FUNCTION(", ")", ";" ], 2);
+		else if (element == "write") {
+			addRow(innerTable, [ indentStr + "document.write", "(", "EXPR", ")", ";" ], 2);
+			addRowStyle(innerTable, [ blue, black, black, black, black ], 2);
+		}
+		else if (element == "writeln") {
+			addRow(innerTable, [ indentStr + "document.writeln", "(", "EXPR", ")", ";" ], 2);
+			addRowStyle(innerTable, [ blue, black, black, black, black ], 2);
+		}
+		else if (element == "stringPrompt") {
+			addRow(innerTable, [ indentStr + "ID", "&nbsp;", "=", "&nbsp;", "prompt", "(", "EXPR", ",&nbsp;", "EXPR", ")", ";" ], 2);
+			addRowStyle(innerTable, [ black, black, black, black, blue, black, black, black, black, black ], 2);
+		}
+		else if (element == "numericPrompt") {
+			addRow(innerTable, [ indentStr + "ID", "&nbsp;", "=", "&nbsp;", "parseFloat", "(", "prompt", "(", "EXPR", ",", "EXPR", ")", ")", ";" ], 2);
+			addRowStyle(innerTable, [ black, black, black, black, blue, black, blue, black, black, black, black, black ], 2);
+		}
+		else if (element == "functionCall") {
+			addRow(innerTable, [ indentStr + "FUNCTION(", ")", ";" ], 2);
+		}
 		else if (element == "return") {
 			addRow(innerTable, [ indentStr + "return&nbsp;", "EXPR", ";" ], 2);
 			addRowStyle(innerTable, [ "blue", "black", "black" ], 2);
@@ -646,7 +723,7 @@ function Editor() {
 			innerTable = codeTable.rows[selRow + i].cells[0].children[0];		// get the newly created inner table object
 
 			// add the row on one line, a '{' on the second line, and '}' on the third
-			if (i == 0) { addRow(innerTable, [ indentStr + "<b>if</b>&nbsp;", "(", "EXPR", ")" ], 2); addRowStyle(innerTable, [ "blue", "black", "black", "black" ], 2); }
+			if (i == 0) { addRow(innerTable, [ indentStr + "if&nbsp;", "(", "EXPR", ")" ], 2); addRowStyle(innerTable, [ "blue", "black", "black", "black" ], 2); }
 			else if (i == 1) addRow(innerTable, [ indentStr + "{" ], 2);
 			else if (i == 2) addRow(innerTable, [ indentStr + "}" ], 2);
 		}
@@ -676,10 +753,10 @@ function Editor() {
 			cell.innerHTML = innerTableTemplate;
 			innerTable = codeTable.rows[selRow + i].cells[0].children[0];
 
-			if (i == 0) { addRow(innerTable, [ indentStr + "<b>if</b>&nbsp;", "(", "EXPR", ")" ], 2); addRowStyle(innerTable, [ "blue", "black", "black", "black" ], 2); }
+			if (i == 0) { addRow(innerTable, [ indentStr + "if&nbsp;", "(", "EXPR", ")" ], 2); addRowStyle(innerTable, [ "blue", "black", "black", "black" ], 2); }
 			else if (i == 1) addRow(innerTable, [ indentStr + "{" ], 2);
 			else if (i == 2) addRow(innerTable, [ indentStr + "}" ], 2);
-			else if (i == 3) { addRow(innerTable, [ indentStr + "<b>else</b>" ], 2); addRowStyle(innerTable, [ "blue", ], 2); }
+			else if (i == 3) { addRow(innerTable, [ indentStr + "else" ], 2); addRowStyle(innerTable, [ "blue", ], 2); }
 			else if (i == 4) addRow(innerTable, [ indentStr + "{" ], 2);
 			else if (i == 5) addRow(innerTable, [ indentStr + "}" ], 2);
 		}
@@ -709,7 +786,7 @@ function Editor() {
 			cell.innerHTML = innerTableTemplate;
 			innerTable = codeTable.rows[selRow + i].cells[0].children[0];
 
-			if (i == 0) { addRow(innerTable, [ indentStr + "<b>while</b>&nbsp;", "(", "EXPR", ")" ], 2); addRowStyle(innerTable, [ "blue", "black", "black", "black" ], 2); }
+			if (i == 0) { addRow(innerTable, [ indentStr + "while&nbsp;", "(", "EXPR", ")" ], 2); addRowStyle(innerTable, [ "blue", "black", "black", "black" ], 2); }
 			else if (i == 1) addRow(innerTable, [ indentStr + "{" ], 2);
 			else if (i == 2) addRow(innerTable, [ indentStr + "}" ], 2);
 		}
@@ -740,7 +817,7 @@ function Editor() {
 			innerTable = codeTable.rows[selRow + i].cells[0].children[0];
 
 			if (i == 0) {
-				addRow(innerTable, [ indentStr + "<b>for</b>&nbsp;", "(", "ID&nbsp;", "=&nbsp;", "EXPR", ";&nbsp;", "ID&nbsp;", "&lt;&nbsp;", "EXPR", ";&nbsp;", "ID", "++", ")" ], 2);
+				addRow(innerTable, [ indentStr + "for&nbsp;", "(", "ID&nbsp;", "=&nbsp;", "EXPR", ";&nbsp;", "ID&nbsp;", "&lt;&nbsp;", "EXPR", ";&nbsp;", "ID", "++", ")" ], 2);
 				addRowStyle(innerTable, [ "blue", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black" ], 2);
 			}
 			else if (i == 1) addRow(innerTable, [ indentStr + "{" ], 2);
@@ -808,8 +885,8 @@ function Editor() {
 
 			// add the row on the first iteration, a '{' on second iteration, and a '}' on third iteration
 			if (i == 0) {
-				addRow(innerTable, [ "<b>function</b>&nbsp;", "ID(", ")&nbsp;", "/*", "VOID", "*/" ], 2);
-				addRowStyle(innerTable, [ blue, black, black, green, green ], 2);
+				addRow(innerTable, [ "function&nbsp;", "ID(", ")&nbsp;", "/*", "VOID", "*/" ], 2);
+				addRowStyle(innerTable, [ blue, black, black, blue, blue, blue ], 2);
 			}
 			else if (i == 1) addRow(innerTable, [ "{" ], 2);
 			else if (i == 2) addRow(innerTable, [ "}" ], 2);
@@ -1118,25 +1195,37 @@ function Editor() {
 	function generateSelectionHTML(list, kind)
 	{
 		var wstring;
-		wstring = "<select id =\"selDrop\" size=\"4\" style=\"width: 100%;marginbottom:10px\">\n";
+		wstring = "<select id='selDrop" + sandboxNum + "' size=\"4\" style=\"width: 100%;marginbottom:10px\">\n";
 		for (i = 0; i < list.length; i++)
 		{
 			wstring += "<option value=\"" + list[i] + "\">" + list[i] + "</option>\n";
 		}
-		wstring += "</select> \n<div>\n <button type=\"button\" onclick=\"";
+		wstring += "</select> \n<div>\n <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button>\n <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style=\"width:4em;height:2em\">Cancel</button>\n </div>";
+		
+		dial.innerHTML = wstring;
+		
 		switch (kind)
 		{
 			case "id":
-				wstring += "idConfirm(selDrop.value)";
+				dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+				dialOKButton.onclick = function() {
+					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					idConfirm(selectDrop.value);
+				};
 				break;
 			case "type":
-				wstring += "typeConfirm(selDrop.value)";
+				dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+				dialOKButton.onclick = function() {
+					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					typeConfirm(selectDrop.value);
+				};
 				break;
 			default:
 				break;
 		}
-		wstring += "\" style=\"width:4em;height:2em\">Okay</button>\n <button type=\"button\" onclick=\"selectorCancel()\" style=\"width:4em;height:2em\">Cancel</button>\n </div>";
-		return wstring;
+		
+		dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
+		dialCancelButton.onclick = function() { selectorCancel(); };
 	}
 
 	function delN(name,list)
@@ -1273,8 +1362,8 @@ function Editor() {
 			bracketFlag = false;
 		}
 		
-		rowNum = lineNums[0];
-		selRow = rowNum;
+		//rowNum = lineNums[0];
+		//selRow = rowNum;
 		
 		codeStr = codeStr.replace("\xA0", " ");
 		codeStr = codeStr.replace("\x1E", " ");
