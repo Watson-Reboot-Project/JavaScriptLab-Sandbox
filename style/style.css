@@ -1,0 +1,85 @@
+body {
+   font-size: 87.5%;
+   font-family: Courier New, 'Lucida Sans Unicode';
+}
+
+#body {
+   margin:0 auto;
+   max-width: 720px;
+}
+
+#codeTitle {
+   padding-top: 0px;
+   margin-top: 0px;
+   margin-bottom: 0px;
+}
+
+#programCode {
+   height: 400px;
+   width: 580px;
+   border-style: ridge;
+   float: left;
+   overflow: auto;
+}
+
+button[type=button] {
+   width: 9em;
+   height: 2.2em;
+}
+
+#buttons {
+   width: auto;
+   height: 300px;
+   float: right;
+}
+
+#varTitle {
+   clear: left;
+   margin-top: 0px;
+   margin-bottom: 0px;
+}
+
+#varBox {
+   width: auto;
+   height: 145px;
+   border-style: ridge;
+   clear: left;
+}
+
+#outTitle {
+   clear: left;
+   margin-top: 0px;
+   margin-bottom: 0px;
+}
+
+#outputBox {
+   width: auto;
+   height: 145px;
+   border-style: ridge;
+   clear: left;
+}
+
+#runWalk {
+   padding-top: 10px;
+   width: auto;
+}
+
+table {
+   border: none;
+   border-collapse:collapse;
+   padding: 0px;
+   margin: 0px;
+}
+
+td {
+   border:none;
+   border-collapse:collapse;
+   padding: 0px;
+   margin: 0px;
+}
+.innerTable {
+   border: none;
+   border-collapse:collapse;
+   padding: 0px;
+   margin: 0px;
+}
