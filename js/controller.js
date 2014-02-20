@@ -28,6 +28,12 @@ function Controller(sandboxNum) {
 	var dummyVar = 0;
 	var showVarBox = true;
 	var showScope = false;
+	var green = "#5CB85C";
+	var greenHover = "#47A447";
+	var orange = "#F0AD4E";
+	var orangeHover = "#F09C28";
+	var red = "#D9534F";
+	var redHover = "#D2322D";
 	var figDiv = document.getElementById("fig" + sandboxNum + "Div");
 	
 	figDiv.innerHTML = '<div id="selector" style="text-align:center"></div> \
@@ -55,23 +61,32 @@ function Controller(sandboxNum) {
 	</div> \
     <div id="fig1OutVarBox" class="outterDiv"> \
       <h4 id="varTitle">Variables</h4> \
-	  <div id="fig1VarBox" class="varDiv"> \
-		<table id="varTable"></table> \
+	  <div id="fig' + sandboxNum + 'VarBox" class="varDiv"> \
+		<table id="fig' + sandboxNum + 'VarTable" class="normal"></table> \
 	  </div> \
    </div> \
    <div class="outterDiv"> \
 		<h4 id="outTitle">Output</h4> \
-		<div id="outputBox" class="varDiv"> \
-			<table id="outputTable"></table> \
+		<div id="fig' + sandboxNum + 'OutputBox" class="varDiv"> \
+			<table id="fig' + sandboxNum + 'OutputTable"></table> \
 		</div> \
    </div> \
    <div id="runWalk" align="center"> \
-      <button type="button" onClick="figure.runButton()">Run</button> \
-      <button type="button" onClick="figure.walkButton()">Walk</button> \
+      <button id="fig' + sandboxNum + 'RunButton" type="button" style="color:#FFFFFF;background-color:' + green + '">Run</button> \
+      <button id="fig' + sandboxNum + 'WalkButton" type="button" style="color:#FFFFFF;background-color:' + orange + '">Walk</button> \
    </div>';
    
    	var editorTable = document.getElementById("fig" + sandboxNum + "Editor");
 	var editor = new Editor(sandboxNum);
+	
+	outputTable = document.getElementById("fig" + sandboxNum + "OutputTable");
+	var outputBox = document.getElementById("fig" + sandboxNum + "OutputBox");
+	var outputBox = document.getElementById("fig" + sandboxNum + "OutputBox");
+	var row = outputTable.insertRow(0);
+	var cell = row.insertCell(0);
+	nextRowInd++;
+	varBox = document.getElementById("fig" + sandboxNum + "VarBox");
+	varTable = document.getElementById("fig" + sandboxNum + "VarTable");
 	
 	this.walkButton = walkButton;
 	this.runButton = runButton;
@@ -91,6 +106,8 @@ function Controller(sandboxNum) {
 	var ifElseButton = document.getElementById("fig" + sandboxNum + "AddIfElse");
 	var funcCallButton = document.getElementById("fig" + sandboxNum + "FuncCall");
 	var returnButton = document.getElementById("fig" + sandboxNum + "Return");
+	var walkButtonObj = document.getElementById("fig" + sandboxNum + "WalkButton");
+	var runButtonObj = document.getElementById("fig" + sandboxNum + "RunButton");
 	
 	addVarButton.onclick = function () { editor.addVariable("variable"); };
 	addArrButton.onclick = function () { editor.addVariable("array"); };
@@ -106,10 +123,37 @@ function Controller(sandboxNum) {
 	ifElseButton.onclick = function() { editor.addIfElse(); };
 	funcCallButton.onclick = function () { editor.addOneLineElement("functionCall"); };
 	returnButton.onclick = function () { editor.addOneLineElement("return"); };
+	walkButtonObj.onclick = function() { walkButton(); }
+	runButtonObj.onclick = function() { runButton(); }
 	
 	$(document).ready(function() {
             $("#fig" + sandboxNum + "OutVarBox").hide(); 
 	 });
+	 
+	$("#fig" + sandboxNum + "RunButton").mousemove(function() {
+		var button = document.getElementById("fig" + sandboxNum + "RunButton");
+		
+		if (button.textContent == "Run") button.style.backgroundColor = greenHover;
+		else button.style.backgroundColor = orangeHover;
+	});
+	
+	$("#fig" + sandboxNum + "RunButton").mouseout(function() {
+		var button = document.getElementById("fig" + sandboxNum + "RunButton");
+		if (button.textContent == "Run") button.style.backgroundColor = green;
+		else button.style.backgroundColor = orange;
+	});
+
+	$("#fig" + sandboxNum + "WalkButton").mousemove(function() {
+		var button = document.getElementById("fig" + sandboxNum + "WalkButton");
+		if (button.textContent == "Walk") button.style.backgroundColor = orangeHover;
+		else button.style.backgroundColor = redHover;
+	});
+	
+	$("#fig" + sandboxNum + "WalkButton").mouseout(function() {
+		var button = document.getElementById("fig" + sandboxNum + "WalkButton");
+		if (button.textContent == "Walk") button.style.backgroundColor = orange;
+		else button.style.backgroundColor = red;
+	});
 	
 	function init(interpreter, scope) {
 		var wrapper = function (text) {
@@ -313,12 +357,6 @@ function Controller(sandboxNum) {
 	}
 	
 	function walkButton() {
-		slideVarBox("down");
-		
-		var text = editor.getEditorText();
-		console.log(text);
-		
-		return;
 		if (done == true) { reset(); return; }
 		if (attemptingToRun == true || runMode == true) {
 			outputTable.innerHTML = "";
@@ -341,7 +379,11 @@ function Controller(sandboxNum) {
 		
 		slideVarBox("down");
 		
-		if (myInterpreter === null) myInterpreter = new Interpreter(codeStr, init, thisObj);
+		if (myInterpreter === null) {
+			var codeStr = editor.getEditorText();
+			console.log(codeStr);
+			myInterpreter = new Interpreter(codeStr, init, thisObj);
+		}
 		if (runMode == true) {
 			clearInterval(intervalID);
 			runMode = false;
@@ -353,17 +395,14 @@ function Controller(sandboxNum) {
 	}
 	
 	function runButton() {
-		slideVarBox("up");
-		return;
-		
 		if (done) reset();
 	
 		if (runMode == true) {
 			clearInterval(intervalID);
-			_runButton.textContent = "Run";
-			_runButton.style.backgroundColor = green; 
-			_walkButton.textContent = "Walk";
-			_walkButton.style.backgroundColor = orange;
+			runButtonObj.textContent = "Run";
+			runButtonObj.style.backgroundColor = green; 
+			walkButtonObj.textContent = "Walk";
+			walkButtonObj.style.backgroundColor = orange;
 			runMode = false;
 			slideVarBox("down");
 			
@@ -373,38 +412,42 @@ function Controller(sandboxNum) {
 			if (attemptingToRun == false && checkIfPrompt() == true) {
 				$("#" + editCellID).focus();
 				attemptingToRun = true;
-				_runButton.textContent = "Pause";
-				_runButton.style.backgroundColor = orange;
-				_walkButton.textContent = "Reset";
-				_walkButton.style.backgroundColor = red;
+				runButtonObj.textContent = "Pause";
+				runButtonObj.style.backgroundColor = orange;
+				walkButtonObj.textContent = "Reset";
+				walkButtonObj.style.backgroundColor = red;
 				return;
 			}
 			else if (attemptingToRun == true && checkIfPrompt() == true) {
 				attemptingToRun = false;
-				_runButton.textContent = "Run";
-				_runBotton.style.backgroundColor = green;
-				_walkButton.textContent = "Walk";
-				_walkButton.style.backgroundColor = orange;
+				runButtonObj.textContent = "Run";
+				runBottonObj.style.backgroundColor = green;
+				walkButtonObj.textContent = "Walk";
+				walkButtonObj.style.backgroundColor = orange;
 				slideVarBox("down");
 				return;
 			}
 			else if (attemptingToRun == true) {
 				attemptingToRun = false;
-				_runButton.textContent = "Run";
-				_runButton.style.backgroundColor = green;
-				_walkButton.textContent = "Walk";
-				_walkButton.style.backgroundColor = orange;
+				runButtonObj.textContent = "Run";
+				runButtonObj.style.backgroundColor = green;
+				walkButtonObj.textContent = "Walk";
+				walkButtonObj.style.backgroundColor = orange;
 				runMode = false;
 				slideVarBox("down");
 				return;
 			}
 		}
 		
-		_walkButton.textContent = "Reset";
-		_walkButton.style.backgroundColor = red;
-		_runButton.textContent = "Pause";
-		_runButton.style.backgroundColor = orange;
-		if (myInterpreter === null) myInterpreter = new Interpreter(codeStr, init, thisObj);
+		walkButtonObj.textContent = "Reset";
+		walkButtonObj.style.backgroundColor = red;
+		runButtonObj.textContent = "Pause";
+		runButtonObj.style.backgroundColor = orange;
+		if (myInterpreter === null) {
+			var codeStr = editor.getEditorText();
+			console.log(codeStr);
+			myInterpreter = new Interpreter(codeStr, init, thisObj);
+		}
 		
 		runMode = true;
 		intervalID = setInterval(walk, 100);
@@ -434,7 +477,7 @@ function Controller(sandboxNum) {
 		var status;
 		
 		if (done == true) {
-			_runButton.textContent = "Run";
+			runButtonObj.textContent = "Run";
 			reset();
 			return true;
 		}
@@ -506,10 +549,10 @@ function Controller(sandboxNum) {
 	}
 	
 	function reset() {
-		_runButton.textContent = "Run";
-		_runButton.style.backgroundColor = green;
-		_walkButton.textContent = "Walk";
-		_walkButton.style.backgroundColor = orange;
+		runButtonObj.textContent = "Run";
+		runButtonObj.style.backgroundColor = green;
+		walkButtonObj.textContent = "Walk";
+		walkButtonObj.style.backgroundColor = orange;
 		promptFlag = false;
 		haltFlag = false;
 		attemptingToRun = false;

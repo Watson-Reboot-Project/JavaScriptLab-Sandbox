@@ -89,3 +89,7 @@ td {
     resize: none;
 	border: 1px solid black;
 }
+.normal {
+	border-spacing: 15px 1px;
+	border-collapse: separate;
+}

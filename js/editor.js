@@ -24,13 +24,14 @@ function Editor(sandboxNum) {
 	var black = "#000000";
 	var brown = "#a52a2a";
 	var functionList = [];									// an array of currently declared functions
-	
+	var promptFlag = false;
 	var rowType = [];
 	var dummyRows = [];
 	var lineNums = [];
 	var charCountStart = [ ];
 	var charCountEnd = [ ];
 	var codeStrLen;
+	var rowNum = -1;
 	
 	/* Weston variables */
 	var vFuns = [];
@@ -38,6 +39,7 @@ function Editor(sandboxNum) {
 	var tFuns = [];
 	var fTypes = ["Text", "Numeric", "Void"];
 	var vtypes = ["Text", "Numeric"];
+	var expr = ["Constant", "Variable", "Function Call", "Expression + Expression"];
 	var nvars = [];
 	var tvars = [];
 	var resWords = ["new", "this", "var", "ID", "list", "Array", "function"];
@@ -56,7 +58,12 @@ function Editor(sandboxNum) {
 	this.addFor = addFor;
 	this.addIfThen = addIfThen;
 	this.addIfElse = addIfElse;
-
+	this.selectLine = selectLine;
+	this.getDatatypeSelectedLine = getDatatypeSelectedLine;
+	this.isNewLine = isNewLine;
+	this.checkPromptFlag = checkPromptFlag;
+	this.reset = reset;
+	
 	init();					// initialize some important stuff
 
 	// init() .... it initializes some important stuff .. o_0
@@ -138,78 +145,7 @@ function Editor(sandboxNum) {
 
 		// we must put the cells we highlight red back to their normal state after we mouseout of them
 		$('.innerTable').on('mouseout', 'td', function(){
-			for (var i = 0; i < codeTable.rows.length; i++) {
-				var innerTable = codeTable.rows[i].cells[0].children[0];										// grab the inner table for this table data object
-				var numCells = innerTable.rows[0].cells.length													// grab the number of cells in this inner table
-
-				// we must look for special characters/keywords that let us now we need to re-color cells in that row
-				if (numCells >= 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("//") >= 0) {				// a comment? it needs to be green
-					for (var j = 0; j < 2; j++) innerTable.rows[0].cells[j].style.color = black;				// first two cells are number and blank space (or possibly an arrow)
-					for (var j = 2; j < numCells; j++) innerTable.rows[0].cells[j].style.color = green;			// last cells are the comment, make it green
-				}
-				else if (numCells >= 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("function") >= 0) {		// a function declaration? function needs to be blue
-					for (var j = 0; j < numCells; j++) {
-						if (j == 2 || j == 5 || j == 6 || j == 7) innerTable.rows[0].cells[j].style.color = blue;								// color "function" blue
-						else innerTable.rows[0].cells[j].style.color = black;									// the rest black
-					}
-				}
-				else if (numCells == 9 && innerTable.rows[0].cells[2].innerHTML.indexOf("var") >= 0) {			// a variable declaration? (num cells = 7) var needs to be blue
-					for (var j = 0; j < numCells; j++) {
-						if (j == 2 || j == 6 || j == 7 || j == 8) innerTable.rows[0].cells[j].style.color = blue;								// make var blue
-						else innerTable.rows[0].cells[j].style.color = black;									// the rest black
-					}
-				}
-				else if (numCells > 9 && innerTable.rows[0].cells[2].innerHTML.indexOf("var") >= 0) {			// an array declaration? (num cells > 7) var needs to be blue, new needs to be blue
-					for (var j = 0; j < numCells; j++) {
-						if (j == 2 || j == 6 || j == 12 || j == 13 || j == 14) innerTable.rows[0].cells[j].style.color = blue;					// make var and new blue
-						else if (j == 11 || j == 12) innerTable.rows[0].cells[j].style.color = green;			// make comment green
-						else innerTable.rows[0].cells[j].style.color = black;									// the rest black
-					}
-				}
-				else if (numCells >= 3 && cellContainsKeyword(innerTable, 2)) {									// any keywords? (if, while, else, for, etc) ?
-					for (var j = 0; j < numCells; j++) {
-						if (j == 2) innerTable.rows[0].cells[j].style.color = blue;								// make the keyword blue
-						else innerTable.rows[0].cells[j].style.color = black;									// the rest black
-					}
-				}
-				else if (numCells > 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("write") >= 0) {
-					for (var j = 0; j < numCells; j++) {
-						if (j == 2)	innerTable.rows[0].cells[j].style.color = blue;
-						else if (j == 4) {
-							if (innerTable.rows[0].cells[2].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
-							else innerTable.rows[0].cells[j].style.color = black;
-						}
-						else innerTable.rows[0].cells[j].style.color = black;
-					}
-				}
-				else if (numCells > 5 && innerTable.rows[0].cells[6].innerHTML.indexOf("parse") >= 0) {
-					for (var j = 0; j < numCells; j++) {
-						if (j == 6 || j == 8) innerTable.rows[0].cells[j].style.color = blue;
-						else if (j == 10 || j == 12) {
-							if (innerTable.rows[0].cells[j].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
-							else innerTable.rows[0].cells[j].style.color = black;
-						}
-						else innerTable.rows[0].cells[j].style.color = black;
-					}
-				}
-				else if (numCells > 5 && innerTable.rows[0].cells[6].innerHTML.indexOf("prompt") >= 0) {
-					for (var j = 0; j < numCells; j++) {
-						if (j == 6) innerTable.rows[0].cells[j].style.color = blue;
-						else if (j == 8 || j == 10) {
-							if (innerTable.rows[0].cells[j].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
-							else innerTable.rows[0].cells[j].style.color = black;
-						}
-						else innerTable.rows[0].cells[j].style.color = black;
-					}
-				}
-				else {
-					for (var j = 0; j < numCells; j++) {														// the rest is black
-						innerTable.rows[0].cells[j].style.color = "#000000";
-					}
-				}
-			}
-
-			codeTable.style.cursor = 'default';
+			returnToNormalColor();
 		});
 
 		$('.innerTable').off('click');						// toggle click event
@@ -394,12 +330,9 @@ function Editor(sandboxNum) {
 					
 					dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
 					dialOKButton.onclick = function() {
-						console.log("Here.");
 						var textArea = document.getElementById("dial" + sandboxNum + "Text");
-						console.log(textArea.value);
 						nameDialogConfirm(textArea.value);
 					};
-					
 					dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
 					dialCancelButton.onclick = function() {	selectorCancel(); };
 					
@@ -407,8 +340,17 @@ function Editor(sandboxNum) {
 			}
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[4].textContent == '=')
 			{
+				 if (tvars.length === 0 && nvars.length === 0) {
+						alert("No variables to select!");
+						return;
+					}
 					$("#selector").empty();
 					generateSelectionHTML(namesUsed, "id");
+					$("#selector").dialog('open');
+			}
+			else if (cellVal == 'EXPR') {
+				$("#selector").empty();
+					generateSelectionHTML(expr, "expr");
 					$("#selector").dialog('open');
 			}
 			
@@ -441,6 +383,101 @@ function Editor(sandboxNum) {
 					}
 			}
 			});
+	}
+	
+	function returnToNormalColor() {
+		for (var i = 0; i < codeTable.rows.length; i++) {
+			var innerTable = codeTable.rows[i].cells[0].children[0];										// grab the inner table for this table data object
+			var numCells = innerTable.rows[0].cells.length													// grab the number of cells in this inner table
+
+			// we must look for special characters/keywords that let us now we need to re-color cells in that row
+			if (numCells >= 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("//") >= 0) {				// a comment? it needs to be green
+				for (var j = 0; j < 2; j++) innerTable.rows[0].cells[j].style.color = black;				// first two cells are number and blank space (or possibly an arrow)
+				for (var j = 2; j < numCells; j++) innerTable.rows[0].cells[j].style.color = green;			// last cells are the comment, make it green
+			}
+			else if (numCells >= 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("function") >= 0) {		// a function declaration? function needs to be blue
+				for (var j = 0; j < numCells; j++) {
+					if (j == 2 || j == 5 || j == 6 || j == 7) innerTable.rows[0].cells[j].style.color = blue;								// color "function" blue
+					else innerTable.rows[0].cells[j].style.color = black;									// the rest black
+				}
+			}
+			else if (numCells == 9 && innerTable.rows[0].cells[2].innerHTML.indexOf("var") >= 0) {			// a variable declaration? (num cells = 7) var needs to be blue
+				for (var j = 0; j < numCells; j++) {
+					if (j == 2 || j == 6 || j == 7 || j == 8) innerTable.rows[0].cells[j].style.color = blue;								// make var blue
+					else innerTable.rows[0].cells[j].style.color = black;									// the rest black
+				}
+			}
+			else if (numCells > 9 && innerTable.rows[0].cells[2].innerHTML.indexOf("var") >= 0) {			// an array declaration? (num cells > 7) var needs to be blue, new needs to be blue
+				for (var j = 0; j < numCells; j++) {
+					if (j == 2 || j == 6 || j == 12 || j == 13 || j == 14) innerTable.rows[0].cells[j].style.color = blue;					// make var and new blue
+					else if (j == 11 || j == 12) innerTable.rows[0].cells[j].style.color = green;			// make comment green
+					else innerTable.rows[0].cells[j].style.color = black;									// the rest black
+				}
+			}
+			else if (numCells >= 3 && cellContainsKeyword(innerTable, 2)) {									// any keywords? (if, while, else, for, etc) ?
+				for (var j = 0; j < numCells; j++) {
+					if (j == 2) innerTable.rows[0].cells[j].style.color = blue;								// make the keyword blue
+					else innerTable.rows[0].cells[j].style.color = black;									// the rest black
+				}
+			}
+			else if (numCells > 3 && innerTable.rows[0].cells[2].innerHTML.indexOf("write") >= 0) {
+				for (var j = 0; j < numCells; j++) {
+					if (j == 2)	innerTable.rows[0].cells[j].style.color = blue;
+					else if (j == 4) {
+						if (innerTable.rows[0].cells[2].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
+						else innerTable.rows[0].cells[j].style.color = black;
+					}
+					else innerTable.rows[0].cells[j].style.color = black;
+				}
+			}
+			else if (numCells > 5 && innerTable.rows[0].cells[6].innerHTML.indexOf("parse") >= 0) {
+				for (var j = 0; j < numCells; j++) {
+					if (j == 6 || j == 8) innerTable.rows[0].cells[j].style.color = blue;
+					else if (j == 10 || j == 12) {
+						if (innerTable.rows[0].cells[j].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
+						else innerTable.rows[0].cells[j].style.color = black;
+					}
+					else innerTable.rows[0].cells[j].style.color = black;
+				}
+			}
+			else if (numCells > 5 && innerTable.rows[0].cells[6].innerHTML.indexOf("prompt") >= 0) {
+				for (var j = 0; j < numCells; j++) {
+					if (j == 6) innerTable.rows[0].cells[j].style.color = blue;
+					else if (j == 8 || j == 10) {
+						if (innerTable.rows[0].cells[j].textContent.indexOf('"') >= 0) innerTable.rows[0].cells[j].style.color = brown;
+						else innerTable.rows[0].cells[j].style.color = black;
+					}
+					else innerTable.rows[0].cells[j].style.color = black;
+				}
+			}
+			else {
+				for (var j = 0; j < numCells; j++) {														// the rest is black
+					innerTable.rows[0].cells[j].style.color = "#000000";
+				}
+			}
+		}
+
+		codeTable.style.cursor = 'default';
+	}
+	
+	function containsControlStructure(text) {
+		if (text.indexOf("while") >= 0) return true;
+		if (text.indexOf("if") >= 0) return true;
+		if (text.indexOf("else") >= 0) return true;
+		if (text.indexOf("for") >= 0) return true;
+	}
+	
+	function highlightCurrentStep(rowNum) {
+		highlightStart = rowNum;
+		var innerTable = codeTable.rows[rowNum].cells[0].children[0];
+		if (innerTable.rows[0].cells.length <= 2) return;
+		var cellText = innerTable.rows[0].cells[2];
+		if (containsControlStructure(cellText.textContent)) {
+			highlightControlStructure(rowNum);
+		}
+		else {
+			highlightLine(rowNum);
+		}
 	}
 
 	// check to see if a specific cell contains a keywords; return true if so
@@ -1142,10 +1179,21 @@ function Editor(sandboxNum) {
 		$("#selector").dialog('close');
 	}
 
+function exprDialogConfirm(result) {
+		// empty string is not valid inpute
+		if (result == "") {
+				$("#selector").dialog('close');
+				return;
+		}
+		
+		clickedCell.textContent = '\"'+result+'\"';
+		$("#nameDialog").dialog('close');
+		$("#selector").dialog('close');
+}
+
 	function nameDialogConfirm(result) {
 		// empty string is not valid inpute
-		if (result == "")
-		{
+		if (result == "") {
 			$("#selector").dialog('close');
 			return;
 		}
@@ -1167,7 +1215,7 @@ function Editor(sandboxNum) {
 
 		//need to add functionality for changing names (removing from namesUsed)
 		clickedCell.textContent = result;
-					console.log("The result is " + result);
+		console.log("The result is " + result);
 		namesUsed.push(result);
 
 		var lastCellindex = innerTablet.rows[0].cells.length-1;
@@ -1186,9 +1234,33 @@ function Editor(sandboxNum) {
 		$("#selector").dialog('close');
 	}
 
+function exprConfirm(result) {
+		var value;
+		$("#selector").empty();
+		
+		if (result == "Constant") {
+				console.log("got constant");
+				dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+				
+				dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+				dialOKButton.onclick = function() {
+						var textArea = document.getElementById("dial" + sandboxNum + "Text");
+						exprDialogConfirm(textArea.value);
+				};
+				dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
+				dialCancelButton.onclick = function() {
+						selectorCancel();
+				};
+		}
+		
+		if (result == "Variable") {
+				$("#selector").empty();
+					generateSelectionHTML(namesUsed, "id");
+		}
+		$("#selector").dialog('open');
+}
 	function selectorCancel() {
 		$("#selector").dialog('close');
-
 	}
 
 	// Weston's functions
@@ -1220,6 +1292,13 @@ function Editor(sandboxNum) {
 					typeConfirm(selectDrop.value);
 				};
 				break;
+		case "expr":
+				dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+				dialOKButton.onclick = function() {
+					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					exprConfirm(selectDrop.value);
+				};
+					break;
 			default:
 				break;
 		}
@@ -1362,8 +1441,8 @@ function Editor(sandboxNum) {
 			bracketFlag = false;
 		}
 		
-		//rowNum = lineNums[0];
-		//selRow = rowNum;
+		rowNum = lineNums[0];
+		selRow = rowNum;
 		
 		codeStr = codeStr.replace("\xA0", " ");
 		codeStr = codeStr.replace("\x1E", " ");
