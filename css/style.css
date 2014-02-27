@@ -1,0 +1,119 @@
+body {
+   font-size: 87.5%;
+   font-family: Courier New, 'Lucida Sans Unicode';
+}
+
+#body {
+   margin:0 auto;
+   max-width: 720px;
+}
+
+#codeTitle {
+   padding-top: 0px;
+   margin-top: 0px;
+   margin-bottom: 0px;
+}
+
+#programCode {
+   height: 400px;
+   width: 580px;
+   border-style: ridge;
+   float: left;
+   overflow: auto;
+}
+
+#insertDiv {
+   width: 18px;
+   height: 400px;
+   float: left;
+}
+
+#offsetDiv {
+   width: 14px;
+   height: 11px;
+}
+
+#insertTable {
+   font-size: 14px;
+   float: left;
+   border-color: black;
+}
+
+#divider {
+   height: 400px;
+   border: 0px solid grey;
+   position: absolute;
+   left: 480px;
+}
+
+button[type=button] {
+   width: 9em;
+   height: 2.2em;
+}
+
+#buttons {
+   width: auto;
+   height: 300px;
+   float: right;
+}
+
+#varTitle {
+   clear: left;
+   margin-top: 0px;
+   margin-bottom: 0px;
+}
+
+.outterDiv {
+   width: auto;
+   height: 100px;
+   clear: left;
+   margin-bottom: 15px;
+}
+
+#outTitle {
+   clear: left;
+   margin-bottom: 0px;
+}
+
+#outputBox {
+   width: auto;
+   height: 100px;
+   clear: left;
+}
+
+#runWalk {
+   padding-top: 10px;
+   width: auto;
+}
+
+table {
+   border: none;
+   border-collapse:collapse;
+   padding: 0px;
+   margin: 0px;
+}
+
+td {
+   border:none;
+   border-collapse:collapse;
+   padding: 0px;
+   margin: 0px;
+}
+.innerTable {
+   border: none;
+   border-collapse:collapse;
+   padding: 0px;
+   margin: 0px;
+}
+
+.varDiv {
+	overflow:auto;
+    width: auto;
+	height: 100px;
+    resize: none;
+	border: 1px solid black;
+}
+.normal {
+	border-spacing: 15px 1px;
+	border-collapse: separate;
+}

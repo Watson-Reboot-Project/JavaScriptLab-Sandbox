@@ -40,8 +40,15 @@ function Controller(sandboxNum) {
 		 <h4 id="codeTitle">Code Window</h4> \
 		 <div> \
 		 <div id="programCode"> \
+   <div id="insertDiv">\
+   <div id="offsetDiv"></div>\
+   <table id="insertTable"></table>\
+   </div>\
+   <div id="divider"></div>\
+   <div id="editorDiv">\
 			<table id="fig' + sandboxNum + 'Editor"></table> \
-		 </div> \
+   </div>\
+   </div>\
 		 <div id="buttons"> \
 			<div><button id="fig' + sandboxNum + 'AddVar"        type="button">Variable</button></div> \
 			<div><button id="fig' + sandboxNum + 'AddArr"        type="button" onclick="figure.getEditor().addVariable("array")">Array</button></div> \
@@ -236,9 +243,10 @@ function Controller(sandboxNum) {
 		else defaultPromptInput = defaultStr;
 		
 		if (promptType == "numeric") setupNumericPrompt(id);
-		else setupStringPrompt(id);
-		
-		$('#' + id).focus();
+		else {
+			setupStringPrompt(id);
+			//cell.focus();
+		}
 		row = outputTable.insertRow(outputTable.rows.length);
 		row.insertCell(0);
 		
@@ -246,6 +254,49 @@ function Controller(sandboxNum) {
 	}
 	
 	function setupNumericPrompt(id) {
+		openNumPad(null, null, "This is a test", "Do things", false, 10).done(function(result) {
+			var cell = document.getElementById(id);
+			
+			if (result === null) {
+				promptInput = defaultPromptInput;
+				cell.textContent = defaultPromptInput;
+			}
+			else {
+				promptInput = result;
+				cell.textContent = result;
+			}
+			
+			cell.contentEditable = false;
+			promptFlag = false;
+			
+			if (runMode == true || attemptingToRun == true) { attemptingToRun = false; runMode = false; runButton(); }
+			else { walkButton(); }
+		});
+	}
+	
+	function setupStringPrompt(id) {
+		openStringPad("This is a stringpad", "These are the instructions").done(function(result)
+		{
+			var cell = document.getElementById(id);	
+			
+			if (result === null) {
+				promptInput = defaultPromptInput;
+				cell.textContent = defaultPromptInput;
+			}
+			else {
+				promptInput = result;
+				cell.textContent = result;
+			}
+				
+			cell.contentEditable = false;
+			promptFlag = false;
+				
+			if (runMode == true || attemptingToRun == true) { attemptingToRun = false; runMode = false; runButton(); }
+			else { walkButton(); }
+		});
+	}
+	
+	function setupNumericPrompt2(id) {
 		$("#" + id).keyup(function (event) {
 			var code = event.which || event.keyCode;
 			if (code == 16) {
@@ -302,7 +353,7 @@ function Controller(sandboxNum) {
 		});
 	}
 	
-	function setupStringPrompt(id) {
+	function setupStringPrompt2(id) {
 		$("#" + id).keyup(function (event) {	
 			promptInput = document.getElementById(id).textContent;	// update the prompt input upon each key up
 		});
@@ -494,6 +545,7 @@ function Controller(sandboxNum) {
 		while (flag == false) {
 			var promptRes = editor.checkPromptFlag();
 			if (promptRes[0] == true) {
+				console.log("Prompt flag.");
 				promptFunc(promptRes[1], promptRes[2], promptRes[3]);
 				haltFlag = true;
 				promptFlag = true;
