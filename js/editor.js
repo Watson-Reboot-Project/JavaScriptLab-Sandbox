@@ -349,9 +349,9 @@ function Editor(sandboxNum) {
 					if (rowContainsString(codeTable, rowNum, "var")) {
 							var innerTable = codeTable.rows[rowNum].cells[0].children[0];
 							// Grab the variable name
-							var cellContent = innerTable.rows[0].cells[4].innerText;
+							var cellContent = innerTable.rows[0].cells[4].textContent;
 							// Grab the variable type
-							var cellContentType = innerTable.rows[0].cells[7].innerText;
+							var cellContentType = innerTable.rows[0].cells[7].textContent;
 
 							if (referenceCheck(cellContent, rowNum)) {
 									alert("You must not reference this variable if you want to delete it");
@@ -936,11 +936,11 @@ function Editor(sandboxNum) {
 			var innerTable = codeTable.rows[i].cells[0].children[0];						// grab the inner table of this row
 			var numCells = innerTable.rows[0].cells.length; 								// grab the number of cells in this row
 			for (var j = 0; j < numCells; j++) {											// iterate throughout these cells
-				if (innerTable.rows[0].cells[j].innerText.indexOf("{") >= 0) {				// if we found a '{'
+				if (innerTable.rows[0].cells[j].textContent.indexOf("{") >= 0) {				// if we found a '{'
 					if (!firstBrack) firstBrack = true;										// if this is the first bracket, skip it
 					else bracket++;															// otherwise, count it
 				}
-				else if (innerTable.rows[0].cells[j].innerText.indexOf("}") >= 0) {			// if we found a '}'
+				else if (innerTable.rows[0].cells[j].textContent.indexOf("}") >= 0) {			// if we found a '}'
 					bracket--;																// subtract from bracket
 				}
 
@@ -965,10 +965,10 @@ function Editor(sandboxNum) {
 			for (var j = numCells - 1; j >= 0; j--) {									// start at num cells - 1
 				if (firstLoop == true) { j = colInd; firstLoop = false; }				// if its the first loop, start at the specified column index
 
-				if (innerTable.rows[0].cells[j].innerText.indexOf('{') >= 0) {			// if the cell contains '{', subtract from bracket
+				if (innerTable.rows[0].cells[j].textContent.indexOf('{') >= 0) {			// if the cell contains '{', subtract from bracket
 					bracket--;
 				}
-				else if (innerTable.rows[0].cells[j].innerText.indexOf('}') >= 0) {		// if the cell contains '}'
+				else if (innerTable.rows[0].cells[j].textContent.indexOf('}') >= 0) {		// if the cell contains '}'
 					if (!firstBrack) firstBrak = true;									// if its the first bracket, don't count it
 					else bracket++;														// otherwise, count it
 				}
@@ -1001,11 +1001,11 @@ function Editor(sandboxNum) {
 				for (var j = 0; j < numCells; j++) {
 					if (firstLoop == true) { j = colInd; firstLoop = false; }
 
-					if (innerTable.rows[0].cells[j].innerText.indexOf(openBracket) >= 0) {
+					if (innerTable.rows[0].cells[j].textContent.indexOf(openBracket) >= 0) {
 						if (!firstBrack) firstBrack = true;
 						else bracket++;
 					}
-					else if (innerTable.rows[0].cells[j].innerText.indexOf(closeBracket) >= 0) {
+					else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
 						bracket--;
 					}
 
@@ -1035,10 +1035,10 @@ function Editor(sandboxNum) {
 				for (var j = numCells - 1; j >= 0; j--) {
 					if (firstLoop == true) { j = colInd; firstLoop = false; }
 
-					if (innerTable.rows[0].cells[j].innerText.indexOf(openBracket) >= 0) {
+					if (innerTable.rows[0].cells[j].textContent.indexOf(openBracket) >= 0) {
 						bracket--;
 					}
-					else if (innerTable.rows[0].cells[j].innerText.indexOf(closeBracket) >= 0) {
+					else if (innerTable.rows[0].cells[j].textContent.indexOf(closeBracket) >= 0) {
 						if (!firstBrack) firstBrack = true;
 						else bracket++;
 					}
@@ -1399,24 +1399,24 @@ function Editor(sandboxNum) {
 
 		if (rowLength == 6) {
 			for (var i = 0; i < rowLength; i++) {
-				if (row.cells[i].innerText.indexOf("=") >= 0) { return true; }		// check for assignment
-				if (row.cells[i].innerText.indexOf("write") >= 9) { return true; }	// check for a write/writeln
+				if (row.cells[i].textContent.indexOf("=") >= 0) { return true; }		// check for assignment
+				if (row.cells[i].textContent.indexOf("write") >= 9) { return true; }	// check for a write/writeln
 			}
 		}
 		else if (rowLength == 10) {
 			for (var i = 0; i < rowLength; i++) {
-				if (row.cells[i].innerText.indexOf("prompt") >= 0) { return true; }	// check for a prompt
+				if (row.cells[i].textContent.indexOf("prompt") >= 0) { return true; }	// check for a prompt
 			}
 		}
 		else if (rowLength == 12) {
 			for (var i = 0; i < rowLength; i++) {
-				if (row.cells[i].innerText.indexOf("prompt") >= 0) { return true; }	// check for a prompt again (numeric prompt)
+				if (row.cells[i].textContent.indexOf("prompt") >= 0) { return true; }	// check for a prompt again (numeric prompt)
 			}
 		}
 		else {
-			if (row.cells[2].innerText.indexOf("return") >= 0) return true;			// check for a return
-			if (row.cells[2].innerText.indexOf("FUNCTION") >= 0) return true;		// check for a function that hasn't been renamed
-			if (functionExists(row.cells[2].innerText)) return true;				// check to see if the function exists that has been named
+			if (row.cells[2].textContent.indexOf("return") >= 0) return true;			// check for a return
+			if (row.cells[2].textContent.indexOf("FUNCTION") >= 0) return true;		// check for a function that hasn't been renamed
+			if (functionExists(row.cells[2].textContent)) return true;				// check to see if the function exists that has been named
 		}
 	}
 
@@ -1452,10 +1452,10 @@ function Editor(sandboxNum) {
 			var innerTable = codeTable.rows[i].cells[0].children[0];					// grab the inner table for this row in the code table
 			var numCells = innerTable.rows[0].cells.length;								// grab the number of cells in this inner table
 			for (var j = 0; j < numCells; j++) {										// iterate throughout the cells
-				if (innerTable.rows[0].cells[j].innerText.indexOf('{') >= 0) {			// if an open bracket, add one to bracket
+				if (innerTable.rows[0].cells[j].textContent.indexOf('{') >= 0) {			// if an open bracket, add one to bracket
 					bracket++;
 				}
-				else if (innerTable.rows[0].cells[j].innerText.indexOf('}') >= 0) {		// if a close bracket, subtract one from bracket
+				else if (innerTable.rows[0].cells[j].textContent.indexOf('}') >= 0) {		// if a close bracket, subtract one from bracket
 					bracket--;
 				}
 			}
@@ -1472,17 +1472,17 @@ function Editor(sandboxNum) {
 	// For example, we don't want the user moving into the variable sections
 	function checkValidRow(row, rowNum) {
 
-		if (row.cells[2].innerText.indexOf("//") >= 0) return false;								// don't let the user edit a comment
-		if (row.cells[2].innerText == '\xA0') return false;											// don't let the user edit a blank line
-		if (row.cells[2].innerText.indexOf("{") >= 0 && rowNum >= programStart) return false;		// don't let the user edit before a '{'
+		if (row.cells[2].textContent.indexOf("//") >= 0) return false;								// don't let the user edit a comment
+		if (row.cells[2].textContent == '\xA0') return false;											// don't let the user edit a blank line
+		if (row.cells[2].textContent.indexOf("{") >= 0 && rowNum >= programStart) return false;		// don't let the user edit before a '{'
 		if (rowNum < variableCount + 3) return false;												// don't let the user edit in the variable space
 
 		// the following if statements ensure that a user doesn't edit before the program start (in the variable or function space.. unless its inside a function)
 		if ((selRow < programStart && rowNum < programStart + 1) || (rowNum < programStart)) {
-			if (row.cells[2].innerText.indexOf("{") >= 0 && selRow > rowNum) return false;
-			if (row.cells[2].innerText.indexOf("}") >= 0 && selRow < rowNum) return false;
-			if (row.cells[2].innerText.indexOf("function") >= 0) return false;
-		//	if (row.cells[2].innerText.indexOf("while") >= 0) return false;
+			if (row.cells[2].textContent.indexOf("{") >= 0 && selRow > rowNum) return false;
+			if (row.cells[2].textContent.indexOf("}") >= 0 && selRow < rowNum) return false;
+			if (row.cells[2].textContent.indexOf("function") >= 0) return false;
+		//	if (row.cells[2].textContent.indexOf("while") >= 0) return false;
 		}
 		return true;
 	}
@@ -1506,7 +1506,7 @@ function Editor(sandboxNum) {
 		for (var i = 0; i < codeTable.rows.length; i++) {
 			innerTable = codeTable.rows[i].cells[0].children[0];
 			if (i < 9) innerTable.rows[0].cells[0].innerHTML = i + 1 + "&nbsp;";
-			else innerTable.rows[0].cells[0].innerText = i+1;
+			else innerTable.rows[0].cells[0].textContent = i+1;
 		}
 	}
 
@@ -1528,7 +1528,7 @@ function Editor(sandboxNum) {
 
 			// Iterate through each column
 			for (var i = 0; i < length; i++) {
-					cellVal = row.rows[startingRow].cells[i].innerText;
+					cellVal = row.rows[startingRow].cells[i].textContent;
 					// If the column contains the string return true
 					if (cellVal.match(str)) {
 							return true;
@@ -1558,7 +1558,7 @@ function Editor(sandboxNum) {
 									// starting at column 3 because we do not want to check the line number, arrow, and a blank column.
 									for (var j = 2; j < colLength; j++) {
 													// Get the text value from each cell
-													cellVal = innerTable.rows[0].cells[j].innerText;
+													cellVal = innerTable.rows[0].cells[j].textContent;
 													// If found then return true
 													if (cellVal === keyWord) {
 																	return true;
@@ -2239,7 +2239,7 @@ function Editor(sandboxNum) {
         var string = "";
         var innerTable = codeTable.rows[rowInd].cells[0].children[0];
         for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
-            string += innerTable.rows[0].cells[i].innerText;
+            string += innerTable.rows[0].cells[i].textContent;
         }
         return string.trim();
     }
