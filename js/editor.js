@@ -1824,6 +1824,13 @@ function Editor(sandboxNum) {
                     cell.innerHTML = values[i];						// make the innerHTML of the cell cells[i]
                 }
                 break;
+				
+			case "numeric variable":
+				$("#selector").empty();
+				generateSelectionHTML(nvars, 'id');
+				$("#selector").dialog('open');
+				break;
+
             default:
                 break;
         }
