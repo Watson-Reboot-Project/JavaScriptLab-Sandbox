@@ -242,13 +242,8 @@ function Editor(sandboxNum) {
 			/* Weston variables */
 			innerTablet = codeTable.rows[rowNum].cells[0].children[0];
 			clickedCell = innerTablet.rows[0].cells[cellNum];
-            clickedCellNum = cellNum;
-                            //console.log("Clicked Cell: " + cellVal + "\n");
-                            /*for (i=0; i < innerTablet.rows[0].cells.length; i++)
-                            {
-                            console.log("Cell " + i + ": " + innerTablet.rows[0].cells[i].textContent + "\n");
-                            }*/
-                            
+			clickedCellNum = cellNum;
+
 			// if we click the number of the line (very left cell in each row), we try to delete something
 			if (cellNum == 0) {
 				var innerTable = codeTable.rows[rowNum].cells[0].children[0];
@@ -355,8 +350,10 @@ function Editor(sandboxNum) {
 							var cellContentType = innerTable.rows[0].cells[7].textContent;
 
 							if (referenceCheck(cellContent, rowNum)) {
-									alert("You must not reference this variable if you want to delete it");
-									return;
+								var warning = "You must not reference this variable if you want to delete it.";
+								createAlertBox("Notice", warning, true, null);
+								//createSelector("Select Type", ftypes, ftypeConfirm);
+								return;
 							}
 
 							// If we are removing a text variable then remove the variable from the text variable list
@@ -401,13 +398,13 @@ function Editor(sandboxNum) {
 			if (selRow == rowNum) return;			// the selected row was clicked? do nothing
 			if (rowNum < variableCount) return;		// we don't allow users to move into variables section
 
-			// if the cell value is a blank (5 non-breaking spaces '\xA0'), we try to move to that location
-/*			if (cellVal == '\xA0\xA0\xA0\xA0\xA0') {
-				var innerTable = codeTable.rows[rowNum].cells[0].children[0];		// grab the inner table of this row
-				if (checkValidRow(innerTable.rows[0], rowNum) == false) return;		// check to see if this is a valid position
-				moveToLine(rowNum);												// move to line if we make it here
-			}
-*/
+		// if the cell value is a blank (5 non-breaking spaces '\xA0'), we try to move to that location
+		/*	if (cellVal == '\xA0\xA0\xA0\xA0\xA0') {
+										var innerTable = codeTable.rows[rowNum].cells[0].children[0];		// grab the inner table of this row
+										if (checkValidRow(innerTable.rows[0], rowNum) == false) return;		// check to see if this is a valid position
+										moveToLine(rowNum);												// move to line if we make it here
+							}
+		*/
 			/* Weston's dialogs */
             if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC' || cellVal == 'VOID')
             {
@@ -2155,14 +2152,7 @@ function Editor(sandboxNum) {
     }
     
     function textEntry(result) {
-        var values = ['"', result, '"'];
-        var cell = clickedCell;
-        cell.textContent = values[0];
-        for (var i = 1; i < values.length; i++) {			// for all cells in the table
-            cell = innerTablet.rows[0].insertCell(++clickedCellNum);	// insert a cell at startInd
-            cell.innerHTML = values[i];						// make the innerHTML of the cell cells[i]
-        }
-        
+        clickedCell.textContent = result;
     }
     
     function fChoose(result) {
@@ -2210,8 +2200,12 @@ function Editor(sandboxNum) {
     }
     
     function createNumPad(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback) {
-		var newNumpad = new NumberPad();
-		newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback);
+						var newNumpad = new NumberPad();
+						newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback);
     }
-
+				
+				function createAlertBox(title, instruction, bool, callback) {
+						var alert = new Alert();
+						alert.open(title, instruction, bool, callback);
+				}
 }
