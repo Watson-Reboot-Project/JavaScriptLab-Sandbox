@@ -355,7 +355,7 @@ function Editor(sandboxNum) {
 							var cellContentType = innerTable.rows[0].cells[7].textContent;
 
 							if (referenceCheck(cellContent, rowNum)) {
-									alert("You must not reference this variable if you want to delete it");
+								 createAlertBox("Notice", "You must not reference this variable if you want to delete it", true, null);
 									return;
 							}
 
@@ -2214,4 +2214,8 @@ function Editor(sandboxNum) {
 		newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback);
     }
 
+				function createAlertBox(title, msg, bool, callback) {
+						var alert = new Alert();
+						alert.open(title, msg, bool, callback);
+  }
 }
