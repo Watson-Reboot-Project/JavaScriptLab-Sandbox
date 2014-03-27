@@ -43,12 +43,12 @@ function Editor(sandboxNum) {
 	var nvars = [];
 	var tvars = [];
     var wtypes = ["text", "numeric"];
-	var resWords = ["new", "this", "var", "ID", "list", "Array", "function"];
+	var resWords = ["new", "this", "var", "ID", "list", "Array", "function", ""];
 	var namesUsed = [];
 	var namesRef = [];
     var compKeys = ["while", "if"];
-    var nExpr = ["numeric constant", "numeric variable", "function call", "EXPR"];
-    var tExpr = ["text constant", "text variable", "function call", "EXPR + EXPR"];
+    var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
+    var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
     var nExprtypes = ["EXPR + EXPR", "EXPR - EXPR", "EXPR * EXPR", "EXPR / EXPR", "EXPR % EXPR", "(EXPR)"];
     var btypes = ["EXPR == EXPR", "EXPR != EXPR", "EXPR > EXPR", "EXPR >= EXPR", "EXPR < EXPR", "EXPR <= EXPR"];
 	var innerTablet;
@@ -97,6 +97,7 @@ function Editor(sandboxNum) {
 			}
 		}
 
+		addNewInsertRow();
 		// make a blank row where the program starts (this could have been in the for loops above)
 		row = codeTable.insertRow(3);	// make a new row
 		cell = row.insertCell(0);		// make a new cell here
@@ -166,7 +167,7 @@ function Editor(sandboxNum) {
 					else innerTable.rows[0].cells[j].style.color = black;
 				}
 			}
-			else if (numCells > 5 && innerTable.rows[0].cells[7].innerHTML.indexOf("parse") >= 0) {
+			else if (numCells > 7 && innerTable.rows[0].cells[7].innerHTML.indexOf("parse") >= 0) {
 				for (var j = 0; j < numCells; j++) {
 					if (j == 7 || j == 9) innerTable.rows[0].cells[j].style.color = blue;
 					else if (j == 11 || j == 13) {
@@ -176,7 +177,7 @@ function Editor(sandboxNum) {
 					else innerTable.rows[0].cells[j].style.color = black;
 				}
 			}
-			else if (numCells > 5 && innerTable.rows[0].cells[7].innerHTML.indexOf("prompt") >= 0) {
+			else if (numCells > 7 && innerTable.rows[0].cells[7].innerHTML.indexOf("prompt") >= 0) {
 				for (var j = 0; j < numCells; j++) {
 					if (j == 7) innerTable.rows[0].cells[j].style.color = blue;
 					else if (j == 9 || j == 11) {
@@ -242,7 +243,7 @@ function Editor(sandboxNum) {
 			innerTablet = codeTable.rows[rowNum].cells[0].children[0];
 			clickedCell = innerTablet.rows[0].cells[cellNum];
             clickedCellNum = cellNum;
-                            console.log("Clicked Cell: " + cellVal + "\n");
+                            //console.log("Clicked Cell: " + cellVal + "\n");
                             /*for (i=0; i < innerTablet.rows[0].cells.length; i++)
                             {
                             console.log("Cell " + i + ": " + innerTablet.rows[0].cells[i].textContent + "\n");
@@ -255,7 +256,7 @@ function Editor(sandboxNum) {
 
 				// Users are not allowed to delete some specific rows
 				// Example a)Empty Rows b)Comments c)Curly Braces
-				if (rowNum < 2 || row == '&nbsp;' || row == '//&nbsp;' || row == '{' || row == '}') {
+				if (rowNum < 2 || row == '&nbsp;' || row == '//&nbsp;' || row.match('{') || row.match('}')) {
 					return;
 				}
 				// User should not be able to delete else statement because it is a part of if function
@@ -427,16 +428,18 @@ function Editor(sandboxNum) {
                             delN(innerTablet.rows[0].cells[cellNum-5].textContent, tFuns);
                             delN(innerTablet.rows[0].cells[cellNum-5].textContent, vFuns);
                             delN(innerTablet.rows[0].cells[cellNum-5].textContent, namesUsed);
-                            $("#selector").empty();
-                            generateSelectionHTML(ftypes, "ftype");
-                            $("#selector").dialog('open');
+                            createSelector("Select Type", ftypes, ftypeConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(ftypes, "ftype");
+//                            $("#selector").dialog('open');
                         }
                         else
                         {
                             console.log("not used.");
-                            $("#selector").empty();
-                            generateSelectionHTML(ftypes, "ftype");
-                            $("#selector").dialog('open');
+                            createSelector("Select Type", ftypes, ftypeConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(ftypes, "ftype");
+//                            $("#selector").dialog('open');
                         }
                     }
                 }
@@ -455,16 +458,18 @@ function Editor(sandboxNum) {
                             delN(innerTablet.rows[0].cells[cellNum-3].textContent, nvars);
                             delN(innerTablet.rows[0].cells[cellNum-3].textContent, tvars);
                             delN(innerTablet.rows[0].cells[cellNum-3].textContent, namesUsed);
-                            $("#selector").empty();
-                            generateSelectionHTML(vtypes, "type");
-                            $("#selector").dialog('open');
+                            createSelector("Select Type", vtypes, typeConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(vtypes, "type");
+//                            $("#selector").dialog('open');
                         }
                         else
                         {
                             console.log("not used.");
-                            $("#selector").empty();
-                            generateSelectionHTML(vtypes, "type");
-                            $("#selector").dialog('open');
+                            createSelector("Select Type", vtypes, typeConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(vtypes, "type");
+//                            $("#selector").dialog('open');
                         }
                     }
                 }
@@ -484,16 +489,18 @@ function Editor(sandboxNum) {
                             delN(innerTablet.rows[0].cells[cellNum-9].textContent, nvars);
                             delN(innerTablet.rows[0].cells[cellNum-9].textContent, tvars);
                             delN(innerTablet.rows[0].cells[cellNum-9].textContent, namesUsed);
-                            $("#selector").empty();
-                            generateSelectionHTML(vtypes, "type");
-                            $("#selector").dialog('open');
+                            createSelector("Select Type", vtypes, typeConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(vtypes, "type");
+//                            $("#selector").dialog('open');
                         }
                         else
                         {
                             console.log("not used.");
-                            $("#selector").empty();
-                            generateSelectionHTML(vtypes, "type");
-                            $("#selector").dialog('open');
+                            createSelector("Select Type", vtypes, typeConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(vtypes, "type");
+//                            $("#selector").dialog('open');
                         }
                     }
                 }
@@ -504,49 +511,54 @@ function Editor(sandboxNum) {
                 {
                     case ('PRINT'):
                             console.log('print');
-                            openSelector("Print Types", wtypes).done(function(returned) { exprConfirm(returned); returnToNormalColor(); });
+                            createSelector("Print Type Selection", wtypes, exprConfirm);
+                            //dialog openSelector("Print Types", wtypes).done(function(returned) { exprConfirm(returned); returnToNormalColor(); });
                             break;
                     case ('BOOL'):
                             console.log("bool");
-                            $("#selector").empty();
-                            generateSelectionHTML(btypes, "bool");
-                            $("#selector").dialog('open');
+                            createSelector("Comparison Type Selection", btypes, boolConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(btypes, "bool");
+//                            $("#selector").dialog('open');
                             break;
                     case ('TEXT ASSIGNMENT'):
-                            $("#selector").empty();
-                            generateSelectionHTML(tExpr, "expr");
-                            /*var tExpr = [];
-                            tExpr.push("text constant");
-                            if (tvars.length > 1) tExpr.push("text variable");
-                            if (tFuns.length > 0)*/
-                            $("#selector").dialog('open');
+                            createSelector("Text Selection", tExpr, exprSelConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(tExpr, "expr");
+//                            $("#selector").dialog('open');
                         break;
                     case ('NUMERIC ASSIGNMENT'):
-                            $("#selector").empty();
-                            generateSelectionHTML(nExpr, "expr");
-                            $("#selector").dialog('open');
+                            createSelector("Numeric Selection", nExpr, exprSelConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(nExpr, "expr");
+//                            $("#selector").dialog('open');
                             break;
                     case ('PROMPTMSG'):
-                            $("#selector").empty();
-                            generateSelectionHTML(["text constant", "text variable"], "expr");
-                            $("#selector").dialog('open');
+                            createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(["text constant", "text variable"], "expr");
+//                            $("#selector").dialog('open');
                         break;
                     case ('PROMPTDFLT'):
-                            $("#selector").empty();
-                            generateSelectionHTML(["text constant", "text variable"], "expr");
-                            $("#selector").dialog('open');
+                            createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(["text constant", "text variable"], "expr");
+//                            $("#selector").dialog('open');
                         break;
                     case ('PARSEDFLT'):
-                            openNumPad(null,null,"Enter default value", "some text", false, 10).done(function(result) {clickedCell.textContent = result; });
+                            createNumPad(null, null, "Default", "Enter a default value for this prompt.", true, 10, enterNum);
+                            //dialog openNumPad(null,null,"Enter default value", "some text", false, 10).done(function(result) {clickedCell.textContent = result; });
                             
                         break;
                     case ('NUMERIC COMPARISON'):
-                            $("#selector").empty();
-                            generateSelectionHTML(nExpr, "expr")
-                            $("#selector").dialog('open');
+                            createSelector("Comparison Type Selection?", nExpr, exprSelConfirm);
+//                            $("#selector").empty();
+//                            generateSelectionHTML(nExpr, "expr")
+//                            $("#selector").dialog('open');
                         break;
                     case ('RETURN'):
-                            openSelector("What type?", wtypes).done(function(returned) { exprConfirm(returned); });
+                            createSelector("What type?????", wtypes, exprConfirm);
+                            //dialog openSelector("What type?", wtypes).done(function(returned) { exprConfirm(returned); });
                             break;
                     default:
                         break;
@@ -554,314 +566,165 @@ function Editor(sandboxNum) {
             }
                             else if (cellVal == 'ID' && foundIn(innerTablet.rows[0].cells[cellNum-3].textContent,compKeys))
                             {
-                            console.log("made it");
-                            $("#selector").empty();
-                            generateSelectionHTML(namesUsed, "id");
-                            $("#selector").dialog('open');
+                            //Choosing the left side of a comparison in a while or if
+                            createSelector("Choose an identifier.", namesUsed, idConfirm);
                             }
                             
                             else if (cellVal == 'ID' && innerTablet.rows[0].cells[cellNum-2].textContent == 'function')
                             {
-                            console.log("Looking at function ID");
-                            $("#selector").empty();
-                            dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+                            //Assigning an identifier to a function
+                            createStringPad("Function ID", "Please name the function.", fIDconfirm);
+                            }
                             
-                            dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
-                            dialOKButton.onclick = function() {
-                            console.log("Here.");
-                            var textArea = document.getElementById("dial" + sandboxNum + "Text");
-                            console.log(textArea.value);
-                            clickedCell.textContent = textArea.value;
-                            namesUsed.push(textArea.value);
-                            switch (innerTablet.rows[0].cells[clickedCellNum+5].textContent)
+                            else if (cellVal == 'FUNCTION') {
+                            //Calling a function
+                            createSelector("Function Call", ftypes, fcallType);
+                            }
+                            
+                            else if (cellVal == 'size')
                             {
-                                case 'VOID':
-                            vFuns.push(textArea.value);
-                            break;
-                            case 'TEXT':
-                            tFuns.push(textArea.value);
-                            break;
-                            case 'NUMERIC':
-                            nFuns.push(textArea.value);
-                            break;
-                            default:
-                            break;
+                            //Choosing a size for an Array
+                            createNumPad(0,null,"Array Size", "Enter a size for the array.", false, 10, enterNum);
                             }
-                            console.log("Names used: " + namesUsed);
-                            console.log("Void Functions: " + vFuns);
-                            console.log("Text Functions: " + tFuns);
-                            console.log("Num Functions: " + nFuns);
-                            $("#selector").dialog('close');
-                            };
-                            
-                            dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
-                            dialCancelButton.onclick = function() {	selectorCancel(); };
-                            
-                            $("#selector").dialog('open');
-                            }
-            /*else if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC')
-            {
-                if (innerTablet.rows[0].cells[cellNum-11].textContent == 'var')
-                {
-                    console.log("array?");
-                    if (foundIn(innerTablet.rows[0].cells[cellNum-9].textContent, namesRef))
-                    {
-                        console.log("Can't change type. Is reffed.\n");
-                    }
-                    else
-                    {
-                        console.log("not reffed.");
-                        if (foundIn(innerTablet.rows[0].cells[cellNum-9].textContent, namesUsed))
-                        {
-                            console.log("used.");
-                            delN(innerTablet.rows[0].cells[cellNum-9].textContent, nvars);
-                            delN(innerTablet.rows[0].cells[cellNum-9].textContent, tvars);
-                            delN(innerTablet.rows[0].cells[cellNum-9].textContent, namesUsed);
-                            $("#selector").empty();
-                            generateSelectionHTML(vtypes, "type");
-                            $("#selector").dialog('open');
-                        }
-                        else
-                        {
-                            console.log("not used.");
-                            $("#selector").empty();
-                            generateSelectionHTML(vtypes, "type");
-                            $("#selector").dialog('open');
-                        }
-                    }
-                }
-            }*/
-           // else if (innerTablet.rows[0].cells[cellNum-2].textContent == 'var' && ()
-/*            if (innerTablet.rows[0].cells[2].textContent == 'var') {
-                    if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC')
-                    {
-                            console.log(innerTablet.rows[0].cells[cellNum-5].textContent)
-                            
-                            if (foundIn(innerTablet.rows[0].cells[4].textContent,namesRef))
-                            {
-                            console.log("Can't change the type of a variable that has been referenced.");
-                            }
-                            else if (foundIn(innerTablet.rows[0].cells[4].textContent, namesUsed))
-                            {
-                                while (foundIn(innerTablet.rows[0].cells[4].textContent, namesUsed))
-                                {
-                                     delN(innerTablet.rows[0].cells[4].textContent, namesUsed);
-                                }
-                                while (foundIn(innerTablet.rows[0].cells[4].textContent, tvars))
-                                {
-                                     delN(innerTablet.rows[0].cells[4].textContent, tvars);
-                                }
-                                while (foundIn(innerTablet.rows[0].cells[4].textContent, nvars))
-                                {
-                                    delN(innerTablet.rows[0].cells[4].textContent, nvars);
-                                }
-                                     $("#selector").empty();
-                                     generateSelectionHTML(vtypes, "type");
-                                     $("#selector").dialog('open');
-                            }
-                            else
-                            {
-                            $("#selector").empty();
-                            generateSelectionHTML(vtypes, "type");
-                            $("#selector").dialog('open');
-                            }
-                    }
-                    else if (cellNum == 4)
-                    {
-                            if (foundIn(cellVal,namesRef))
-                            {
-                            console.log("Var is refed");
-                            }
-                            else if (foundIn(cellVal, namesUsed))
-                            {
-                            clickedCell.textContent == 'ID';
-                            delN(cellVal, namesUsed);
-                            delN(cellVal, nvars);
-                            delN(cellVal, tvars);
-                            $("#selector").empty();
-                            dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
-                            
-                            dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
-                            dialOKButton.onclick = function() {
-                            console.log("Here.");
-                            var textArea = document.getElementById("dial" + sandboxNum + "Text");
-                            console.log(textArea.value);
-                            nameDialogConfirm(textArea.value);
-                            };
-                            
-                            dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
-                            dialCancelButton.onclick = function() {	selectorCancel(); };
-                            
-                            $("#selector").dialog('open');
-
-                            }
-                            else
-                            {
-                            $("#selector").empty();
-                            dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
-                            
-                            dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
-                            dialOKButton.onclick = function() {
-                            console.log("Here.");
-                            var textArea = document.getElementById("dial" + sandboxNum + "Text");
-                            console.log(textArea.value);
-                            nameDialogConfirm(textArea.value);
-                            };
-                            
-                            dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
-                            dialCancelButton.onclick = function() {	selectorCancel(); };
-                            
-                            $("#selector").dialog('open');
-                            }
-                    }
-            }
-			/*else if (cellVal == 'TYPE' && innerTablet.rows[0].cells[2].textContent == 'var') {
-					$("#selector").empty();
-					generateSelectionHTML(vtypes, "type");
-					$("#selector").dialog('open');
-			}*/
+                            /*Weston edit end*/
+            
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'var') {
-					$("#selector").empty();
-					dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
-					
-					dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
-					dialOKButton.onclick = function() {
-						console.log("Here.");
-						var textArea = document.getElementById("dial" + sandboxNum + "Text");
-						console.log(textArea.value);
-						nameDialogConfirm(textArea.value);
-					};
-					
-					dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
-					dialCancelButton.onclick = function() {	selectorCancel(); };
-					
-					$("#selector").dialog('open');
+                            createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
 			}
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[cellNum+2].textContent == '=')
 			{
-                            console.log('ID');
-					$("#selector").empty();
-					generateSelectionHTML(namesUsed, "id");
-					$("#selector").dialog('open');
+//                            console.log('ID');
+                            createSelector("Choose a variable to assign.", namesUsed, idConfirm);
 			}
 			
-			if (foundIn(cellVal, tvars) == 1) {
-					$("#selector").empty();
-					dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
-					
-					dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
-					dialOKButton.onclick = function() {
-						var textArea = document.getElementById("dial" + sandboxNum + "Text");
-						nameDialogConfirm(textArea.value);
-					};
-					
-					dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
-					dialCancelButton.onclick = function() {	selectorCancel(); };
-					
-					$("#selector").dialog('open');
-					
-					console.log(innerTablet.rows[0].cells[2].textContent);
-					if (innerTablet.rows[0].cells[7].textContent == 'TEXT') {
-									var index = tvars.indexOf(cellVal);
-									tvars.splice(index, 1);
-									console.log(tvars);
-					}		
-					else if (innerTablet.rows[0].cells[7].textContent === 'NUMERIC') {
-									console.log("got here");
-									var index = nvars.indexOf(cellVal);
-									nvars.splice(index, 1);
-									console.log(nvars);
-					}
-			}
+//			if (foundIn(cellVal, tvars) == 1) {
+//					$("#selector").empty();
+//					dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+//					
+//					dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+//					dialOKButton.onclick = function() {
+//						var textArea = document.getElementById("dial" + sandboxNum + "Text");
+//						nameDialogConfirm(textArea.value);
+//					};
+//					
+//					dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
+//					dialCancelButton.onclick = function() {	selectorCancel(); };
+//					
+//					$("#selector").dialog('open');
+//					
+//					console.log(innerTablet.rows[0].cells[2].textContent);
+//					if (innerTablet.rows[0].cells[7].textContent == 'TEXT') {
+//									var index = tvars.indexOf(cellVal);
+//									tvars.splice(index, 1);
+//									console.log(tvars);
+//					}		
+//					else if (innerTablet.rows[0].cells[7].textContent === 'NUMERIC') {
+//									console.log("got here");
+//									var index = nvars.indexOf(cellVal);
+//									nvars.splice(index, 1);
+//									console.log(nvars);
+//					}
+//			}
 			
 			});
 	
-    
-    /** Implementation for '>' **/
-    // Display the > sign when hovered over the very left cell
-    $(".insert").off("mouseover");
-    $(".insert").on("mouseover", function() {
-                    
-                    var insertRowNum = $(this).parent().index();
-                    insertRowNum++;
-                    $(this).css('cursor', 'pointer');
-                    $(this).html(">");
-                    
-                    //if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) &&
-                    //				insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop" && insertRow+1 != selRow && insertRow+1 != selRow+1) {
-                    //$(this).css('cursor', 'pointer');
-                    //$(this).html(">");
-                    //}
-                    });
-    
-    $(".insert").off("mouseout");
-    $(".insert").on("mouseout", function() {
-                    $(this).html(blank);
-                    });
-    
-    $(".insert").off("click");
-    $(".insert").on("click", function() {
-                    var insertRowNum = $(this).parent().index();
-                    insertRowNum++;
-                    console.log("click"+insertRowNum);
-                    
-                    var innerTable = codeTable.rows[insertRowNum].cells[0].children[0];		// grab the inner table of this row
-                    console.log("programCount"+programCount);
-                    //	console.log(innerTable.rows[0].cells[2].innerHTML);
-                    if (insertRowNum == programCount) {
-                    //		if (rowContainsString(codeTable, insertRowNum, "}")) {
-                    //				console.log("found }");
-                    //				moveToLine(programCount-1);
-                    //				return;
-                    //		}
-                    moveToLine(programCount);
-                    return;
-                    }
-                    if (checkValidRow(innerTable.rows[0], insertRowNum) == false)
-                    return;		// check to see if this is a valid position
-                    moveToLine(insertRowNum);
-                    
-                    //var insertRow = $(this).parent().index();
-                    //
-                    //		if ((insertRow < codeTable.rows.length-2 || selRow != codeTable.rows.length-1) && insertRow+1 < codeTable.rows.length && rowToString(insertRow+1) != "loop") {
-                    //				if (insertRow+1 != selRow) {
-                    //						moveToLine(insertRow+1);
-                    //						$(this).html(blank);
-                    //				}
-                    //		}
-                    });
-    
-    //$("#" + offsetDiv.id).off("mouseover");
-    //$("#" + offsetDiv.id).on("mouseover", function() {
-    //	if (selRow >0) {
-    //		$(this).css('cursor', 'pointer');
-    //		$(this).html(">");
-    //	}
-    //});
-    //
-    //$("#" + offsetDiv.id).off("mouseout");
-    //$("#" + offsetDiv.id).on("mouseout", function() {
-    //	$(this).html(blank);
-    //});
-    //
-    //$("#" + offsetDiv.id).off("click");
-    //$("#" + offsetDiv.id).on("click", function() {
-    //	if(selRow != 0) {
-    //		moveToLine(0);
-    //		$(this).html(blank);
-    //	}
-    //});
-    //
-    //Remove bar when scrolling right in editor
-    $("#" + editorDiv.id).off("scroll");
-    $("#" + editorDiv.id).on("scroll", function() {
-                             if ($(this).scrollLeft() > 0) {
-                             $("#" + divider.id).hide(250);
-                             }
-                             else {
-                             $("#" + divider.id).show(250);
-                             }
-                             });
+   /** Implementation for '>' **/
+		// Display the > sign when hovered over the very left cell
+		$(".insert").off("mouseover");
+		$(".insert").on("mouseover", function() {
+				// Grab the the row number so as to edit the editor
+				var insertRowNum = $(this).parent().index();
+				// Increase the insertRowNum because we want to enter the new statement
+				// in the next line in the code window.
+				insertRowNum++;
+					
+				if (selRow == insertRowNum-1) {
+						$(this).css('cursor', 'default');
+						return;
+				}
+				
+				// Display the cursor at the very bottom of the editor
+				if (insertRowNum > programCount) {
+						$(this).css('cursor', 'pointer');
+						$(this).html(">");
+						return;
+				}
+
+				// For empty row
+				if (codeTable.rows[insertRowNum].cells[0].children[0].rows[0].cells.length == 2) {
+						$(this).css('cursor', 'default');
+						return;
+				}
+				
+				try {
+						var innerTable = codeTable.rows[insertRowNum].cells[0].children[0];
+						var cellTwoText = innerTable.rows[0].cells[2].innerText;
+				} catch(e) {
+						console.log("Error:", e.message);	
+				}
+				
+				// Check if the row is valid or not
+				if (checkValidRow(innerTable.rows[0], insertRowNum) == false) {		
+						$(this).css('cursor', 'default');
+						return;		
+				}
+				
+				// When hovered, display the cursor
+				$(this).css('cursor', 'pointer');
+				$(this).html(">");
+		});
+		
+		/** Remove the cursor when the mouse is moved away. **/
+		$(".insert").off("mouseout");
+		$(".insert").on("mouseout", function() {
+				$(this).css('cursor', 'default');
+				$(this).html(blank);
+		});
+		
+		/** When a cell is clicked, moved to the corresponding row. **/
+		$(".insert").off("click");
+		$(".insert").on("click", function() {
+				// Grab the the row number so as to edit the editor
+				var insertRowNum = $(this).parent().index();
+				// Increase the insertRowNum because we want to enter the new statement
+				// in the next line in the code window.
+				insertRowNum++;
+				
+				if (selRow == insertRowNum-1) {
+						return;
+				}
+								
+				// Move to the bottom of the editor
+				if (insertRowNum > programCount) {
+						moveToLine(programCount);
+						return;
+				}
+				
+				// Condition to ensure the insertion is done only at the bottom of the row
+				if (codeTable.rows[insertRowNum].cells[0].children[0].rows[0].cells.length == 2) {
+						return;
+				}
+				
+				// Grab the inner table from the code window
+				try {
+						var innerTable = codeTable.rows[insertRowNum].cells[0].children[0];
+						var cellTwoText = innerTable.rows[0].cells[2].innerText;
+				} catch(e) {
+						console.log(e);	
+				}
+				
+				//Check to see if this is a valid position
+				if (checkValidRow(innerTable.rows[0], insertRowNum) == false) {		
+						return;		
+				}
+				
+				// If all condition is passed move to the specified line
+				if (insertRowNum > selRow) {
+						moveToLine(insertRowNum-1);
+				}
+				else
+						moveToLine(insertRowNum);
+		});
 }
 
 	// check to see if a specific cell contains a keywords; return true if so
@@ -1305,7 +1168,6 @@ function Editor(sandboxNum) {
 		// if we haven't added a function yet, we must insert the '// Functions' comment
 		if (funcCount == 0) {
             row = codeTable.insertRow(beginRow);							// add the row at the 'beginRow' index
-            addNewInsertRow();
             cell = row.insertCell(0);
             cell.innerHTML = innerTableTemplate;
             innerTable = codeTable.rows[beginRow].cells[0].children[0];
@@ -1322,7 +1184,6 @@ function Editor(sandboxNum) {
         
 		// add a blank line at begin row (this creates a blank line after the function declaration)
 		row = codeTable.insertRow(beginRow);
-		addNewInsertRow();
 		cell = row.insertCell(0);
 		cell.innerHTML = innerTableTemplate;
 		innerTable = codeTable.rows[beginRow].cells[0].children[0];
@@ -1333,7 +1194,6 @@ function Editor(sandboxNum) {
         
 		for (var i = 0; i < 3; i++) {											// iterate three times
 			row = codeTable.insertRow(beginRow + i);							// create a row at beginRow
-			addNewInsertRow();
 			cell = row.insertCell(0);											// insert a new cell in the row
 			cell.innerHTML = innerTableTemplate;								// put our inner table template here
 			innerTable = codeTable.rows[beginRow + i].cells[0].children[0];		// grab the innerTable object we just created
@@ -1389,7 +1249,10 @@ function Editor(sandboxNum) {
 		if (selRow > rowNum) selRow--;
 		if (programStart > rowNum) programStart--;
 
+		// Delete row from the code table
 		codeTable.deleteRow(rowNum);
+		// Also delete from the insert row
+		insertTable.deleteRow(rowNum);
 		programCount--;
 	}
 
@@ -1471,18 +1334,18 @@ function Editor(sandboxNum) {
 	// checkValidRow() makes sure the program doesn't move somewhere that it shouldn't
 	// For example, we don't want the user moving into the variable sections
 	function checkValidRow(row, rowNum) {
-
-		if (row.cells[2].textContent.indexOf("//") >= 0) return false;								// don't let the user edit a comment
-		if (row.cells[2].textContent == '\xA0') return false;											// don't let the user edit a blank line
-		if (row.cells[2].textContent.indexOf("{") >= 0 && rowNum >= programStart) return false;		// don't let the user edit before a '{'
+		if (row.cells[2].innerText.indexOf("//") >= 0) return false;								// don't let the user edit a comment
+		if (row.cells[2].innerText == '\xA0')  return false;											// don't let the user edit a blank line
+		if (row.cells[2].innerText == 'else') return false;
+		if (row.cells[2].innerText.indexOf("{") >= 0) return false;
+		if (row.cells[2].innerText.indexOf("{") >= 0 && rowNum >= programStart) return false;		// don't let the user edit before a '{'
 		if (rowNum < variableCount + 3) return false;												// don't let the user edit in the variable space
 
-		// the following if statements ensure that a user doesn't edit before the program start (in the variable or function space.. unless its inside a function)
+		// the following if statements ensure that a user doesn't edit before the program start (in the variable or function space..
+		// unless its inside a function)
 		if ((selRow < programStart && rowNum < programStart + 1) || (rowNum < programStart)) {
-			if (row.cells[2].textContent.indexOf("{") >= 0 && selRow > rowNum) return false;
-			if (row.cells[2].textContent.indexOf("}") >= 0 && selRow < rowNum) return false;
-			if (row.cells[2].textContent.indexOf("function") >= 0) return false;
-		//	if (row.cells[2].textContent.indexOf("while") >= 0) return false;
+				if (row.cells[2].innerText.indexOf("{") >= 0&& selRow > rowNum) return false;
+				if (row.cells[2].innerText.indexOf("function") >= 0) return false;
 		}
 		return true;
 	}
@@ -1573,6 +1436,10 @@ function Editor(sandboxNum) {
 	}
 
 	//Weston's functions below here
+    /*Weston edit start*/
+
+    /*Weston edit end*/
+    
 	function typeConfirm(result) {  // For confirming types for variables and else
         if (innerTablet.rows[0].cells[clickedCellNum-5].textContent == 'var')
         {
@@ -1613,7 +1480,7 @@ function Editor(sandboxNum) {
             if (!foundIn(innerTablet.rows[0].cells[clickedCellNum-9].textContent, namesUsed) && innerTablet.rows[0].cells[clickedCellNum-9].textContent != 'ID') namesUsed.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent);
         }
         console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
-        $("#selector").dialog('close');
+//        $("#selector").dialog('close');
 	}
     
     function ftypeConfirm(result) {  // For confirming types for variables and else
@@ -1642,7 +1509,7 @@ function Editor(sandboxNum) {
         }
         if (!foundIn(innerTablet.rows[0].cells[clickedCellNum-5].textContent, namesUsed) && innerTablet.rows[0].cells[clickedCellNum-5].textContent != 'ID') namesUsed.push(innerTablet.rows[0].cells[clickedCellNum-5].textContent);
         console.log("nfuns: " + nFuns +"\ntfuns: " + tFuns + "\nvfuns: " + vFuns + "\nnamesUsed: " + namesUsed);
-        $("#selector").dialog('close');
+//        $("#selector").dialog('close');
 	}
     
     function exprtype()
@@ -1744,7 +1611,7 @@ function Editor(sandboxNum) {
 		else if (innerTablet.rows[0].cells[lastCellindex-1].textContent == 'TEXT') tvars.push(result);
 		//$("#nameDialog").dialog('close');
         console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
-		$("#selector").dialog('close');
+//		$("#selector").dialog('close');
 		
 		returnToNormalColor();
 	}
@@ -1758,19 +1625,19 @@ function Editor(sandboxNum) {
             namesRef.push(result);
             console.log(namesRef);
         }
-		$("#selector").dialog('close');
+//		$("#selector").dialog('close');
 		
 		returnToNormalColor();
 	}
 
-	function selectorCancel() {
-		$("#selector").dialog('close');
-
-	}
+//	function selectorCancel() {
+//		$("#selector").dialog('close');
+//
+//	}
     
     function tConstantconfirm(result)
     {
-        $("#selector").dialog('close');
+//        $("#selector").dialog('close');
         clickedCell.textContent = '"' + result + '"';
 		
 		returnToNormalColor();
@@ -1782,38 +1649,47 @@ function Editor(sandboxNum) {
         switch (result)
         {
             case "numeric constant":
-                openNumPad(null, null, "Enter a value", "not sure what this string is", false, 10).done( function(result) {console.log(result);                                                                                                        clickedCell.textContent = result;                                                                                                        });
+                createNumPad(null,null,"Number Pad", "Enter a value.", true, 10, enterNum);
+                //dialog openNumPad(null, null, "Enter a value", "not sure what this string is", false, 10).done( function(result) {console.log(result);                                                                                                        clickedCell.textContent = result;                                                                                                        });
                 break;
             case "EXPR":
-                openSelector("Expression choices", nExprtypes).done(function(returned) { mathExpr(returned); returnToNormalColor(); });
+                createSelector("Choose an Expression Format.", nExprtypes, mathExpr);
+                //dialog openSelector("Expression choices", nExprtypes).done(function(returned) { mathExpr(returned); returnToNormalColor(); });
                 break;
             case "text constant":
-                $("#selector").empty();
-                dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+                createStringPad("Text Entry Box", "Enter a text constant", textEntry);
                 
-                dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
-                dialOKButton.onclick = function() {
-                    console.log("Here.");
-                    var textArea = document.getElementById("dial" + sandboxNum + "Text");
-                    console.log(textArea.value);
-                    tConstantconfirm(textArea.value);
-                };
-                
-                dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
-                dialCancelButton.onclick = function() {	selectorCancel(); };
-                
-                $("#selector").dialog('open');
+//                $("#selector").empty();
+//                dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
+//                
+//                dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+//                dialOKButton.onclick = function() {
+//                    console.log("Here.");
+//                    var textArea = document.getElementById("dial" + sandboxNum + "Text");
+//                    console.log(textArea.value);
+//                    tConstantconfirm(textArea.value);
+//                };
+//                
+//                dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
+//                dialCancelButton.onclick = function() {	selectorCancel(); };
+//                
+//                $("#selector").dialog('open');
 
                 break;
             case "text variable":
-                $("#selector").empty;
-                generateSelectionHTML(tvars, 'id');
-                $("#selector").dialog('open');
+                createSelector("Text Var Selection", tvars, idConfirm);
+//                $("#selector").empty;
+//                generateSelectionHTML(tvars, 'id');
+//                $("#selector").dialog('open');
                 break;
-            case "function call":
-                $("#selector").empty;
-                generateSelectionHTML(nFuns, 'fun');
-                $("#selector").dialog('open');
+            case "numeric function call":
+                createSelector("Function Call Selection", nFuns, funConfirm);
+                break;
+            case "text function call":
+                createSelector("Function Call Selection", tFuns, funConfirm);
+//                $("#selector").empty;
+//                generateSelectionHTML(tFuns, 'fun');
+//                $("#selector").dialog('open');
                 break;
             case "EXPR + EXPR":
                 var cell;
@@ -1826,9 +1702,10 @@ function Editor(sandboxNum) {
                 break;
 				
 			case "numeric variable":
-				$("#selector").empty();
-				generateSelectionHTML(nvars, 'id');
-				$("#selector").dialog('open');
+                createSelector("Numeric Var Selection", nvars, idConfirm);
+//				$("#selector").empty();
+//				generateSelectionHTML(nvars, 'id');
+//				$("#selector").dialog('open');
 				break;
 
             default:
@@ -1876,7 +1753,7 @@ function Editor(sandboxNum) {
     
     function boolConfirm(result)
     {
-        $("#selector").dialog('close');
+//        $("#selector").dialog('close');
         var values = ["&nbsp;", "", "&nbsp;", "EXPR"];
         switch (result)
         {
@@ -1911,6 +1788,14 @@ function Editor(sandboxNum) {
     }
 
 	// Weston's functions
+    /*Weston edit start*/
+    function funCallfinal(result)
+    {
+        clickedCell.textContent = result;
+        namesRef.push(result);
+        $("#selector").dialog('close');
+    }
+    /*Weston edit end*/
     
     function funConfirm(result)
     {
@@ -1941,6 +1826,15 @@ function Editor(sandboxNum) {
 		
 		switch (kind)
 		{
+                /*Weston edit start*/
+            case "fcall":
+                dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+				dialOKButton.onclick = function() {
+					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					funCallfinal(selectDrop.value);
+				};
+                break;
+                /*Weston edit end*/
             case "fun":
                 dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
 				dialOKButton.onclick = function() {
@@ -1998,16 +1892,18 @@ function Editor(sandboxNum) {
         switch (result)
         {
             case ('text'):
-                generateSelectionHTML(tExpr, "expr");
-                $("#selector").dialog('open');
+                createSelector("Text Expressions", tExpr, exprSelConfirm);
+//                generateSelectionHTML(tExpr, "expr");
+//                $("#selector").dialog('open');
                 //console.log(result);
                 break;
             case ('numeric'):
-                console.log(result + "ha");
-                generateSelectionHTML(nExpr, "expr");
-                $("#selector").dialog('open');
+                createSelector("Numeric Expressions", nExpr, exprSelConfirm);
+//                console.log(result + "ha");
+//                generateSelectionHTML(nExpr, "expr");
+//                $("#selector").dialog('open');
                 //openSelector("Expression choices", nExpr).done(function(returned) {  });
-                console.log(result);
+//                console.log(result);
                 break;
             default:
                 break;
@@ -2233,23 +2129,89 @@ function Editor(sandboxNum) {
 		
 		return null;
 	}
-
-    //Returns string representation of the row at specified row index
-    function rowToString(rowInd) {
-        var string = "";
-        var innerTable = codeTable.rows[rowInd].cells[0].children[0];
-        for (var i = 1; i < innerTable.rows[0].cells.length; i++) {
-            string += innerTable.rows[0].cells[i].textContent;
-        }
-        return string.trim();
-    }
-    
     function addNewInsertRow() {
         var row = insertTable.insertRow(-1);
         var cell = row.insertCell(0);
         cell.className = "insert";
         cell.innerHTML = blank;
     }
+    
+    function fcallType(result) {
+        //Function called to allow selection of functions based on a type parameter
+        switch (result)
+        {
+            case ('Void'):
+                createSelector("Void Functions", vFuns, fChoose);
+                break;
+            case ('Text'):
+                createSelector("Void Functions", tFuns, fChoose);
+                break;
+            case ('Numeric'):
+                createSelector("Void Functions", nFuns, fChoose);
+                break;
+            default:
+                break;
+        }
+    }
+    
+    function textEntry(result) {
+        var values = ['"', result, '"'];
+        var cell = clickedCell;
+        cell.textContent = values[0];
+        for (var i = 1; i < values.length; i++) {			// for all cells in the table
+            cell = innerTablet.rows[0].insertCell(++clickedCellNum);	// insert a cell at startInd
+            cell.innerHTML = values[i];						// make the innerHTML of the cell cells[i]
+        }
+        
+    }
+    
+    function fChoose(result) {
+        //Function that is called when selecting a function that replaces the text of a single cell
+        clickedCell.textContent = result;
+    }
+    
+    function enterNum(result) {
+        //Function called to replace a cell with a number
+        clickedCell.textContent = result;
+    }
+    
+    function fIDconfirm(result) {
+        //Function called to assign an identifier to a function at its declaration
+        if (foundIn(result, resWords)) return;
+        clickedCell.textContent = result;
+        switch (innerTablet.rows[0].cells[clickedCellNum+5].textContent)
+        {
+            case 'VOID':
+                vFuns.push(result);
+                break;
+            case 'TEXT':
+                tFuns.push(result);
+                break;
+            case 'NUMERIC':
+                nFuns.push(result);
+                break;
+            default:
+                break;
+        }
+        console.log("Names used: " + namesUsed);
+        console.log("Void Functions: " + vFuns);
+        console.log("Text Functions: " + tFuns);
+        console.log("Num Functions: " + nFuns);
+    }
+    
+    function createSelector(title, optionS, callback) {
+        var newSel = new Selector();
+        newSel.open(title, optionS, callback);
+    }
+    
+    function createStringPad(title, instructions, callback) {
+        var newStrP = new StringPad();
+        newStrP.open(title, instructions, callback);
+    }
+    
+    function createNumPad(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback) {
+		var newNumpad = new NumberPad();
+		newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback);
+    }
 
 }
-
