@@ -587,6 +587,11 @@ function Editor(sandboxNum) {
                             createNumPad(0,null,"Array Size", "Enter a size for the array.", false, 10, enterNum);
                             }
                             /*Weston edit end*/
+                            else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'for' && cellNum == 5)
+                            {
+                            console.log("for id");
+                            createSelector("Counter Selection", nvars, forId);
+                            }
             
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'var') {
                             createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
@@ -1132,7 +1137,7 @@ function Editor(sandboxNum) {
 			innerTable = codeTable.rows[selRow + i].cells[0].children[0];
 
 			if (i == 0) {
-				addRow(innerTable, [ indentStr + "for&nbsp;", "(", "ID&nbsp;", "=&nbsp;", "EXPR", ";&nbsp;", "ID&nbsp;", "&lt;&nbsp;", "EXPR", ";&nbsp;", "ID", "++", ")" ], 2);
+				addRow(innerTable, [ indentStr + "for", "&nbsp;", "(", "ID", "&nbsp;", "=", "&nbsp;", "EXPR", ";&nbsp;", "ID", "&nbsp;", "&lt;&nbsp;", "EXPR", ";&nbsp;", "ID", "++", ")" ], 2);
 				addRowStyle(innerTable, [ "blue", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black" ], 2);
 			}
 			else if (i == 1) addRow(innerTable, [ indentStr + "{" ], 2);
@@ -2199,6 +2204,16 @@ function Editor(sandboxNum) {
         console.log("Num Functions: " + nFuns);
     }
     
+    function forId(result) {
+//        clickedCell.textContent = result;
+        console.log(innerTablet.rows[0].cells.length);
+        for (i=0; i<innerTablet.rows[0].cells.length; i++)
+        {
+            console.log(innerTablet.rows[0].cells[i].textContent + '\n');
+            if (innerTablet.rows[0].cells[i].textContent == 'ID') innerTablet.rows[0].cells[i].textContent = result;
+        }
+    }
+    
     function createSelector(title, optionS, callback) {
         var newSel = new Selector();
         newSel.open(title, optionS, callback);
@@ -2214,8 +2229,8 @@ function Editor(sandboxNum) {
 		newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback);
     }
 
-				function createAlertBox(title, msg, bool, callback) {
-						var alert = new Alert();
-						alert.open(title, msg, bool, callback);
+    function createAlertBox(title, msg, bool, callback) {
+        var alert = new Alert();
+        alert.open(title, msg, bool, callback);
   }
 }
