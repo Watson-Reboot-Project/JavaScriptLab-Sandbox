@@ -243,7 +243,7 @@ function Editor(sandboxNum) {
 			innerTablet = codeTable.rows[rowNum].cells[0].children[0];
 			clickedCell = innerTablet.rows[0].cells[cellNum];
             clickedCellNum = cellNum;
-                            //console.log("Clicked Cell: " + cellVal + "\n");
+                            console.log("Clicked Cell: " + cellVal + "\n");
                             /*for (i=0; i < innerTablet.rows[0].cells.length; i++)
                             {
                             console.log("Cell " + i + ": " + innerTablet.rows[0].cells[i].textContent + "\n");
@@ -2160,14 +2160,7 @@ function Editor(sandboxNum) {
     }
     
     function textEntry(result) {
-        var values = ['"', result, '"'];
-        var cell = clickedCell;
-        cell.textContent = values[0];
-        for (var i = 1; i < values.length; i++) {			// for all cells in the table
-            cell = innerTablet.rows[0].insertCell(++clickedCellNum);	// insert a cell at startInd
-            cell.innerHTML = values[i];						// make the innerHTML of the cell cells[i]
-        }
-        
+        clickedCell.textContent = '"' + result + '"';
     }
     
     function fChoose(result) {
