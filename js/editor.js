@@ -1929,9 +1929,10 @@ function Editor(sandboxNum) {
 
 	function foundIn(name,list)
 	{
+        console.log("name: " + name + "\nlist: " + list);
 		for (i = 0; i < list.length; i++)
 		{
-			//console.log(list[i].toUpperCase() + " " + name.toUpperCase());
+			console.log(list[i].toUpperCase() + " " + name.toUpperCase());
 			if (list[i].toUpperCase() == name.toUpperCase())
 			{
 				console.log("Match found");
@@ -1995,23 +1996,28 @@ function Editor(sandboxNum) {
 				else bracketFlag = true;
 			}
 			
-			if (cellText.indexOf("function") >= 0) rowType.push("functionDeclaration");
-			else if(cellText.indexOf("if") >= 0) rowType.push("if");
-			else if(cellText.indexOf("else") >= 0) rowType.push("else");
-			else if(cellText.indexOf("while") >= 0) rowType.push("while");
-			else if(cellText.indexOf("return") >= 0) rowType.push("return");
-			else if(cellText.indexOf("for") >= 0) rowType.push("for");
-			else if(cellText.indexOf("//") >= 0) rowType.push("comment");
-			else if(cellText.indexOf("writeln") >= 0) rowType.push("writeln");
-			else if(cellText.indexOf("write") >= 0) rowType.push("write");
-			else if(cellText.indexOf("var") >= 0) rowType.push("variable");
-			else if(cellText.indexOf("{") >= 0) rowType.push("closeBracket");
-			else if(cellText.indexOf("}") >= 0) rowType.push("openBracket");
-			else if(innerTable.rows[0].cells[7].textContent.indexOf("parse") >= 0) rowType.push("numericPrompt");
-			else if(innerTable.rows[0].cells[7].textContent.indexOf("prompt") >= 0) rowType.push("prompt");
-			else if(innerTable.rows[0].cells[3].textContent.indexOf("=") >= 0) rowType.push("assignment");
-			else { rowType.push("functionCall"); funcCall = true; }
-			
+//            while()
+//            {
+                if (cellText.indexOf("function") >= 0) rowType.push("functionDeclaration");
+                else if(cellText.indexOf("if") >= 0) rowType.push("if");
+                else if(cellText.indexOf("else") >= 0) rowType.push("else");
+                else if(cellText.indexOf("while") >= 0) rowType.push("while");
+                else if(cellText.indexOf("return") >= 0) rowType.push("return");
+                else if(cellText.indexOf("for") >= 0) rowType.push("for");
+                else if(cellText.indexOf("//") >= 0) rowType.push("comment");
+                else if(cellText.indexOf("writeln") >= 0) rowType.push("writeln");
+                else if(cellText.indexOf("write") >= 0) rowType.push("write");
+                else if(cellText.indexOf("var") >= 0) rowType.push("variable");
+                else if(cellText.indexOf("{") >= 0) rowType.push("closeBracket");
+                else if(cellText.indexOf("}") >= 0) rowType.push("openBracket");
+                else if(foundIn(innerTable.rows[0].cells[3].textContent,(vFuns.concat(tFuns)).concat(nFuns))) {rowType.push("functionCall"); funcCall = true; console.log("func");/*break; */}
+                else if(innerTable.rows[0].cells[7].textContent.indexOf("parse") >= 0) rowType.push("numericPrompt");
+                else if(innerTable.rows[0].cells[7].textContent.indexOf("prompt") >= 0) rowType.push("prompt");
+                else if(innerTable.rows[0].cells[5  ].textContent.indexOf("=") >= 0) rowType.push("assignment");
+//			else { rowType.push("functionCall"); funcCall = true; }
+//                break;
+//            }
+            
 			for (var j = 2; j < numCells; j++) {
 				cellText = innerTable.rows[0].cells[j].textContent;
 				if (cellText.indexOf("//") >= 0) break;
