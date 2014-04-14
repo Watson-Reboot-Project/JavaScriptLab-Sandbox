@@ -242,13 +242,8 @@ function Editor(sandboxNum) {
 			/* Weston variables */
 			innerTablet = codeTable.rows[rowNum].cells[0].children[0];
 			clickedCell = innerTablet.rows[0].cells[cellNum];
-            clickedCellNum = cellNum;
-                            // console.log("Clicked Cell: " + cellVal + "\n");
-                            /*for (i=0; i < innerTablet.rows[0].cells.length; i++)
-                            {
-                            console.log("Cell " + i + ": " + innerTablet.rows[0].cells[i].textContent + "\n");
-                            }*/
-                            
+			clickedCellNum = cellNum;
+                          
 			// if we click the number of the line (very left cell in each row), we try to delete something
 			if (cellNum == 0) {
 				var innerTable = codeTable.rows[rowNum].cells[0].children[0];
@@ -264,7 +259,7 @@ function Editor(sandboxNum) {
 					return;
 				else {
 					// If the next line has '{' then the whole block should be deleted
-					if (rowContainsString(codeTable, rowNum+1, "{"))	{
+					if (rowContainsString(codeTable, rowNum+1, "{")) {
 						// To determine if the selected row is inside the code block or not.
 						var isSelRowInside = false;
 						// isFunction determines if the current row being deleted is a function or not
@@ -355,7 +350,7 @@ function Editor(sandboxNum) {
 							var cellContentType = innerTable.rows[0].cells[7].textContent;
 
 							if (referenceCheck(cellContent, rowNum)) {
-								 createAlertBox("Notice", "You must not reference this variable if you want to delete it", true, null);
+								 createAlertBox("Notice!", "You must not reference this variable if you want to delete it", true, null);
 								 return;
 							}
 
@@ -384,8 +379,8 @@ function Editor(sandboxNum) {
 								}
 							}
 						} else
-									// Delete the current row	
-									deleteOneLineElement(rowNum);
+								// Delete the current row
+								deleteOneLineElement(rowNum);
 					}
 				}
 
@@ -393,344 +388,227 @@ function Editor(sandboxNum) {
 				var innerTable = codeTable.rows[rowNum-1].cells[0].children[0];
 				if (innerTable.rows[0].cells.length == 2 || innerTable.rows[0].cells[2].innerHTML == "/*&nbsp;") {
 					moveToLine(programCount);
-					}
-					refreshLineCount();
-					return;
+				}
+				refreshLineCount();
+				return;
 			}
 
-			if (selRow == rowNum) return;			// the selected row was clicked? do nothing
+			if (selRow == rowNum) return;					// the selected row was clicked? do nothing
 			if (rowNum < variableCount) return;		// we don't allow users to move into variables section
-
-			// if the cell value is a blank (5 non-breaking spaces '\xA0'), we try to move to that location
-/*			if (cellVal == '\xA0\xA0\xA0\xA0\xA0') {
-				var innerTable = codeTable.rows[rowNum].cells[0].children[0];		// grab the inner table of this row
-				if (checkValidRow(innerTable.rows[0], rowNum) == false) return;		// check to see if this is a valid position
-				moveToLine(rowNum);												// move to line if we make it here
-			}
-*/
+			
 			/* Weston's dialogs */
-            if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC' || cellVal == 'VOID')
-            {
-                if (innerTablet.rows[0].cells[cellNum-7].textContent == 'function')
-                {
-                    console.log("looking at a function type");
-                    if (foundIn(innerTablet.rows[0].cells[cellNum-5].textContent, namesRef))
-                    {
-                        console.log("Can't change type. Is reffed.\n");
-                    }
-                    else
-                    {
-                        console.log("not reffed.");
-                        if (foundIn(innerTablet.rows[0].cells[cellNum-5].textContent, namesUsed))
-                        {
-                            console.log("used.");
-                            delN(innerTablet.rows[0].cells[cellNum-5].textContent, nFuns);
-                            delN(innerTablet.rows[0].cells[cellNum-5].textContent, tFuns);
-                            delN(innerTablet.rows[0].cells[cellNum-5].textContent, vFuns);
-                            delN(innerTablet.rows[0].cells[cellNum-5].textContent, namesUsed);
-                            createSelector("Select Type", ftypes, ftypeConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(ftypes, "ftype");
-//                            $("#selector").dialog('open');
-                        }
-                        else
-                        {
-                            console.log("not used.");
-                            createSelector("Select Type", ftypes, ftypeConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(ftypes, "ftype");
-//                            $("#selector").dialog('open');
-                        }
-                    }
-                }
-                else if (innerTablet.rows[0].cells[cellNum-5].textContent == 'var')
-                {
-                    if (foundIn(innerTablet.rows[0].cells[cellNum-3].textContent, namesRef))
-                    {
-                        console.log("Can't change type. Is reffed.\n");
-                    }
-                    else
-                    {
-                        console.log("not reffed.");
-                        if (foundIn(innerTablet.rows[0].cells[cellNum-3].textContent, namesUsed))
-                        {
-                            console.log("used.");
-                            delN(innerTablet.rows[0].cells[cellNum-3].textContent, nvars);
-                            delN(innerTablet.rows[0].cells[cellNum-3].textContent, tvars);
-                            delN(innerTablet.rows[0].cells[cellNum-3].textContent, namesUsed);
-                            createSelector("Select Type", vtypes, typeConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(vtypes, "type");
-//                            $("#selector").dialog('open');
-                        }
-                        else
-                        {
-                            console.log("not used.");
-                            createSelector("Select Type", vtypes, typeConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(vtypes, "type");
-//                            $("#selector").dialog('open');
-                        }
-                    }
-                }
-                else if (innerTablet.rows[0].cells[cellNum-11].textContent == 'var')
-                {
-                    console.log("array?");
-                    if (foundIn(innerTablet.rows[0].cells[cellNum-9].textContent, namesRef))
-                    {
-                        console.log("Can't change type. Is reffed.\n");
-                    }
-                    else
-                    {
-                        console.log("not reffed.");
-                        if (foundIn(innerTablet.rows[0].cells[cellNum-9].textContent, namesUsed))
-                        {
-                            console.log("used.");
-                            delN(innerTablet.rows[0].cells[cellNum-9].textContent, nvars);
-                            delN(innerTablet.rows[0].cells[cellNum-9].textContent, tvars);
-                            delN(innerTablet.rows[0].cells[cellNum-9].textContent, namesUsed);
-                            createSelector("Select Type", vtypes, typeConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(vtypes, "type");
-//                            $("#selector").dialog('open');
-                        }
-                        else
-                        {
-                            console.log("not used.");
-                            createSelector("Select Type", vtypes, typeConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(vtypes, "type");
-//                            $("#selector").dialog('open');
-                        }
-                    }
-                }
-            }
-            if (cellVal == 'EXPR')
-            {
-                switch (exprtype())
-                {
-                    case ('PRINT'):
-                            console.log('print');
-                            createSelector("Print Type Selection", wtypes, exprConfirm);
-                            //dialog openSelector("Print Types", wtypes).done(function(returned) { exprConfirm(returned); returnToNormalColor(); });
-                            break;
-                    case ('BOOL'):
-                            console.log("bool");
-                            createSelector("Comparison Type Selection", btypes, boolConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(btypes, "bool");
-//                            $("#selector").dialog('open');
-                            break;
-                    case ('TEXT ASSIGNMENT'):
-                            createSelector("Text Selection", tExpr, exprSelConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(tExpr, "expr");
-//                            $("#selector").dialog('open');
-                        break;
-                    case ('NUMERIC ASSIGNMENT'):
-                            createSelector("Numeric Selection", nExpr, exprSelConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(nExpr, "expr");
-//                            $("#selector").dialog('open');
-                            break;
-                    case ('PROMPTMSG'):
-                            createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(["text constant", "text variable"], "expr");
-//                            $("#selector").dialog('open');
-                        break;
-                    case ('PROMPTDFLT'):
-                            createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(["text constant", "text variable"], "expr");
-//                            $("#selector").dialog('open');
-                        break;
-                    case ('PARSEDFLT'):
-                            createNumPad(null, null, "Default", "Enter a default value for this prompt.", true, 10, enterNum);
-                            //dialog openNumPad(null,null,"Enter default value", "some text", false, 10).done(function(result) {clickedCell.textContent = result; });
-                            
-                        break;
-                    case ('NUMERIC COMPARISON'):
-                            createSelector("Comparison Type Selection?", nExpr, exprSelConfirm);
-//                            $("#selector").empty();
-//                            generateSelectionHTML(nExpr, "expr")
-//                            $("#selector").dialog('open');
-                        break;
-                    case ('RETURN'):
-                            createSelector("What type?????", wtypes, exprConfirm);
-                            //dialog openSelector("What type?", wtypes).done(function(returned) { exprConfirm(returned); });
-                            break;
-                    default:
-                        break;
-                }
-            }
-                            else if (cellVal == 'ID' && foundIn(innerTablet.rows[0].cells[cellNum-3].textContent,compKeys))
-                            {
-                            //Choosing the left side of a comparison in a while or if
-                            createSelector("Choose an identifier.", namesUsed, idConfirm);
-                            }
-                            
-                            else if (cellVal == 'ID' && innerTablet.rows[0].cells[cellNum-2].textContent == 'function')
-                            {
-                            //Assigning an identifier to a function
-                            createStringPad("Function ID", "Please name the function.", fIDconfirm);
-                            }
-                            
-                            else if (cellVal == 'FUNCTION') {
-                            //Calling a function
-                            createSelector("Function Call", ftypes, fcallType);
-                            }
-                            
-                            else if (cellVal == 'size')
-                            {
-                            //Choosing a size for an Array
-                            createNumPad(0,null,"Array Size", "Enter a size for the array.", false, 10, enterNum);
-                            }
-                            /*Weston edit end*/
-                            else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'for' && cellNum == 5)
-                            {
-                            console.log("for id");
-                            createSelector("Counter Selection", nvars, forId);
-                            }
-            
+			if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC' || cellVal == 'VOID') {
+				if (innerTablet.rows[0].cells[cellNum-7].textContent == 'function') {
+					if (foundIn(innerTablet.rows[0].cells[cellNum-5].textContent, namesRef)) {
+						console.log("Can't change type. Is reffed.\n");
+					}
+					else {
+						if (foundIn(innerTablet.rows[0].cells[cellNum-5].textContent, namesUsed))	{
+							console.log("used.");
+							delN(innerTablet.rows[0].cells[cellNum-5].textContent, nFuns);
+							delN(innerTablet.rows[0].cells[cellNum-5].textContent, tFuns);
+							delN(innerTablet.rows[0].cells[cellNum-5].textContent, vFuns);
+							delN(innerTablet.rows[0].cells[cellNum-5].textContent, namesUsed);
+							createSelector("Select Type", ftypes, ftypeConfirm);
+						}
+						else {
+							createSelector("Select Type", ftypes, ftypeConfirm);
+						}
+						
+					}
+				}
+				else if (innerTablet.rows[0].cells[cellNum-5].textContent == 'var')	{
+					if (foundIn(innerTablet.rows[0].cells[cellNum-3].textContent, namesRef)) {
+						console.log("Can't change type. Is reffed.\n");
+					}
+					else {				
+						if (foundIn(innerTablet.rows[0].cells[cellNum-3].textContent, namesUsed)) {
+							delN(innerTablet.rows[0].cells[cellNum-3].textContent, nvars);
+							delN(innerTablet.rows[0].cells[cellNum-3].textContent, tvars);
+							delN(innerTablet.rows[0].cells[cellNum-3].textContent, namesUsed);
+							createSelector("Select Type", vtypes, typeConfirm);
+						}
+						else {
+							createSelector("Select Type", vtypes, typeConfirm);
+						}
+					}
+				}
+				else if (innerTablet.rows[0].cells[cellNum-11].textContent == 'var') {
+					if (foundIn(innerTablet.rows[0].cells[cellNum-9].textContent, namesRef)) {
+						console.log("Can't change type. Is reffed.\n");
+					}
+					else {
+						if (foundIn(innerTablet.rows[0].cells[cellNum-9].textContent, namesUsed))	{
+							delN(innerTablet.rows[0].cells[cellNum-9].textContent, nvars);
+							delN(innerTablet.rows[0].cells[cellNum-9].textContent, tvars);
+							delN(innerTablet.rows[0].cells[cellNum-9].textContent, namesUsed);
+							createSelector("Select Type", vtypes, typeConfirm);
+						}
+						else {
+							createSelector("Select Type", vtypes, typeConfirm);
+						}
+					}
+				}
+			}
+			
+			if (cellVal == 'EXPR') {
+				switch (exprtype())	{
+					case ('PRINT'):
+						createSelector("Print Type Selection", wtypes, exprConfirm);
+						break;
+					case ('BOOL'):
+						createSelector("Comparison Type Selection", btypes, boolConfirm);
+						break;
+					case ('TEXT ASSIGNMENT'):
+						createSelector("Text Selection", tExpr, exprSelConfirm);
+						break;
+					case ('NUMERIC ASSIGNMENT'):
+						createSelector("Numeric Selection", nExpr, exprSelConfirm);
+						break;
+					case ('PROMPTMSG'):
+						createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
+						break;
+					case ('PROMPTDFLT'):
+						createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
+						break;
+					case ('PARSEDFLT'):
+						createNumPad(null, null, "Default", "Enter a default value for this prompt.", true, 10, enterNum);
+						break;
+					case ('NUMERIC COMPARISON'):
+						createSelector("Comparison Type Selection?", nExpr, exprSelConfirm);
+						break;
+					case ('RETURN'):
+						createSelector("What type?????", wtypes, exprConfirm);
+						break;
+					default:
+						break;
+				}
+			}
+			else if (cellVal == 'ID' && foundIn(innerTablet.rows[0].cells[cellNum-3].textContent,compKeys))	{
+				// Choosing the left side of a comparison in a while or if
+				createSelector("Choose an identifier.", namesUsed, idConfirm);
+			}
+			else if (cellVal == 'ID' && innerTablet.rows[0].cells[cellNum-2].textContent == 'function') {
+				// Assigning an identifier to a function
+				createStringPad("Function ID", "Please name the function.", fIDconfirm);
+			}
+			else if (cellVal == 'FUNCTION') {
+				// If no function defined then do not give the options
+				if (vFuns.length < 1 && nFuns.length < 1 && tFuns.length < 1) {
+					createAlertBox("Notice!", "No declared functions to select.", true, null);
+					return;
+				}
+				// Calling a function
+				createSelector("Function Call", ftypes, fcallType);
+			}
+			else if (cellVal == 'size') {
+				// Choosing a size for an Array
+				createNumPad(0,null,"Array Size", "Enter a size for the array.", false, 10, enterNum);
+			}
+			else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'for' && cellNum == 5) {
+				createSelector("Counter Selection", nvars, forId);
+			}
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'var') {
-                            createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
+				createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
 			}
-			else if (cellVal == 'ID' && innerTablet.rows[0].cells[cellNum+2].textContent == '=')
-			{
-//                            console.log('ID');
-                            createSelector("Choose a variable to assign.", namesUsed, idConfirm);
+			else if (cellVal == 'ID' && innerTablet.rows[0].cells[cellNum+2].textContent == '=') {
+				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
 			}
-			
-//			if (foundIn(cellVal, tvars) == 1) {
-//					$("#selector").empty();
-//					dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
-//					
-//					dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
-//					dialOKButton.onclick = function() {
-//						var textArea = document.getElementById("dial" + sandboxNum + "Text");
-//						nameDialogConfirm(textArea.value);
-//					};
-//					
-//					dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
-//					dialCancelButton.onclick = function() {	selectorCancel(); };
-//					
-//					$("#selector").dialog('open');
-//					
-//					console.log(innerTablet.rows[0].cells[2].textContent);
-//					if (innerTablet.rows[0].cells[7].textContent == 'TEXT') {
-//									var index = tvars.indexOf(cellVal);
-//									tvars.splice(index, 1);
-//									console.log(tvars);
-//					}		
-//					else if (innerTablet.rows[0].cells[7].textContent === 'NUMERIC') {
-//									console.log("got here");
-//									var index = nvars.indexOf(cellVal);
-//									nvars.splice(index, 1);
-//									console.log(nvars);
-//					}
-//			}
-			
-			});
+		});
 	
    /** Implementation for '>' **/
-		// Display the > sign when hovered over the very left cell
-		$(".insert").off("mouseover");
-		$(".insert").on("mouseover", function() {
-				// Grab the the row number so as to edit the editor
-				var insertRowNum = $(this).parent().index();
-				// Increase the insertRowNum because we want to enter the new statement
-				// in the next line in the code window.
-				insertRowNum++;
-					
-				if (selRow == insertRowNum-1) {
-						$(this).css('cursor', 'default');
-						return;
-				}
-				
-				// Display the cursor at the very bottom of the editor
-				if (insertRowNum > programCount) {
-						$(this).css('cursor', 'pointer');
-						$(this).html(">");
-						return;
-				}
-
-				// For empty row
-				if (codeTable.rows[insertRowNum].cells[0].children[0].rows[0].cells.length == 2) {
-						$(this).css('cursor', 'default');
-						return;
-				}
-				
-				try {
-						var innerTable = codeTable.rows[insertRowNum].cells[0].children[0];
-						var cellTwoText = innerTable.rows[0].cells[2].innerText;
-				} catch(e) {
-						console.log("Error:", e.message);	
-				}
-				
-				// Check if the row is valid or not
-				if (checkValidRow(innerTable.rows[0], insertRowNum) == false) {		
-						$(this).css('cursor', 'default');
-						return;		
-				}
-				
-				// When hovered, display the cursor
-				$(this).css('cursor', 'pointer');
-				$(this).html(">");
-		});
+	 // Display the > sign when hovered over the very left cell
+	 $(".insert").off("mouseover");
+	 $(".insert").on("mouseover", function() {
+		// Grab the the row number so as to edit the editor
+		var insertRowNum = $(this).parent().index();
+		// Increase the insertRowNum because we want to enter the new statement
+		// in the next line in the code window.
+		insertRowNum++;
+		if (selRow == insertRowNum-1) {
+			$(this).css('cursor', 'default');
+			return;
+		}
 		
-		/** Remove the cursor when the mouse is moved away. **/
-		$(".insert").off("mouseout");
-		$(".insert").on("mouseout", function() {
-				$(this).css('cursor', 'default');
-				$(this).html(blank);
-		});
+		// Display the cursor at the very bottom of the editor
+		if (insertRowNum > programCount) {
+			$(this).css('cursor', 'pointer');
+			$(this).html(">");
+			return;
+		}
 		
-		/** When a cell is clicked, moved to the corresponding row. **/
-		$(".insert").off("click");
-		$(".insert").on("click", function() {
-				// Grab the the row number so as to edit the editor
-				var insertRowNum = $(this).parent().index();
-				// Increase the insertRowNum because we want to enter the new statement
-				// in the next line in the code window.
-				insertRowNum++;
-				
-				if (selRow == insertRowNum-1) {
-						return;
-				}
-								
-				// Move to the bottom of the editor
-				if (insertRowNum > programCount) {
-						moveToLine(programCount);
-						return;
-				}
-				
-				// Condition to ensure the insertion is done only at the bottom of the row
-				if (codeTable.rows[insertRowNum].cells[0].children[0].rows[0].cells.length == 2) {
-						return;
-				}
-				
-				// Grab the inner table from the code window
-				try {
-						var innerTable = codeTable.rows[insertRowNum].cells[0].children[0];
-						var cellTwoText = innerTable.rows[0].cells[2].innerText;
-				} catch(e) {
-						console.log(e);	
-				}
-				
-				//Check to see if this is a valid position
-				if (checkValidRow(innerTable.rows[0], insertRowNum) == false) {		
-						return;		
-				}
-				
-				// If all condition is passed move to the specified line
-				if (insertRowNum > selRow) {
-						moveToLine(insertRowNum-1);
-				}
-				else
-						moveToLine(insertRowNum);
+		// For empty row
+		if (codeTable.rows[insertRowNum].cells[0].children[0].rows[0].cells.length == 2) {
+			$(this).css('cursor', 'default');
+			return;
+		}
+		
+		try {
+			var innerTable = codeTable.rows[insertRowNum].cells[0].children[0];
+			var cellTwoText = innerTable.rows[0].cells[2].innerText;
+		} catch(e) {
+			console.log("Error:", e.message);
+		}
+		
+		// Check if the row is valid or not
+		if (checkValidRow(innerTable.rows[0], insertRowNum) == false) {
+			$(this).css('cursor', 'default');
+			return;
+		}
+		
+		// When hovered, display the cursor
+		$(this).css('cursor', 'pointer');
+		$(this).html(">");
+	});
+	 
+	/** Remove the cursor when the mouse is moved away. **/
+	$(".insert").off("mouseout");
+	$(".insert").on("mouseout", function() {
+		$(this).css('cursor', 'default');
+		$(this).html(blank);
+	});
+	
+	/** When a cell is clicked, moved to the corresponding row. **/
+	$(".insert").off("click");
+	$(".insert").on("click", function() {
+		// Grab the the row number so as to edit the editor
+		var insertRowNum = $(this).parent().index();
+		// Increase the insertRowNum because we want to enter the new statement
+		// in the next line in the code window.
+		insertRowNum++;
+		
+		if (selRow == insertRowNum-1) 
+			return;
+			
+		// Move to the bottom of the editor
+		if (insertRowNum > programCount) {
+			moveToLine(programCount);
+			return;
+		}
+		
+		// Condition to ensure the insertion is done only at the bottom of the row
+		if (codeTable.rows[insertRowNum].cells[0].children[0].rows[0].cells.length == 2)
+			return;
+			
+		// Grab the inner table from the code window
+		try {
+			var innerTable = codeTable.rows[insertRowNum].cells[0].children[0];
+			var cellTwoText = innerTable.rows[0].cells[2].innerText;
+		} catch(e) {
+				console.log(e);
+		}
+		
+		//Check to see if this is a valid position
+		if (checkValidRow(innerTable.rows[0], insertRowNum) == false)
+			return;
+			
+		// If all condition is passed move to the specified line
+		if (insertRowNum > selRow)
+			moveToLine(insertRowNum-1);
+		else
+			moveToLine(insertRowNum);
 		});
-}
+	}
 
 	// check to see if a specific cell contains a keywords; return true if so
 	function cellContainsKeyword(table, cellNo) {
@@ -1137,7 +1015,7 @@ function Editor(sandboxNum) {
 			innerTable = codeTable.rows[selRow + i].cells[0].children[0];
 
 			if (i == 0) {
-				addRow(innerTable, [ indentStr + "for", "&nbsp;", "(", "ID", "&nbsp;", "=", "&nbsp;", "EXPR", ";&nbsp;", "ID", "&nbsp;", "&lt;&nbsp;", "EXPR", ";&nbsp;", "ID", "++", ")" ], 2);
+				addRow(innerTable, [ indentStr + "for", "&nbsp;", "(", "ID", "&nbsp;", "=", "&nbsp;", "EXPR", ";&nbsp;", "ID", "&nbsp;", "&lt;=&nbsp;", "EXPR", ";&nbsp;", "ID", "++", ")" ], 2);
 				addRowStyle(innerTable, [ "blue", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black", "black" ], 2);
 			}
 			else if (i == 1) addRow(innerTable, [ indentStr + "{" ], 2);
@@ -1580,6 +1458,7 @@ function Editor(sandboxNum) {
 		//if the name is in use already, abort
 		if (foundIn(result,namesUsed) == 1) {
 			console.log("Already exists (nameDialogconfirm)");
+			createAlertBox("Notice!", "Name has already been used.", true, null);
 			$("#selector").dialog('close');
 			return; //this will need to spawn a dialog box before returning
 		}
@@ -2192,7 +2071,7 @@ function Editor(sandboxNum) {
   }
     
   function fIDconfirm(result) {
-		//Function called to assign an identifier to a function at its declaration
+		// Function called to assign an identifier to a function at its declaration
     if (foundIn(result, resWords))
 			return;
     
