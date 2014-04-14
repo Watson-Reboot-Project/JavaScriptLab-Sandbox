@@ -15,16 +15,16 @@ a:active {
 
 /* Applies font choices to everything */
 * {
-	/* font-family: Verdana, Geneva, sans-serif */
+	/* font-family: Verdana, Geneva, sans-serif */;
 }
 /*End font choices */
 
 /* div id styling */
 #wrapper {
-	width: 540px;
+	width: 720px;
 	margin: 0 auto;
 	border: solid 0px #002F8B;
-	font-family: Verdana, Geneva, sans-serif;
+	font-family: Courier New, 'Lucida Sans Unicode';
 }
 
 #header {
@@ -85,7 +85,6 @@ a:active {
 	display:table;
 	list-style:none;
 	margin:0 auto;
-	
 }
 .Image { /* Centers images */
 	margin: 0 auto;
@@ -153,29 +152,35 @@ IMG.displayed {
 	#header{width: 220px; font-size:80%}
 	#headnav{width: 240px; font-size:60%}
 	#chapnav{width: 240px; font-size:60%}
+	#buttons{width: 100px; font-size: 60%}
+	#offsetDiv{height:3px;}
 }
 @media screen and (max-width: 480px) and (min-width:361px) {
 	#wrapper{width:320px; font-size:70%}
 	#header{width:320px; font-size:90%}
 	#headnav{width:320px; font-size:70%}
 	#chapnav{width:320px; font-size:70%}
+	#offsetDiv{height:5px;}
 }
 @media screen and (max-width: 720px) and (min-width:481px) {
 	#wrapper{width: 440px; font-size:80%}
 	#header{width:440px;}
 	#headnav{width:440px; font-size:80%}
-	#chapnav{width:440px; font-size:80%}
+	#chapnav{width:440px; font-size:80
+	#offsetDiv{height:5px;}
 }
 @media screen and (min-width:721px) and (max-width:900px){
 	#wrapper{width:680px; font-size:90%}
 	#header{width:680px; font-size:110%}
 	#headnav{width:680px; font-size:90%}
 	#chapnav{width:680px; font-size:90%}
+	#offsetDiv{height:7px;}
 }
 @media screen and (min-width:901px){
 	#wrapper{width:880px}
 	#header{width:100%; font-size:120%}
 	#headnav{width:880px;}
 	#chapnav{width:880px;}
+	#offsetDiv{height:9px;}
 }
 /* End @media definitions for various devices and resolutions */

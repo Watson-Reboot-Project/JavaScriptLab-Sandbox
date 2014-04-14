@@ -42,18 +42,18 @@ function Editor(sandboxNum) {
 	var vtypes = ["Text", "Numeric"];
 	var nvars = [];
 	var tvars = [];
-    var wtypes = ["text", "numeric"];
+  var wtypes = ["text", "numeric"];
 	var resWords = ["new", "this", "var", "ID", "list", "Array", "function", ""];
 	var namesUsed = [];
 	var namesRef = [];
-    var compKeys = ["while", "if"];
-    var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
-    var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
-    var nExprtypes = ["EXPR + EXPR", "EXPR - EXPR", "EXPR * EXPR", "EXPR / EXPR", "EXPR % EXPR", "(EXPR)"];
-    var btypes = ["EXPR == EXPR", "EXPR != EXPR", "EXPR > EXPR", "EXPR >= EXPR", "EXPR < EXPR", "EXPR <= EXPR"];
+  var compKeys = ["while", "if"];
+  var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
+  var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
+  var nExprtypes = ["EXPR + EXPR", "EXPR - EXPR", "EXPR * EXPR", "EXPR / EXPR", "EXPR % EXPR", "(EXPR)"];
+  var btypes = ["EXPR == EXPR", "EXPR != EXPR", "EXPR > EXPR", "EXPR >= EXPR", "EXPR < EXPR", "EXPR <= EXPR"];
 	var innerTablet;
 	var clickedCell;
-    var clickedCellNum;
+  var clickedCellNum;
 	var dial = document.getElementById('selector');
 	var dialOKButton;
 	var dialCancelButton;
@@ -243,7 +243,7 @@ function Editor(sandboxNum) {
 			innerTablet = codeTable.rows[rowNum].cells[0].children[0];
 			clickedCell = innerTablet.rows[0].cells[cellNum];
             clickedCellNum = cellNum;
-                            console.log("Clicked Cell: " + cellVal + "\n");
+                            // console.log("Clicked Cell: " + cellVal + "\n");
                             /*for (i=0; i < innerTablet.rows[0].cells.length; i++)
                             {
                             console.log("Cell " + i + ": " + innerTablet.rows[0].cells[i].textContent + "\n");
@@ -356,7 +356,7 @@ function Editor(sandboxNum) {
 
 							if (referenceCheck(cellContent, rowNum)) {
 								 createAlertBox("Notice", "You must not reference this variable if you want to delete it", true, null);
-									return;
+								 return;
 							}
 
 							// If we are removing a text variable then remove the variable from the text variable list
@@ -1355,19 +1355,6 @@ function Editor(sandboxNum) {
 		return true;
 	}
 
-	// addMainProgramComment() simply adds the main program comment '// Main Program'
-	function addMainProgramComment() {
-		var row = codeTable.insertRow(programStart);
-		var cell = row.insertCell(0);
-		cell.innerHTML = innerTableTemplate;
-		innerTable = codeTable.rows[programStart].cells[0].children[0];
-		addRow(innerTable, [ "//&nbsp;", "Main Program" ], 2);
-		addRowStyle(innerTable, [ green, green ], 2);
-		if (selRow >= programStart) selRow++;
-		programStart++;
-		firstMove = false;
-	}
-
 	// refreshLineCount() refreshes the line count in the first cell of every inner table
 	function refreshLineCount() {
 		var innerTable;
@@ -1441,9 +1428,9 @@ function Editor(sandboxNum) {
 	}
 
 	//Weston's functions below here
-    /*Weston edit start*/
+  /*Weston edit start*/
 
-    /*Weston edit end*/
+  /*Weston edit end*/
     
 	function typeConfirm(result) {  // For confirming types for variables and else
         if (innerTablet.rows[0].cells[clickedCellNum-5].textContent == 'var')
@@ -1941,6 +1928,7 @@ function Editor(sandboxNum) {
 		}
 		return 0;
 	}
+	// <----------------- End of Weston's Code ----------------->
 	function isDummyRow(rowNum) {
 			for (var i = 0; i < dummyRows.length; i++) {
 				if (dummyRows[i] == rowNum) return true;
@@ -1995,28 +1983,31 @@ function Editor(sandboxNum) {
 				if (cellText.indexOf("}") < 0 && cellText.indexOf("{") < 0 && cellText.indexOf("else") < 0) { rowType.push("blankLine"); continue; }
 				else bracketFlag = true;
 			}
+			// while(){
+			if (cellText.indexOf("function") >= 0) rowType.push("functionDeclaration");
+			else if(cellText.indexOf("if") >= 0) rowType.push("if");
+			else if(cellText.indexOf("else") >= 0) rowType.push("else");
+			else if(cellText.indexOf("while") >= 0) rowType.push("while");
+			else if(cellText.indexOf("return") >= 0) rowType.push("return");
+			else if(cellText.indexOf("for") >= 0) rowType.push("for");	
+			else if(cellText.indexOf("//") >= 0) rowType.push("comment");
+			else if(cellText.indexOf("writeln") >= 0) rowType.push("writeln");
+			else if(cellText.indexOf("write") >= 0) rowType.push("write");
+			else if(cellText.indexOf("var") >= 0) rowType.push("variable");
+			else if(cellText.indexOf("{") >= 0) rowType.push("closeBracket");
+			else if(cellText.indexOf("}") >= 0) rowType.push("openBracket");
 			
-//            while()
-//            {
-                if (cellText.indexOf("function") >= 0) rowType.push("functionDeclaration");
-                else if(cellText.indexOf("if") >= 0) rowType.push("if");
-                else if(cellText.indexOf("else") >= 0) rowType.push("else");
-                else if(cellText.indexOf("while") >= 0) rowType.push("while");
-                else if(cellText.indexOf("return") >= 0) rowType.push("return");
-                else if(cellText.indexOf("for") >= 0) rowType.push("for");
-                else if(cellText.indexOf("//") >= 0) rowType.push("comment");
-                else if(cellText.indexOf("writeln") >= 0) rowType.push("writeln");
-                else if(cellText.indexOf("write") >= 0) rowType.push("write");
-                else if(cellText.indexOf("var") >= 0) rowType.push("variable");
-                else if(cellText.indexOf("{") >= 0) rowType.push("closeBracket");
-                else if(cellText.indexOf("}") >= 0) rowType.push("openBracket");
-                else if(foundIn(innerTable.rows[0].cells[3].textContent,(vFuns.concat(tFuns)).concat(nFuns))) {rowType.push("functionCall"); funcCall = true; console.log("func");/*break; */}
-                else if(innerTable.rows[0].cells[7].textContent.indexOf("parse") >= 0) rowType.push("numericPrompt");
-                else if(innerTable.rows[0].cells[7].textContent.indexOf("prompt") >= 0) rowType.push("prompt");
-                else if(innerTable.rows[0].cells[5  ].textContent.indexOf("=") >= 0) rowType.push("assignment");
-//			else { rowType.push("functionCall"); funcCall = true; }
-//                break;
-//            }
+			else if(foundIn(innerTable.rows[0].cells[3].textContent,(vFuns.concat(tFuns)).concat(nFuns))) {
+				rowType.push("functionCall");
+				funcCall = true; console.log("func");/*break; */
+			}
+			
+			else if(innerTable.rows[0].cells[7].textContent.indexOf("parse") >= 0) rowType.push("numericPrompt");
+			else if(innerTable.rows[0].cells[7].textContent.indexOf("prompt") >= 0) rowType.push("prompt");
+			else if(innerTable.rows[0].cells[5  ].textContent.indexOf("=") >= 0) rowType.push("assignment");
+			// else { rowType.push("functionCall"); funcCall = true; }
+			// break;
+			// }
             
 			for (var j = 2; j < numCells; j++) {
 				cellText = innerTable.rows[0].cells[j].textContent;
@@ -2070,18 +2061,29 @@ function Editor(sandboxNum) {
 		return tCodeStr;
 	}
 
+	// Checks whether the line is a new line or not ?? maybe ??
 	function isNewLine(start, end) {
 		if (start == -1 && end == -1) {
-
 			return [ true, rowNum ];
 		}
+		
 		for (var i = 0; i < charCountStart.length; i++) {
 			if (start >= charCountStart[i] && end <= charCountEnd[i] + 1) { 
-				if (lineNums[i] == rowNum) { return [ false, rowNum ]; }
+				if (lineNums[i] == rowNum) {
+					return [ false, rowNum ];
+				}
 				else {
 					rowNum = lineNums[i];
-					if (rowType[rowNum].indexOf('numeric') >= 0) { promptFlag = [ true, "numeric" ]; }
-					else if (rowType[rowNum].indexOf('prompt') >= 0) { promptFlag = [ true, "string" ]; }
+					try {
+						if (rowType[rowNum].indexOf('numeric') >= 0) {
+							promptFlag = [ true, "numeric" ];
+						}
+						else if (rowType[rowNum].indexOf('prompt') >= 0) {
+							promptFlag = [ true, "string" ];
+						}
+					} catch(e) {
+						console.log(e);	
+					}
 					return [true, selRow];
 				}
 			}
@@ -2094,11 +2096,14 @@ function Editor(sandboxNum) {
 			var type = promptFlag[1];
 			var promptStr;
 			var defStr;
+			
 			promptFlag = [ false, "" ];
 			highlightCurrentStep(rowNum);
+			
 			var promptStr;
 			var firstParam = true;
 			var innerTable = codeTable.rows[rowNum].cells[0].children[0];
+			
 			for (var i = 2; i < innerTable.rows[0].cells.length; i++) {
 				cell = innerTable.rows[0].cells[i];
 				if (cell.textContent.indexOf('"') >= 0) {
@@ -2127,109 +2132,125 @@ function Editor(sandboxNum) {
 	}
 
 	function reset() {
+		//console.log("codeTable.rows.length - 1 " + codeTable.rows.length - 1);
 		selectLine(codeTable.rows.length - 1);
-		rowNum = lineNums[0];
-		selRow = rowNum;
+		selRow = programCount;
+		//rowNum = lineNums[0];
+		//selRow = rowNum;
 	}
 
 	function getDatatypeSelectedLine() {
 		var innerTable = codeTable.rows[selRow].cells[0].children[0];
 		var numCells = innerTable.rows[0].cells.length;
-		if (innerTable.rows[0].cells[numCells - 1].textContent.indexOf("NUMERIC") >= 0) return "numeric";
-		else if (innerTable.rows[0].cells[numCells - 1].textContent.indexOf("NUMERIC") >= 0) return "text";
+		if (innerTable.rows[0].cells[numCells - 1].textContent.indexOf("NUMERIC") >= 0)
+			return "numeric";
+		else if (innerTable.rows[0].cells[numCells - 1].textContent.indexOf("NUMERIC") >= 0)
+			return "text";
 		
 		return null;
 	}
-    function addNewInsertRow() {
-        var row = insertTable.insertRow(-1);
-        var cell = row.insertCell(0);
-        cell.className = "insert";
-        cell.innerHTML = blank;
-    }
+	
+	// Insert row for the insertion bar
+	function addNewInsertRow() {
+		var row = insertTable.insertRow(-1);
+		var cell = row.insertCell(0);
+		cell.className = "insert";
+		cell.innerHTML = blank;
+  }
+	
+	// <----------------- Weston Code start ----------------->
+	
+	function fcallType(result) {
+		// Function call to allow selection of functions based on a type parameter
+		switch (result) {
+			case ('Void'):
+				createSelector("Void Functions", vFuns, fChoose);
+				break;
+			case ('Text'):
+				createSelector("Void Functions", tFuns, fChoose);
+				break;
+			case ('Numeric'):
+				createSelector("Void Functions", nFuns, fChoose);
+				break;
+			default:
+				break;
+		}
+  }
     
-    function fcallType(result) {
-        //Function called to allow selection of functions based on a type parameter
-        switch (result)
-        {
-            case ('Void'):
-                createSelector("Void Functions", vFuns, fChoose);
-                break;
-            case ('Text'):
-                createSelector("Void Functions", tFuns, fChoose);
-                break;
-            case ('Numeric'):
-                createSelector("Void Functions", nFuns, fChoose);
-                break;
-            default:
-                break;
-        }
-    }
+  function textEntry(result) {
+		clickedCell.textContent = '"' + result + '"';
+  }
     
-    function textEntry(result) {
-        clickedCell.textContent = '"' + result + '"';
-    }
+  function fChoose(result) {
+    // Function that is called when selecting a function that replaces the text of a single cell
+    clickedCell.textContent = result;
+  }
     
-    function fChoose(result) {
-        //Function that is called when selecting a function that replaces the text of a single cell
-        clickedCell.textContent = result;
-    }
+  function enterNum(result) {
+		// Function called to replace a cell with a number
+    clickedCell.textContent = result;
+  }
     
-    function enterNum(result) {
-        //Function called to replace a cell with a number
-        clickedCell.textContent = result;
-    }
+  function fIDconfirm(result) {
+		//Function called to assign an identifier to a function at its declaration
+    if (foundIn(result, resWords))
+			return;
     
-    function fIDconfirm(result) {
-        //Function called to assign an identifier to a function at its declaration
-        if (foundIn(result, resWords)) return;
-        clickedCell.textContent = result;
-        switch (innerTablet.rows[0].cells[clickedCellNum+5].textContent)
-        {
-            case 'VOID':
-                vFuns.push(result);
-                break;
-            case 'TEXT':
-                tFuns.push(result);
-                break;
-            case 'NUMERIC':
-                nFuns.push(result);
-                break;
-            default:
-                break;
-        }
-        console.log("Names used: " + namesUsed);
-        console.log("Void Functions: " + vFuns);
-        console.log("Text Functions: " + tFuns);
-        console.log("Num Functions: " + nFuns);
-    }
+		clickedCell.textContent = result;
+    switch (innerTablet.rows[0].cells[clickedCellNum+5].textContent) {
+			case 'VOID':
+				vFuns.push(result);
+				break;
+			case 'TEXT':
+				tFuns.push(result);
+				break;
+			case 'NUMERIC':
+				nFuns.push(result);
+				break;
+			default:
+				break;
+		}
+		
+		//console.log("Names used: " + namesUsed);
+		//console.log("Void Functions: " + vFuns);
+		//console.log("Text Functions: " + tFuns);
+		//console.log("Num Functions: " + nFuns);
+	}
     
-    function forId(result) {
-//        clickedCell.textContent = result;
-        console.log(innerTablet.rows[0].cells.length);
-        for (i=0; i<innerTablet.rows[0].cells.length; i++)
-        {
-            console.log(innerTablet.rows[0].cells[i].textContent + '\n');
-            if (innerTablet.rows[0].cells[i].textContent == 'ID') innerTablet.rows[0].cells[i].textContent = result;
-        }
-    }
+  function forId(result) {
+		// clickedCell.textContent = result;
+		console.log(innerTablet.rows[0].cells.length);
+		for (i=0; i<innerTablet.rows[0].cells.length; i++) {
+			console.log(innerTablet.rows[0].cells[i].textContent + '\n');
+			
+			if (innerTablet.rows[0].cells[i].textContent == 'ID')
+				innerTablet.rows[0].cells[i].textContent = result;
+		}
+  }
+  
+	/** Create Selectors for specific cases **/
+	
+	// Create a select box
+  function createSelector(title, optionS, callback) {
+    var newSel = new Selector();
+    newSel.open(title, optionS, callback);
+  }
     
-    function createSelector(title, optionS, callback) {
-        var newSel = new Selector();
-        newSel.open(title, optionS, callback);
-    }
+	// Create a string pad
+  function createStringPad(title, instructions, callback) {
+    var newStrP = new StringPad();
+    newStrP.open(title, instructions, callback);
+  }
     
-    function createStringPad(title, instructions, callback) {
-        var newStrP = new StringPad();
-        newStrP.open(title, instructions, callback);
-    }
-    
-    function createNumPad(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback) {
+	// Create a number pad
+  function createNumPad(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback) {
 		var newNumpad = new NumberPad();
 		newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback);
-    }
-
-    function createAlertBox(title, msg, bool, callback) {
-        var alert = new Alert();
-        alert.open(title, msg, bool, callback);
   }
+
+	// Create an alert box
+  function createAlertBox(title, msg, bool, callback) {
+    var alert = new Alert();
+    alert.open(title, msg, bool, callback);
+	}
 }

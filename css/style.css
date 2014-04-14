@@ -3,11 +3,6 @@ body {
    font-family: Courier New, 'Lucida Sans Unicode';
 }
 
-#body {
-   margin:0 auto;
-   max-width: 720px;
-}
-
 #codeTitle {
    padding-top: 0px;
    margin-top: 0px;
@@ -15,46 +10,54 @@ body {
 }
 
 #programCode {
-   height: 400px;
-   width: 580px;
-   border-style: ridge;
+   width: 35%;
+   height: 368px;
    float: left;
+   overflow: auto;
+   clear: left;
+   border: 1px solid black;
+   margin-bottom: 5px;
+}
+
+#editorDiv {
    overflow: auto;
 }
 
+#fig1Editor td tr { overflow: auto; }
+
 #insertDiv {
-   width: 18px;
-   height: 400px;
+   width: 15px;
+   height: 368px;
    float: left;
 }
 
 #offsetDiv {
-   width: 14px;
-   height: 11px;
+   width: auto;
+   height: 1.5%;
+   overflow: auto;
 }
 
-#insertTable {
+#insertTable td { }
+
+#insertTable  {
+   width: 1px;
    font-size: 14px;
    float: left;
-   border-color: black;
+   border-collapse: collapse;
+   padding: 0px;
+   margin: 0px;
 }
 
-#divider {
-   height: 400px;
-   border: 0px solid grey;
-   position: absolute;
-   left: 480px;
-}
-
-button[type=button] {
-   width: 9em;
-   height: 2.2em;
-}
+.rightButton {width: 100%; font-size: 100%; }
 
 #buttons {
+   margin-left: 5px;
+   margin-right: 5px;
+   padding-left: 0.2%;
    width: auto;
-   height: 300px;
-   float: right;
+   float: left;
+   overflow: auto;
+   margin: 0 0;
 }
 
 #varTitle {
@@ -64,8 +67,7 @@ button[type=button] {
 }
 
 .outterDiv {
-   width: auto;
-   height: 100px;
+   width: 35%;
    clear: left;
    margin-bottom: 15px;
 }
@@ -76,44 +78,92 @@ button[type=button] {
 }
 
 #outputBox {
-   width: auto;
-   height: 100px;
    clear: left;
 }
 
+.rwButton {width:20%;}
+
 #runWalk {
    padding-top: 10px;
-   width: auto;
+   width: 35%;
+   overflow: auto;
+   margin: 0 0; 
 }
 
 table {
    border: none;
-   border-collapse:collapse;
+   border-collapse: collapse;
    padding: 0px;
    margin: 0px;
 }
 
 td {
-   border:none;
-   border-collapse:collapse;
-   padding: 0px;
-   margin: 0px;
-}
-.innerTable {
    border: none;
-   border-collapse:collapse;
+   border-collapse: collapse;
    padding: 0px;
    margin: 0px;
 }
 
-.varDiv {
-	overflow:auto;
-    width: auto;
-	height: 100px;
-    resize: none;
-	border: 1px solid black;
+.innerTable {
+   overflow: scroll;
+   border: none;
+   border-collapse: collapse;
+   padding: 0px;
+   margin: 0px;
 }
+
+.innerTable td tr { overflow: auto;}
+.varDiv {
+   margin-top: 5px;
+   height: 100px;
+   overflow: auto;
+   resize: none;
+   border: 1px solid black;
+}
+
 .normal {
-	border-spacing: 15px 1px;
-	border-collapse: separate;
+   border-spacing: 15px 1px;
+   border-collapse: separate;
+}
+
+/** For ipad and ipad mini **/
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px)  {
+   /* STYLES GO HERE */
+   #programCode { width: 70%; height: 400px;}
+   #insertDiv {height: 400px; }
+   .outterDiv { width: 70%; }
+   #runWalk { width: 70%; }
+}
+
+/** iphone 2-4s/ smartphones **/
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 480px) {
+   /* STYLES GO HERE */
+   #programCode { width: 70%; height: 400px;}
+   #insertDiv {height: 400px; }
+   .outterDiv { width: 70%; }
+   #runWalk { width: 70%; }
+}
+
+/** iphone 5 **/
+@media only screen 
+and (min-device-width : 320px) 
+and (max-device-width : 568px) {
+   /* STYLES GO HERE */
+   #programCode { width: 70%; height: 400px;}
+   #insertDiv {height: 400px; }
+   .outterDiv { width: 70%; }
+   #runWalk { width: 70%; }   
+}
+
+/** Samsung Galaxy S3 in portrait **/
+@media only screen and (-webkit-device-pixel-ratio: 2) {
+   /* YOUR STYLE GOES HERE */
+   #programCode { width: 70%; height: 400px; }
+   #insertDiv { height: 400px; }
+   .outterDiv { width: 70%; }
+   #runWalk { width: 70%; }
 }
