@@ -166,6 +166,7 @@ function JSEditor(sandboxNum) {
 			// we are trying to select, all of the logic we need should be taken
 			// care of in the insertion bar cursor logic
 			editor.selectRowByIndex(insertRowNum, true);
+			console.log('\there21');
 			
 			/*
 			// If all condition is passed move to the specified line
@@ -187,7 +188,7 @@ function JSEditor(sandboxNum) {
 			/* Weston variables */
 			//innerTablet = codeTable.rows[rowNum].cells[0].children[0];
 			//clickedCell = innerTablet.rows[0].cells[cellNum];
-			clickRow = editor.rowToArray(rowNum);
+			clickRow = editor.rowToArrayHtml(rowNum);
 			clickedCell = $(this);
 			clickedCellNum = cellNum;
 			
@@ -201,7 +202,9 @@ function JSEditor(sandboxNum) {
 
 				// Users are not allowed to delete some specific rows
 				// Example a)Empty Rows b)Comments c)Curly Braces
-				if (rowNum < 2 || clickRow[0] == '&nbsp;' || clickRow[0] == '//&nbsp;' || clickRow[0] == '{' || clickRow[0] == '}' || clickRow[1] =='else') {
+				
+				console.log(clickRow);
+				if (rowNum < 2 || clickRow[0] == '&nbsp;' || clickRow[0] == '//&nbsp;' || clickRow.indexOf('{') >= 0 || clickRow.indexOf('}') >= 0 || clickRow[1] =='else') {
 					return;
 				}
 				// User should not be able to delete else statement because it is a part of if function
@@ -210,7 +213,6 @@ function JSEditor(sandboxNum) {
 				else {
 					// If the next line has '{' then the whole block should be deleted
 					if (rowNum != (editor.getRowCount() - 1) && editor.rowToArray(rowNum+1).indexOf('{') >= 0)	{
-					console.log("\there1");
 						// To determine if the selected row is inside the code block or not.
 						var isSelRowInside = false;
 						
@@ -242,7 +244,7 @@ function JSEditor(sandboxNum) {
 							// Increase the tableRowCount
 							tableRowCount++;
 							
-							var innerRow = editor.rowToArray(i);
+							var innerRow = editor.rowToArrayHtml(i);
 							console.log("\t", innerRow);
 
 							// If the selected row is inside this current function
@@ -261,7 +263,7 @@ function JSEditor(sandboxNum) {
 								if (bracketFound > 0) {
 									bracketFound--;
 
-									if ((i+1) < editor.getRowCount() && editor.rowToArray(i+1)[1] == "else") {
+									if ((i+1) < editor.getRowCount() && editor.rowToArrayHtml(i+1)[1] == "else") {
 											continue;
 									}
 									if (bracketFound == 0) {
@@ -274,7 +276,6 @@ function JSEditor(sandboxNum) {
 						// If the selRow is inside the code block
 						// move the selRow to the end of the program before deleting the rows.
 						if (isSelRowInside) {
-							//console.log("\there11 " + i);
 							//moveToLine(i);
 							editor.selectRowByIndex(i);
 							// Reduce the tableRowCount because selecting another row automatically deletes the current row.
@@ -340,13 +341,13 @@ function JSEditor(sandboxNum) {
 								varType = clickRow[6];
 							}
 
-							console.log("\there7 " + varName + " " + (varName !== "ID"));
+							//console.log("\there7 " + varName + " " + (varName !== "ID"));
 							if (varName != "ID" && referenceCheck(varName, rowNum)) {
 								 createAlertBox("Notice", "You must not reference this variable if you want to delete it", true, null);
 									return;
 							}
 
-							console.log("\there8");
+							//console.log("\there8");
 							// If we are removing a text variable then remove the variable from the text variable list
 							if (varType === "TEXT") {
 									var index = tvars.indexOf(varName);
@@ -362,14 +363,14 @@ function JSEditor(sandboxNum) {
 							//deleteOneLineElement(rowNum);
 							deleteOneLineElement(rowNum);
 							
-							console.log("\there9 " + variableCount);
+							//console.log("\there9 " + variableCount);
 							
 							// Remove the variable comment if no variable exists
 							if (variableCount == 0) {
 								// We have to iterate twice to remove the empty space
 								// which is at the bottom of the variable section.
 								for (var i = 1; i <= 2; i++) {
-								console.log("\there10");
+								//console.log("\there10");
 									// Delete the second row because the variable comment if exists
 									// is always at row 2.
 									deleteOneLineElement(2);
@@ -632,7 +633,7 @@ function JSEditor(sandboxNum) {
 		}
 
 		// For empty row
-		if (editor.rowToArray(insertRowNum).length == 0) {
+		if (editor.rowToArrayHtml(insertRowNum).length == 0) {
 				//$(this).css('cursor', 'default');
 				return false;
 		}
@@ -646,10 +647,11 @@ function JSEditor(sandboxNum) {
 		
 		//console.log(insertRowNum);
 		/*
-		console.log("\t1 " + insertRowNum + " " + editor.rowToArray(insertRowNum).length,editor.rowToArray(insertRowNum));
-		console.log(canInsertAfter(editor.rowToArray(insertRowNum), insertRowNum));
-		console.log("\t2 " + (insertRowNum+1) + " " + editor.rowToArray(insertRowNum+1).length,editor.rowToArray(insertRowNum+1));
-		console.log(canInsertBefore(editor.rowToArray(insertRowNum+1), insertRowNum+1));
+		console.log("\t1 " + insertRowNum + " " + editor.rowToArrayHtml(insertRowNum).length,editor.rowToArrayHtml(insertRowNum));
+		console.log(canInsertAfter(editor.rowToArrayHtml(insertRowNum), insertRowNum));
+		console.log("\t2 " + (insertRowNum+1) + " " + editor.rowToArrayHtml(insertRowNum+1).length,editor.rowToArrayHtml(insertRowNum+1));
+		console.log(canInsertBefore(editor.rowToArrayHtml(insertRowNum+1), insertRowNum+1));
+		console.log("-----------------------------------------------------------------");
 		*/
 			/*
 		// Check if the row is valid or not
@@ -659,11 +661,11 @@ function JSEditor(sandboxNum) {
 		}*/
 		
 		//if you can insert after the current row, continue
-		if(!canInsertAfter(editor.rowToArray(insertRowNum)))
+		if(!canInsertAfter(editor.rowToArrayHtml(insertRowNum)))
 			return false;
 		
 		//if you can insert before the next row, continue
-		if(!canInsertBefore(editor.rowToArray(insertRowNum+1)))
+		if(!canInsertBefore(editor.rowToArrayHtml(insertRowNum+1)))
 			return false;
 		
 		//so by here, we should be able to insert after the current row and before the next row
@@ -717,7 +719,7 @@ function JSEditor(sandboxNum) {
 		if (row.length <= 0) return false;
 		if (row[0] == 'var') return false;
 		if (row[0] == 'function') return false;
-		if (row[0] == '\xA0')  return false;
+		if (row[0] == '&nbsp;')  return false;
 		
 		if(row.length > 1){
 			if (row[1] == 'else') return false;
@@ -728,7 +730,6 @@ function JSEditor(sandboxNum) {
 			
 		return true;
 	}
-	
 	
 /*
 	// check to see if a specific cell contains a keywords; return true if so
@@ -1222,7 +1223,7 @@ function JSEditor(sandboxNum) {
 
 	// deleteOneLineElement() is responsible for appropriately deleting an element that takes up one line
 	function deleteOneLineElement(rowNum) {
-		console.log("\tdelete:", rowNum, editor.rowToArray(rowNum));
+		console.log("\tdelete:", rowNum, editor.rowToArrayHtml(rowNum));
 		if (programStart > rowNum) programStart--;
 
 		// Delete row from the editor
@@ -1286,14 +1287,12 @@ function JSEditor(sandboxNum) {
 		var bracket = 0;	// number of brackets opened
 		for (var i = 0; i < editor.getRowCount(); i++) {								// iterate throughout the code table
 			if (i == row) break;														// when the iteration equals the row, stop
-			var rowArr = editor.rowToArray(i);
+			var rowArr = editor.rowToArrayHtml(i);
 			
 			if (rowArr.indexOf('{') >= 0) {			// if an open bracket, add one to bracket
-		console.log("\there18 " + i);
 				bracket++;
 			}
 			else if (rowArr.indexOf('}') >= 0) {		// if a close bracket, subtract one from bracket
-		console.log("\there19 " + i);
 				bracket--;
 			}
 		}
@@ -1301,8 +1300,6 @@ function JSEditor(sandboxNum) {
 		// the bracket variable is how many indents we need
 		var indents = "";
 		for (var i = 0; i < bracket; i++) indents += indent;
-		
-		console.log("\there20 " + i);
 		
 		return indents;
 	}
@@ -1371,7 +1368,7 @@ function JSEditor(sandboxNum) {
 			// Get the length of the current row to check for matching string
 			//var colLength = innerTable.rows[0].cells.length;
 			
-			var row = editor.rowToArray(i);
+			var row = editor.rowToArrayHtml(i);
 			var colLength = row.length;
 
 			// Skip the row from where the keyWord was obtained
@@ -1673,7 +1670,7 @@ function JSEditor(sandboxNum) {
 				console.log(clickedCell.index() + " " + clickedCell.text());
 				
 				//get the clickRow again, since stuff has changed
-				clickRow = editor.rowToArray(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
+				clickRow = editor.rowToArrayHtml(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
                 break;
 				
 			case "numeric variable":
@@ -1728,7 +1725,7 @@ function JSEditor(sandboxNum) {
         }
         
 		//get the clickRow again, since stuff has changed
-		clickRow = editor.rowToArray(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
+		clickRow = editor.rowToArrayHtml(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
 		
         //returnToNormalColor();                 
     }
@@ -1774,7 +1771,7 @@ function JSEditor(sandboxNum) {
         }
         
 		//get the clickRow again, since stuff has changed
-		clickRow = editor.rowToArray(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
+		clickRow = editor.rowToArrayHtml(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
 		
 		//returnToNormalColor();
     }
@@ -2125,7 +2122,7 @@ function JSEditor(sandboxNum) {
 	function getDatatypeSelectedLine() {
 		//var innerTable = codeTable.rows[selRow].cells[0].children[0];
 		//var numCells = innerTable.rows[0].cells.length;
-		var row = editor.rowToArray(editor.getSelectedRowIndex());
+		var row = editor.rowToArrayHtml(editor.getSelectedRowIndex());
 		var numCells = row.length;
 		if (row[numCells - 1].indexOf("NUMERIC") >= 0) return "numeric";
 		else if (row[numCells - 1].indexOf("NUMERIC") >= 0) return "text";
@@ -2209,7 +2206,7 @@ function JSEditor(sandboxNum) {
 		clickedCell.parent().find('td:contains("ID")').text(result);
 		
 		//get the clickRow again, since stuff has changed
-		clickRow = editor.rowToArray(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
+		clickRow = editor.rowToArrayHtml(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
     }
     
     function createSelector(title, optionS, callback) {

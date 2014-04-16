@@ -108,6 +108,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 	/*PUBLIC FUNCTIONS********************************************************/
 
 	this.rowToArray = rowToArray;
+	this.rowToArrayHtml = rowToArrayHtml;
 	this.getRowCount = getRowCount;
 	this.addRow = addRow;
 	this.addCell = addCell;
@@ -137,6 +138,25 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 		for(var i = 2; i < cells.length; i++)
 		{
 			ret.push(cells[i].textContent);
+		}
+		
+		//console.log(ret);
+		return ret;
+	}
+	
+	/* rowToArrayHtml - returns an array with each entry representing a cell in the row
+		@param {number} index - the index of the row to process
+		@returns {array} an array of strings of the cells of the row
+	*/
+	function rowToArrayHtml(index){
+		//console.log(codeTable.rows[index].cells[0].children[0].rows[0].cells[2].innerHTML);
+		var cells = codeTable.rows[index].cells[0].children[0].rows[0].cells;
+		var ret = []; //the return array
+		
+		//i starts at 2 so it doesn't get the line number
+		for(var i = 2; i < cells.length; i++)
+		{
+			ret.push(cells[i].innerHTML);
 		}
 		
 		//console.log(ret);
