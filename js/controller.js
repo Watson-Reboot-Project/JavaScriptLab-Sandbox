@@ -40,14 +40,6 @@ function Controller(sandboxNum) {
 		 <h4 id="codeTitle">Code Window</h4> \
 		 <div> \
 		 <div id="programCode"> \
-   <div id="insertDiv">\
-   <div id="offsetDiv"></div>\
-   <table id="insertTable"></table>\
-   </div>\
-   <div id="divider"></div>\
-   <div id="editorDiv">\
-			<table id="fig' + sandboxNum + 'Editor"></table> \
-   </div>\
    </div>\
 		 <div id="buttons"> \
 			<div><button id="fig' + sandboxNum + 'AddVar"        type="button">Variable</button></div> \
@@ -83,8 +75,8 @@ function Controller(sandboxNum) {
       <button id="fig' + sandboxNum + 'WalkButton" type="button" style="color:#FFFFFF;background-color:' + orange + '">Walk</button> \
    </div>';
    
-   	var editorTable = document.getElementById("fig" + sandboxNum + "Editor");
-	var editor = new Editor(sandboxNum);
+   	//var editorTable = document.getElementById("fig" + sandboxNum + "Editor");
+	var editor = new JSEditor(sandboxNum);
 	
 	outputTable = document.getElementById("fig" + sandboxNum + "OutputTable");
 	var outputBox = document.getElementById("fig" + sandboxNum + "OutputBox");
@@ -569,6 +561,7 @@ function Controller(sandboxNum) {
 			}
 			
 			status = editor.isNewLine(start, end);
+			console.log(status);
 			if (haltFlag == true) {
 				editor.selectLine(status[1]);
 				haltFlag = false;

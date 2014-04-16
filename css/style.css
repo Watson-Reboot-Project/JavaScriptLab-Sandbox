@@ -17,9 +17,7 @@ body {
 #programCode {
    height: 400px;
    width: 580px;
-   border-style: ridge;
    float: left;
-   overflow: auto;
 }
 
 #insertDiv {
