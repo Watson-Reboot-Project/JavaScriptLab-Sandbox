@@ -42,6 +42,8 @@ function Editor(sandboxNum) {
 	var vtypes = ["Text", "Numeric"];
 	var nvars = [];
 	var tvars = [];
+    var nArrays = [];
+    var tArrays = [];
   var wtypes = ["text", "numeric"];
 	var resWords = ["new", "this", "var", "ID", "list", "Array", "function", ""];
 	var namesUsed = [];
@@ -506,7 +508,7 @@ function Editor(sandboxNum) {
 				createNumPad(0,null,"Array Size", "Enter a size for the array.", false, 10, enterNum);
 			}
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'for' && cellNum == 5) {
-				createSelector("Counter Selection", nvars, forId);
+				createSelector("Counter Selection", nvars.concat(nArrays), forId);
 			}
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[2].textContent == 'var') {
 				createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
@@ -1336,7 +1338,7 @@ function Editor(sandboxNum) {
                 clickedCell.textContent = 'TEXT';
                 if (innerTablet.rows[0].cells[clickedCellNum-9].textContent != 'ID')
                 {
-                    tvars.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent);
+                    tArrays.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent);
                 }
             }
             else if (result == 'Numeric') {
@@ -1344,12 +1346,12 @@ function Editor(sandboxNum) {
                 if (innerTablet.rows[0].cells[clickedCellNum-9].textContent != 'ID')
                 {
                     //console.log(innerTablet.rows[0].cells[4].textContent);
-                    nvars.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent);
+                    nArrays.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent);
                 }
             }
-            if (!foundIn(innerTablet.rows[0].cells[clickedCellNum-9].textContent, namesUsed) && innerTablet.rows[0].cells[clickedCellNum-9].textContent != 'ID') namesUsed.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent);
+            if (!foundIn(innerTablet.rows[0].cells[clickedCellNum-9].textContent + "[]", namesUsed) && innerTablet.rows[0].cells[clickedCellNum-9].textContent != 'ID') namesUsed.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent + "[]");
         }
-        console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
+        console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnArrays: " + nArrays + "\ntArrays: " + tArrays + "\nnamesUsed: " + namesUsed);
 //        $("#selector").dialog('close');
 	}
     
@@ -1451,8 +1453,8 @@ function Editor(sandboxNum) {
 		// empty string is not valid inpute
 		if (result == "")
 		{
-			$("#selector").dialog('close');
-			return;
+            console.log("This should not be allowed. Alert?");
+            return;
 		}
 
 		//if the name is in use already, abort
@@ -1474,14 +1476,27 @@ function Editor(sandboxNum) {
 		//need to add functionality for changing names (removing from namesUsed)
 		clickedCell.textContent = result;
         console.log("The result is " + result);
-		namesUsed.push(result);
+        if (innerTablet.rows[0].cells[7].textContent == 'Array') {
+            namesUsed.push(result + "[]");
+        }
+        else {
+            namesUsed.push(result);
+        }
 
 		var lastCellindex = innerTablet.rows[0].cells.length-1;
-        innerTablet.rows[0].cells[lastCellindex-1].textContent
-		if (innerTablet.rows[0].cells[lastCellindex-1].textContent == 'NUMERIC') nvars.push(result);
-		else if (innerTablet.rows[0].cells[lastCellindex-1].textContent == 'TEXT') tvars.push(result);
+//        innerTablet.rows[0].cells[lastCellindex-1].textContent
+        if (innerTablet.rows[0].cells[7].textContent == 'Array') {
+            console.log("Array var");
+            if (innerTablet.rows[0].cells[lastCellindex-1].textContent == 'NUMERIC') nArrays.push(result + "[]");
+            else if (innerTablet.rows[0].cells[lastCellindex-1].textContent == 'TEXT') tArrays.push(result + "[]");
+        }
+        else {
+            console.log("Normal var");
+            if (innerTablet.rows[0].cells[lastCellindex-1].textContent == 'NUMERIC') nvars.push(result);
+            else if (innerTablet.rows[0].cells[lastCellindex-1].textContent == 'TEXT') tvars.push(result);
 		//$("#nameDialog").dialog('close');
-        console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
+            console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
+        }
 //		$("#selector").dialog('close');
 		
 		returnToNormalColor();
@@ -1489,9 +1504,29 @@ function Editor(sandboxNum) {
 
 	function idConfirm(result) {
         if (foundIn(result, namesUsed))
-        {
-            console.log("id value: " + result);
-            clickedCell.textContent = result;
+//            FFFFFFFIIIIXXXXXX MMMMMEEEEEEE!!!!!!!!!!!!!!!!!!!!
+//        {
+//            console.log("id value: " + result);
+//            
+//            console.log(result[result.length-1]);
+//            if (result[result.length-1] == "]") {
+//                var array2;
+//                for (i=0;result[i] != "]";i++) {
+//                    array2[i] = result[i];
+//                }
+//                console.log(array2);
+//                if (result == "asd[") console.log(result);
+//                var array1 = [result, "index", "]"];
+//                clickedCell.textContent = result;
+//                for (i = 1; i < array1.length; i++)
+//                {
+//                    cell = innerTablet.rows[0].insertCell(++clickedCellNum);
+//                    cell.textContent = array1[i];
+//                }
+//            }
+//            else {
+//                clickedCell.textContent = result;
+//            }
             console.log("\n" + result);
             namesRef.push(result);
             console.log(namesRef);
@@ -1529,38 +1564,15 @@ function Editor(sandboxNum) {
                 break;
             case "text constant":
                 createStringPad("Text Entry Box", "Enter a text constant", textEntry);
-                
-//                $("#selector").empty();
-//                dial.innerHTML = "<textarea id='dial" + sandboxNum + "Text' size=\"4\" style=\"width: 100%;margin-bottom:10px\"></textarea> <div> <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button> <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style = \"width:4em;height:2em\">Cancel</button> </div>";
-//                
-//                dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
-//                dialOKButton.onclick = function() {
-//                    console.log("Here.");
-//                    var textArea = document.getElementById("dial" + sandboxNum + "Text");
-//                    console.log(textArea.value);
-//                    tConstantconfirm(textArea.value);
-//                };
-//                
-//                dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
-//                dialCancelButton.onclick = function() {	selectorCancel(); };
-//                
-//                $("#selector").dialog('open');
-
-                break;
+                                break;
             case "text variable":
                 createSelector("Text Var Selection", tvars, idConfirm);
-//                $("#selector").empty;
-//                generateSelectionHTML(tvars, 'id');
-//                $("#selector").dialog('open');
                 break;
             case "numeric function call":
                 createSelector("Function Call Selection", nFuns, funConfirm);
                 break;
             case "text function call":
                 createSelector("Function Call Selection", tFuns, funConfirm);
-//                $("#selector").empty;
-//                generateSelectionHTML(tFuns, 'fun');
-//                $("#selector").dialog('open');
                 break;
             case "EXPR + EXPR":
                 var cell;
@@ -1574,9 +1586,6 @@ function Editor(sandboxNum) {
 				
 			case "numeric variable":
                 createSelector("Numeric Var Selection", nvars, idConfirm);
-//				$("#selector").empty();
-//				generateSelectionHTML(nvars, 'id');
-//				$("#selector").dialog('open');
 				break;
 
             default:
