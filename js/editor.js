@@ -1504,29 +1504,25 @@ function Editor(sandboxNum) {
 
 	function idConfirm(result) {
         if (foundIn(result, namesUsed))
-//            FFFFFFFIIIIXXXXXX MMMMMEEEEEEE!!!!!!!!!!!!!!!!!!!!
-//        {
-//            console.log("id value: " + result);
-//            
-//            console.log(result[result.length-1]);
-//            if (result[result.length-1] == "]") {
-//                var array2;
-//                for (i=0;result[i] != "]";i++) {
-//                    array2[i] = result[i];
-//                }
-//                console.log(array2);
-//                if (result == "asd[") console.log(result);
-//                var array1 = [result, "index", "]"];
-//                clickedCell.textContent = result;
-//                for (i = 1; i < array1.length; i++)
-//                {
-//                    cell = innerTablet.rows[0].insertCell(++clickedCellNum);
-//                    cell.textContent = array1[i];
-//                }
-//            }
-//            else {
-//                clickedCell.textContent = result;
-//            }
+        {
+            console.log("id value: " + result);
+            
+            console.log(result[result.length-1]);
+            if (result[result.length-1] == "]") {
+                var str;
+                str = result.substring(0,(result.length-1));
+                console.log(str);
+                var array1 = [str, "index", "]"];
+                clickedCell.textContent = str;
+                for (i = 1; i < array1.length; i++)
+                {
+                    cell = innerTablet.rows[0].insertCell(++clickedCellNum);
+                    cell.textContent = array1[i];
+                }
+            }
+            else {
+                clickedCell.textContent = result;
+            }
             console.log("\n" + result);
             namesRef.push(result);
             console.log(namesRef);
