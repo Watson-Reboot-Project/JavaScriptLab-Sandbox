@@ -116,6 +116,7 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 	this.selectRowByIndex = selectRowByIndex;
 	this.selectAndHighlightRowByIndex = selectAndHighlightRowByIndex;
 	this.setSelectedRow = setSelectedRow;
+	this.clearHighlighting = clearHighlighting;
 	this.moveInsertionBarCursor = moveInsertionBarCursor;
 	this.getSelectedRowIndex = getSelectedRowIndex;
 	this.setCellClickListener = setCellClickListener;
@@ -339,6 +340,12 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 		selRow = index;
 		innerTable = codeTable.rows[selRow].cells[0].children[0];
 		innerTable.rows[0].cells[1].innerHTML = arrow;
+	}
+	
+	/* clearHighilighting - manually clears all of the highlighting across the editor
+	*/
+	function clearHighlighting(){
+		$(codeTable).find('.code').removeClass('selected running');
 	}
 	
 	/* moveInsertionBarCursor - moves the cursor in the insertion bar, which is removed in the mouse leave event below

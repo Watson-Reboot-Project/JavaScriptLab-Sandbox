@@ -6,9 +6,9 @@
 *			is to mimic Watson as it is now.
 ************************************************************************************/
 
-function JSEditor(sandboxNum) {
+function JSEditor(divID) {
 	
-	var editor = new Editor("programCode", true, true, 1, -1, true);
+	var editor = new Editor(divID, true, true, 1, -1, true);
 	
 	var variableCount = 0;									// keeps count of the amount of variables
 	var funcCount = 0;										// keeps count of number of functions
@@ -29,6 +29,7 @@ function JSEditor(sandboxNum) {
 	var codeStrLen;
 	
 	/* Weston variables */
+	var funcsNamed = []; //functions that have a name
 	var vFuns = [];
 	var nFuns = [];
 	var tFuns = [];
@@ -38,7 +39,9 @@ function JSEditor(sandboxNum) {
 	var tvars = [];
     var wtypes = ["text", "numeric"];
 	var resWords = ["new", "this", "var", "ID", "list", "Array", "function", ""];
-	var namesUsed = [];
+	var namesUsed = []; //variables that have been name and given a type
+	var varsNamed = []; //variable that have only been given a name and do not have a type
+	var varNames = [];
 	var namesRef = [];
     var compKeys = ["while", "if"];
     var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
@@ -124,7 +127,7 @@ function JSEditor(sandboxNum) {
 		var programCount = editor.getRowCount();
 
 		//if we clicked on the insert bar
-		if($(this).hasClass("insertprogramCode")){
+		if($(this).hasClass("insert")){
 			//console.log("in insert code");
 			// Grab the the row number so as to edit the editor
 			var insertRowNum = $(this).parent().index();
@@ -166,7 +169,6 @@ function JSEditor(sandboxNum) {
 			// we are trying to select, all of the logic we need should be taken
 			// care of in the insertion bar cursor logic
 			editor.selectRowByIndex(insertRowNum, true);
-			console.log('\there21');
 			
 			/*
 			// If all condition is passed move to the specified line
@@ -358,6 +360,11 @@ function JSEditor(sandboxNum) {
 									var index = nvars.indexOf(varName);
 									nvars.splice(index, 1);
 							}
+							
+							//remove the variable name from namesUsed and varsNamed
+							varsNamed.splice(varsNamed.indexOf(varName), 1);
+							namesUsed.splice(varsNamed.indexOf(varName), 1);
+							
 							variableCount--;
 							// Delete the current row
 							//deleteOneLineElement(rowNum);
@@ -472,6 +479,10 @@ function JSEditor(sandboxNum) {
 		//                            $("#selector").empty();
 		//                            generateSelectionHTML(vtypes, "type");
 		//                            $("#selector").dialog('open');
+						}
+						
+						if(clickRow[cellNum-3] != 'ID' && !foundIn(clickRow[cellNum-3], namesRef)){
+							namesUsed.push(clickRow[cellNum-3]);
 						}
 					}
 				}
@@ -596,8 +607,10 @@ function JSEditor(sandboxNum) {
 			}
 			else if (cellVal == 'ID' && clickRow[cellNum+2] == '=')
 			{
-                //console.log('ID');
 				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
+			}
+			else if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && clickRow.indexOf('function' >= 0)){
+				console.log("add parameter?");
 			}
 		}
 		
@@ -789,9 +802,9 @@ function JSEditor(sandboxNum) {
 				{text:"&nbsp;"},
 				{text:"ID"},
 				{text:";&nbsp;"},
-				{text:"&nbsp;/*", type:"keyword"},
-				{text:"TYPE", type:"keyword"},
-				{text:"*/", type:"keyword"}]);
+				{text:"&nbsp;/*", type:"datatype"},
+				{text:"TYPE", type:"datatype"},
+				{text:"*/", type:"datatype"}]);
 		}
 		// if its an array
 		else if (element == "array") {
@@ -807,9 +820,9 @@ function JSEditor(sandboxNum) {
 				{text:"SIZE"},
 				{text:")", type:"closeParen"},
 				{text:";"},
-				{text:"&nbsp;/*", type:"keyword"},
-				{text:"TYPE", type:"keyword"},
-				{text:"*/", type:"keyword"}]);
+				{text:"&nbsp;/*", type:"datatype"},
+				{text:"TYPE", type:"datatype"},
+				{text:"*/", type:"datatype"}]);
 		}
 
 		//selRow++;			// increase the selected row
@@ -1173,9 +1186,9 @@ function JSEditor(sandboxNum) {
 			{text:"(", type:"openParen"},
 			{text:")", type:"closeParen"},
 			{text:"&nbsp;"},
-			{text:"/*", type:"keyword"},
-			{text:"VOID", type:"keyword"},
-			{text:"*/", type:"keyword"}]);
+			{text:"/*", type:"datatype"},
+			{text:"VOID", type:"datatype"},
+			{text:"*/", type:"datatype"}]);
 			
 		//adds "{"
 		editor.addRow(beginRow++,
@@ -1319,14 +1332,14 @@ function JSEditor(sandboxNum) {
 	}
 */
 	// refreshLineCount() refreshes the line count in the first cell of every inner table
-	function refreshLineCount() {
+	/*function refreshLineCount() {
 		var innerTable;
 		for (var i = 0; i < codeTable.rows.length; i++) {
 			innerTable = codeTable.rows[i].cells[0].children[0];
 			if (i < 9) innerTable.rows[0].cells[0].innerHTML = i + 1 + "&nbsp;";
 			else innerTable.rows[0].cells[0].textContent = i+1;
 		}
-	}
+	}*/
 
 	// selectDialogConfirm() has to do with the selecting of options from the jQuery UI (not implemented)
 	function selectDialogConfirm(result) {
@@ -1547,8 +1560,14 @@ function JSEditor(sandboxNum) {
 			return;
 		}
 
+		//if the result is a number (isNaN() will be false if the argument is a number), return
+		if(!isNaN(result)){
+			console.log("You can't name a variable with a number");
+			return;
+		}
+		
 		//if the name is in use already, abort
-		if (foundIn(result,namesUsed) == 1) {
+		if (foundIn(result,varsNamed.concat(namesUsed).concat(funcsNamed)) == 1) {
 			console.log("Already exists (nameDialogconfirm)");
 			$("#selector").dialog('close');
 			return; //this will need to spawn a dialog box before returning
@@ -1565,7 +1584,22 @@ function JSEditor(sandboxNum) {
 		//need to add functionality for changing names (removing from namesUsed)
 		clickedCell.text(result);
         console.log("The result is " + result);
-		namesUsed.push(result);
+		
+		//console.log('\t\t' + (clickRow[clickedCellNum+3] != 'TYPE') + ' ' + (clickRow[clickedCellNum+3] !== 'TYPE'));
+		
+		//if the variable does not have a type, add it to varsNamed
+		if(clickRow[clickedCellNum+3] == 'TYPE'){
+			varsNamed.push(result);
+		}
+		//if the variable does have a type, then add it to namesUsed
+		else{
+			//remove the name from varsNamed
+			varsNamed.splice(varsNamed.indexOf(result),1);
+			
+			//add the name to names used
+			namesUsed.push(result);
+		}
+		//namesUsed.push(result);
 
 		var lastCellindex = clickRow.length-1;
         //clickRow[lastCellindex-1]
@@ -1578,7 +1612,11 @@ function JSEditor(sandboxNum) {
 		//returnToNormalColor();
 	}
 
-	function idConfirm(result) {
+	function idConfirm(result) {	
+		//if the result was null, the user clicked the cancel button, so don't do anything
+		if(result == null)
+			return;
+
         if (foundIn(result, namesUsed))
         {
             console.log("id value: " + result);
@@ -1689,6 +1727,7 @@ function JSEditor(sandboxNum) {
     
     function mathExpr(result){
         console.log(result);
+		var values;
         switch (result)
         {
             case ("EXPR + EXPR"):
@@ -1712,16 +1751,19 @@ function JSEditor(sandboxNum) {
             default:
                 break;
         }
+		
         clickedCell.text(values[0]);
 		var cell = clickedCell;
         for (i = 1; i < values.length; i++)
         {
             //cell = innerTablet.rows[0].insertCell(++clickedCellNum);
             //cell.innerHTML = values[i];
+			console.log(i, values[i]);
+			console.log(cell);
 			
-			editor.addCell(clickedCell, [{text:values[i]}]);
+			editor.addCell(cell, [{text:values[i]}]);
 			
-			cell = cell.nextSibling;
+			cell = cell.next();
         }
         
 		//get the clickRow again, since stuff has changed
@@ -1765,9 +1807,9 @@ function JSEditor(sandboxNum) {
 		var cell = clickedCell;
         for (var i = 0; i < values.length; i++)
         {
-			editor.addCell(clickedCell, [{text:values[i]}]);
+			editor.addCell(cell, [{text:values[i]}]);
 			
-			cell = cell.nextSibling;
+			cell = cell.next();
         }
         
 		//get the clickRow again, since stuff has changed
@@ -1801,12 +1843,12 @@ function JSEditor(sandboxNum) {
         console.log(list);
 		var wstring;
         console.log(list);
-		wstring = "<select id='selDrop" + sandboxNum + "' size=\"4\" style=\"width: 100%;marginbottom:10px\">\n";
+		wstring = "<select id='selDrop" + divID + "' size=\"4\" style=\"width: 100%;marginbottom:10px\">\n";
 		for (i = 0; i < list.length; i++)
 		{
 			wstring += "<option value=\"" + list[i] + "\">" + list[i] + "</option>\n";
 		}
-		wstring += "</select> \n<div>\n <button id='dial" + sandboxNum + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button>\n <button id='dial" + sandboxNum + "CancelButton' type=\"button\" style=\"width:4em;height:2em\">Cancel</button>\n </div>";
+		wstring += "</select> \n<div>\n <button id='dial" + divID + "OKButton' type=\"button\" style=\"width:4em;height:2em\">Okay</button>\n <button id='dial" + divID + "CancelButton' type=\"button\" style=\"width:4em;height:2em\">Cancel</button>\n </div>";
 		
 		dial.innerHTML = wstring;
 		
@@ -1814,53 +1856,53 @@ function JSEditor(sandboxNum) {
 		{
                 /*Weston edit start*/
             case "fcall":
-                dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+                dialOKButton = document.getElementById("dial" + divID + "OKButton");
 				dialOKButton.onclick = function() {
-					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					var selectDrop = document.getElementById("selDrop" + divID);
 					funCallfinal(selectDrop.value);
 				};
                 break;
                 /*Weston edit end*/
             case "fun":
-                dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+                dialOKButton = document.getElementById("dial" + divID + "OKButton");
 				dialOKButton.onclick = function() {
-					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					var selectDrop = document.getElementById("selDrop" + divID);
 					funConfirm(selectDrop.value);
 				};
                 break;
             case "ftype":
-                dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+                dialOKButton = document.getElementById("dial" + divID + "OKButton");
                 dialOKButton.onclick = function() {
-                    var selectDrop = document.getElementById("selDrop" + sandboxNum);
+                    var selectDrop = document.getElementById("selDrop" + divID);
                     ftypeConfirm(selectDrop.value);
                 };
                 break;
             case "expr":
-                dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+                dialOKButton = document.getElementById("dial" + divID + "OKButton");
                 dialOKButton.onclick = function() {
-                    var selectDrop = document.getElementById("selDrop" + sandboxNum);
+                    var selectDrop = document.getElementById("selDrop" + divID);
                     exprSelConfirm(selectDrop.value);
                 };
                 break;
 			case "id":
-				dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+				dialOKButton = document.getElementById("dial" + divID + "OKButton");
 				dialOKButton.onclick = function() {
-					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					var selectDrop = document.getElementById("selDrop" + divID);
 					idConfirm(selectDrop.value);
 				};
 				break;
 			case "type":
-				dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+				dialOKButton = document.getElementById("dial" + divID + "OKButton");
 				dialOKButton.onclick = function() {
-					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					var selectDrop = document.getElementById("selDrop" + divID);
 					typeConfirm(selectDrop.value);
 				};
 				break;
             case "bool":
                 console.log("bool");
-				dialOKButton = document.getElementById("dial" + sandboxNum + "OKButton");
+				dialOKButton = document.getElementById("dial" + divID + "OKButton");
 				dialOKButton.onclick = function() {
-					var selectDrop = document.getElementById("selDrop" + sandboxNum);
+					var selectDrop = document.getElementById("selDrop" + divID);
 					boolConfirm(selectDrop.value);
                     console.log(selectDrop.value);
                 };
@@ -1869,7 +1911,7 @@ function JSEditor(sandboxNum) {
 				break;
 		}
 		
-		dialCancelButton = document.getElementById("dial" + sandboxNum + "CancelButton");
+		dialCancelButton = document.getElementById("dial" + divID + "CancelButton");
 		dialCancelButton.onclick = function() { selectorCancel(); };
 	}
     
@@ -1966,7 +2008,6 @@ function JSEditor(sandboxNum) {
 			}
 		
 			row = editor.rowToArray(i);
-			console.log(row);
 			numCells = row.length;
 			if (numCells == 0) { continue; }
 			
@@ -1974,29 +2015,24 @@ function JSEditor(sandboxNum) {
 				if (row[0].indexOf("}") < 0 && row[0].indexOf("{") < 0 && row[0].indexOf("else") < 0) { rowType.push("blankLine"); continue; }
 				else bracketFlag = true;
 			}
-			
-//            while()
-//            {
 
-                if (row[0].indexOf("function") >= 0) rowType.push("functionDeclaration");
-                else if(row[0].indexOf("//") >= 0) rowType.push("comment");
-                else if(row.indexOf("{") >= 0) rowType.push("closeBracket");
-                else if(row.indexOf("}") >= 0) rowType.push("openBracket");
-                else if(row.indexOf("var") >= 0) rowType.push("variable");
-                else if(row[1].indexOf("if") >= 0) rowType.push("if");
-                else if(row[1].indexOf("else") >= 0) rowType.push("else");
-                else if(row[1].indexOf("while") >= 0) rowType.push("while");
-                else if(row[1].indexOf("return") >= 0) rowType.push("return");
-                else if(row[1].indexOf("for") >= 0) rowType.push("for");
-                else if(row[1].indexOf("writeln") >= 0) rowType.push("writeln");
-                else if(row[1].indexOf("write") >= 0) rowType.push("write");
-                else if(foundIn(row[1],(vFuns.concat(tFuns)).concat(nFuns))) {rowType.push("functionCall"); funcCall = true; console.log("func");/*break; */}
-                else if(row[5].indexOf("parse") >= 0) rowType.push("numericPrompt");
-                else if(row[7].indexOf("prompt") >= 0) rowType.push("prompt");
-                else if(row[3].indexOf("=") >= 0) rowType.push("assignment");
-//			else { rowType.push("functionCall"); funcCall = true; }
-//                break;
-//            }
+			if (row[0].indexOf("function") >= 0) rowType.push("functionDeclaration");
+			else if(row[0].indexOf("//") >= 0) rowType.push("comment");
+			else if(row.indexOf("{") >= 0) rowType.push("closeBracket");
+			else if(row.indexOf("}") >= 0) rowType.push("openBracket");
+			else if(row.indexOf("var") >= 0) rowType.push("variable");
+			else if(row[1].indexOf("if") >= 0) rowType.push("if");
+			else if(row[1].indexOf("else") >= 0) rowType.push("else");
+			else if(row[1].indexOf("while") >= 0) rowType.push("while");
+			else if(row[1].indexOf("return") >= 0) rowType.push("return");
+			else if(row[1].indexOf("for") >= 0) rowType.push("for");
+			else if(row[1].indexOf("writeln") >= 0) rowType.push("writeln");
+			else if(row[1].indexOf("write") >= 0) rowType.push("write");
+			else if(foundIn(row[1],(vFuns.concat(tFuns)).concat(nFuns))) {rowType.push("functionCall"); funcCall = true; console.log("func");}
+			else if(row[3].indexOf("=") >= 0) rowType.push("assignment");
+			else if(row[5].indexOf("parse") >= 0) rowType.push("numericPrompt");
+			else if(row[7].indexOf("prompt") >= 0) rowType.push("prompt");
+
             
 			for (var j = 0; j < numCells; j++) {
 				//cellText = innerTable.rows[0].cells[j].textContent;
@@ -2037,7 +2073,6 @@ function JSEditor(sandboxNum) {
 		
 		rowNum = lineNums[0];
 		//selRow = rowNum;
-		console.log(rowNum);
 		editor.setSelectedRow(rowNum);
 		
 		codeStr = codeStr.replace("\xA0", " ");
@@ -2049,7 +2084,6 @@ function JSEditor(sandboxNum) {
 		}
 		codeStrLen = tCodeStr.length;
 		
-		console.log(codeStr);
 		console.log(tCodeStr);
 		
 		return tCodeStr;
@@ -2115,8 +2149,9 @@ function JSEditor(sandboxNum) {
 
 	function reset() {
 		selectLine(editor.getRowCount() - 1);
-		var rowNum = lineNums[0];
-		editor.selectRowByIndex(rowNum);
+		/*var rowNum = lineNums[0];
+		editor.selectAndHighlightRowByIndex(rowNum);*/
+		editor.clearHighlighting();
 	}
 
 	function getDatatypeSelectedLine() {
@@ -2145,10 +2180,10 @@ function JSEditor(sandboxNum) {
                 createSelector("Void Functions", vFuns, fChoose);
                 break;
             case ('Text'):
-                createSelector("Void Functions", tFuns, fChoose);
+                createSelector("Text Functions", tFuns, fChoose);
                 break;
             case ('Numeric'):
-                createSelector("Void Functions", nFuns, fChoose);
+                createSelector("Numeric Functions", nFuns, fChoose);
                 break;
             default:
                 break;
@@ -2157,10 +2192,16 @@ function JSEditor(sandboxNum) {
     
     function textEntry(result) {
         clickedCell.text('"' + result + '"');
+		clickedCell.addClass("literal");
     }
     
     function fChoose(result) {
         //Function that is called when selecting a function that replaces the text of a single cell
+		
+		//if the result was null, the user clicked the cancel button, so don't do anything
+		if(result == null)
+			return;
+			
         clickedCell.text(result);
     }
     
@@ -2171,7 +2212,29 @@ function JSEditor(sandboxNum) {
     
     function fIDconfirm(result) {
         //Function called to assign an identifier to a function at its declaration
-        if (foundIn(result, resWords)) return;
+		
+		//if the result was null, the user clicked the cancel button, so don't do anything
+		if(result == null)
+			return;
+		
+		//if the result is a number (isNaN() will be false if the argument is a number), return
+		if(!isNaN(result)){
+			console.log("You can't name a function with a number");
+			return;
+		}
+		
+		//if the result is the name of a variable or function, return
+        if (foundIn(result,varsNamed.concat(namesUsed).concat(funcsNamed))){
+			console.log("The name " + result + " has already been used");
+			return;
+		}
+		
+		//if the result is a reserved word, return
+        if (foundIn(result, resWords)){
+			console.log("The word " + result + " is a reserved word");
+			return;
+		}
+		
         clickedCell.text(result);
         switch (clickRow[clickedCellNum+5])
         {
@@ -2187,6 +2250,10 @@ function JSEditor(sandboxNum) {
             default:
                 break;
         }
+		
+		//push the name of this function onto funcsNamed
+		funcsNamed.push(result);
+		
         console.log("Names used: " + namesUsed);
         console.log("Void Functions: " + vFuns);
         console.log("Text Functions: " + tFuns);
@@ -2195,6 +2262,10 @@ function JSEditor(sandboxNum) {
     
     function forId(result) {
 //        clickedCell.textContent = result;
+		//if the result was null, the user clicked the cancel button, so don't do anything
+		if(result == null)
+			return;
+			
         console.log(clickRow.length);
 		/*
         for (i=0; i<clickRow.length; i++)
@@ -2211,21 +2282,21 @@ function JSEditor(sandboxNum) {
     
     function createSelector(title, optionS, callback) {
         var newSel = new Selector();
-        newSel.open(title, optionS, callback);
+        newSel.open(title, optionS, callback, document.getElementById(divID));
     }
     
     function createStringPad(title, instructions, callback) {
         var newStrP = new StringPad();
-        newStrP.open(title, instructions, callback);
+        newStrP.open(title, instructions, callback, document.getElementById(divID));
     }
     
     function createNumPad(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback) {
 		var newNumpad = new NumberPad();
-		newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback);
+		newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback, document.getElementById(divID));
     }
 
     function createAlertBox(title, msg, bool, callback) {
         var alert = new Alert();
-        alert.open(title, msg, bool, callback);
+        alert.open(title, msg, bool, callback, document.getElementById(divID));
   }
 }

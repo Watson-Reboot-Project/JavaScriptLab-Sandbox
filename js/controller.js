@@ -37,46 +37,48 @@ function Controller(sandboxNum) {
 	var figDiv = document.getElementById("fig" + sandboxNum + "Div");
 	
 	figDiv.innerHTML = '<div id="selector" style="text-align:center"></div> \
-		 <h4 id="codeTitle">Code Window</h4> \
-		 <div> \
-		 <div id="programCode"> \
-   </div>\
-		 <div id="buttons"> \
-			<div><button id="fig' + sandboxNum + 'AddVar"        type="button">Variable</button></div> \
-			<div><button id="fig' + sandboxNum + 'AddArr"        type="button" onclick="figure.getEditor().addVariable("array")">Array</button></div> \
-			<div><button id="fig' + sandboxNum + 'AddFunc"       type="button" onclick="figure.getEditor().addFunction()">Declare Function</button></div> \
-			<div><button id="fig' + sandboxNum + 'Assign"        type="button" onclick="figure.getEditor().addOneLineElement("assignment")">Assign</button></div> \
-			<div><button id="fig' + sandboxNum + 'Write"         type="button" onclick="figure.getEditor().addOneLineElement("write")">Write</button></div> \
-			<div><button id="fig' + sandboxNum + 'Writeln"       type="button" onclick="figure.getEditor().addOneLineElement("writeln")">Writeln</button></div> \
-			<div><button id="fig' + sandboxNum + 'StringPrompt"  type="button" onclick="figure.getEditor().addOneLineElement("stringPrompt")">String Prompt</button></div> \
-			<div><button id="fig' + sandboxNum + 'NumericPrompt" type="button" onclick="figure.getEditor().addOneLineElement("numericPrompt")">Numeric Prompt</button></div> \
-			<div><button id="fig' + sandboxNum + 'While"         type="button" onclick="figure.getEditor().addWhile()">While</button></div> \
-			<div><button id="fig' + sandboxNum + 'AddFor"        type="button" onclick="figure.getEditor().addFor()">For</button></div> \
-			<div><button id="fig' + sandboxNum + 'AddIfThen"     type="button" onclick="figure.getEditor().addIfThen()">If...Then</button></div> \
-			<div><button id="fig' + sandboxNum + 'AddIfElse"     type="button" onclick="figure.getEditor().addIfElse()">If...Else</button></div> \
-			<div><button id="fig' + sandboxNum + 'FuncCall"      type="button" onclick="figure.getEditor().addOneLineElement("functionCall")">Call Function</button></div> \
-			<div><button id="fig' + sandboxNum + 'Return"        type="button" onclick="figure.getEditor().addOneLineElement("return")">Return</button></div> \
-		 </div> \
-	</div> \
-    <div id="fig1OutVarBox" class="outterDiv"> \
-      <h4 id="varTitle">Variables</h4> \
-	  <div id="fig' + sandboxNum + 'VarBox" class="varDiv"> \
-		<table id="fig' + sandboxNum + 'VarTable" class="normal"></table> \
-	  </div> \
-   </div> \
-   <div class="outterDiv"> \
-		<h4 id="outTitle">Output</h4> \
-		<div id="fig' + sandboxNum + 'OutputBox" class="varDiv"> \
-			<table id="fig' + sandboxNum + 'OutputTable"></table> \
+		<h4 id="codeTitle">Code Window</h4> \
+		<div class="codeAndButtons"> \
+			<div id="buttons"> \
+				<div><button id="fig' + sandboxNum + 'AddVar"        type="button">Variable</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddArr"        type="button" onclick="figure.getEditor().addVariable("array")">Array</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddFunc"       type="button" onclick="figure.getEditor().addFunction()">Declare Function</button></div> \
+				<div><button id="fig' + sandboxNum + 'Assign"        type="button" onclick="figure.getEditor().addOneLineElement("assignment")">Assign</button></div> \
+				<div><button id="fig' + sandboxNum + 'Write"         type="button" onclick="figure.getEditor().addOneLineElement("write")">Write</button></div> \
+				<div><button id="fig' + sandboxNum + 'Writeln"       type="button" onclick="figure.getEditor().addOneLineElement("writeln")">Writeln</button></div> \
+				<div><button id="fig' + sandboxNum + 'StringPrompt"  type="button" onclick="figure.getEditor().addOneLineElement("stringPrompt")">String Prompt</button></div> \
+				<div><button id="fig' + sandboxNum + 'NumericPrompt" type="button" onclick="figure.getEditor().addOneLineElement("numericPrompt")">Numeric Prompt</button></div> \
+				<div><button id="fig' + sandboxNum + 'While"         type="button" onclick="figure.getEditor().addWhile()">While</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddFor"        type="button" onclick="figure.getEditor().addFor()">For</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddIfThen"     type="button" onclick="figure.getEditor().addIfThen()">If...Then</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddIfElse"     type="button" onclick="figure.getEditor().addIfElse()">If...Else</button></div> \
+				<div><button id="fig' + sandboxNum + 'FuncCall"      type="button" onclick="figure.getEditor().addOneLineElement("functionCall")">Call Function</button></div> \
+				<div><button id="fig' + sandboxNum + 'Return"        type="button" onclick="figure.getEditor().addOneLineElement("return")">Return</button></div> \
+			</div> \
+			<div id="fig' + sandboxNum + 'Editor" class="programCode"> </div>\
 		</div> \
-   </div> \
-   <div id="runWalk" align="center"> \
-      <button id="fig' + sandboxNum + 'RunButton" type="button" style="color:#FFFFFF;background-color:' + green + '">Run</button> \
-      <button id="fig' + sandboxNum + 'WalkButton" type="button" style="color:#FFFFFF;background-color:' + orange + '">Walk</button> \
-   </div>';
+		<div id="fig1OutVarBox" class="outterDiv"> \
+		  <h4 id="varTitle">Variables</h4> \
+		  <div id="fig' + sandboxNum + 'VarBox" class="varDiv"> \
+			<table id="fig' + sandboxNum + 'VarTable" class="normal"></table> \
+		  </div> \
+		</div> \
+		<div class="outterDiv"> \
+			<h4 id="outTitle">Output</h4> \
+			<div id="fig' + sandboxNum + 'OutputBox" class="varDiv"> \
+				<table id="fig' + sandboxNum + 'OutputTable"></table> \
+			</div> \
+		</div> \
+		<div id="runWalk" align="center"> \
+		  <button id="fig' + sandboxNum + 'RunButton" type="button" style="color:#FFFFFF;background-color:' + green + '">Run</button> \
+		  <button id="fig' + sandboxNum + 'WalkButton" type="button" style="color:#FFFFFF;background-color:' + orange + '">Walk</button> \
+		</div>';
    
+	//subract 6 for the width of the border of .textArea, if the border ever changes, this will have to change too
+	$('#fig' + sandboxNum + 'Editor').height($('#buttons').height() - 6);
+	
    	//var editorTable = document.getElementById("fig" + sandboxNum + "Editor");
-	var editor = new JSEditor(sandboxNum);
+	var editor = new JSEditor("fig" + sandboxNum + "Editor");
 	
 	outputTable = document.getElementById("fig" + sandboxNum + "OutputTable");
 	var outputBox = document.getElementById("fig" + sandboxNum + "OutputBox");
@@ -690,10 +692,10 @@ function Controller(sandboxNum) {
 			row = varTable.insertRow(0);
 			for (var i = 0; i < 4; i++) {
 				cell = row.insertCell(i);
-				if (i == 0) cell.textContent = "level";
-				else if (i == 1) cell.textContent = "variable";
-				else if (i == 2) cell.textContent = "type";
-				else cell.textContent = "value";
+				if (i == 0) {cell.textContent = "level"; cell.className = "varHeader";}
+				else if (i == 1) {cell.textContent = "variable"; cell.className = "varHeader";}
+				else if (i == 2) {cell.textContent = "type"; cell.className = "varHeader";}
+				else {cell.textContent = "value"; cell.className = "varHeader";}
 			}
 
 			
@@ -718,9 +720,9 @@ function Controller(sandboxNum) {
 			row = varTable.insertRow(0);
 			for (var i = 0; i < 3; i++) {
 				cell = row.insertCell(i);
-				if (i == 0) cell.textContent = "variable";
-				else if (i == 1) cell.textContent = "type";
-				else cell.textContent = "value";
+				if (i == 0) {cell.textContent = "variable"; cell.className = "varHeader";}
+				else if (i == 1) {cell.textContent = "type"; cell.className = "varHeader";}
+				else {cell.textContent = "value"; cell.className = "varHeader";}
 			}
 			
 			for (var i = 0; i < varArr.length; i++) {

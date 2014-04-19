@@ -1,5 +1,3 @@
-/*mine*/
-
 body {
    font-size: 87.5%;
    font-family: Courier New, 'Lucida Sans Unicode';
@@ -16,14 +14,19 @@ body {
    margin-bottom: 0px;
 }
 
-#programCode {
-   width: 35%;
-   height: 368px;
-   float: left;
+.codeAndButtons{
+	/*overflow: hidden;*/
+}
+
+.programCode {
+   /*width: 35%;
+   height: 368px;*/
+   /*float: left;*/
    /*overflow: auto;*/
-   clear: left;
+   /*clear: left;*/
    /*border: 1px solid black;*/
    margin-bottom: 5px;
+   /*the height for this element is set in controller.js to be the same as #buttons*/
 }
 
 #insertDiv {
@@ -57,9 +60,10 @@ button[type=button] {
    margin-right: 5px;
    padding-left: 0.2%;
    width: auto;
-   float: left;
+   height: auto;
+   float: right;
    overflow: auto;
-   margin: 0 0;
+   /*margin: 0 0;*/
 }
 
 #varTitle {
@@ -69,8 +73,8 @@ button[type=button] {
 }
 
 .outterDiv {
-   width: 35%;
-   clear: left;
+   /*width: 35%;*/
+   clear: both;
    margin-bottom: 15px;
 }
 
@@ -87,7 +91,7 @@ button[type=button] {
 
 #runWalk {
    padding-top: 10px;
-   width: 35%;
+   /*width: 35%;*/
    overflow: auto;
    margin: 0 0; 
 }
@@ -121,6 +125,11 @@ td {
     resize: none;
 	border: 1px solid black;
 }
+
+.varHeader{
+	font-weight: bold;
+}
+
 .normal {
 	border-spacing: 15px 1px;
 	border-collapse: separate;
