@@ -516,6 +516,9 @@ function Editor(sandboxNum) {
 			else if (cellVal == 'ID' && innerTablet.rows[0].cells[cellNum+2].textContent == '=') {
 				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
 			}
+                            else if (cellVal == 'index') {
+                            createNumPad(0,null,"Index", "Select an index of the array.", true, 10, enterNum);
+                            }
 		});
 	
    /** Implementation for '>' **/
@@ -1338,7 +1341,7 @@ function Editor(sandboxNum) {
                 clickedCell.textContent = 'TEXT';
                 if (innerTablet.rows[0].cells[clickedCellNum-9].textContent != 'ID')
                 {
-                    tArrays.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent);
+                    tArrays.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent + "[]");
                 }
             }
             else if (result == 'Numeric') {
@@ -1346,7 +1349,7 @@ function Editor(sandboxNum) {
                 if (innerTablet.rows[0].cells[clickedCellNum-9].textContent != 'ID')
                 {
                     //console.log(innerTablet.rows[0].cells[4].textContent);
-                    nArrays.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent);
+                    nArrays.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent + "[]");
                 }
             }
             if (!foundIn(innerTablet.rows[0].cells[clickedCellNum-9].textContent + "[]", namesUsed) && innerTablet.rows[0].cells[clickedCellNum-9].textContent != 'ID') namesUsed.push(innerTablet.rows[0].cells[clickedCellNum-9].textContent + "[]");
@@ -1413,8 +1416,10 @@ function Editor(sandboxNum) {
                 }
                 else
                 {
-                    if (foundIn(innerTablet.rows[0].cells[counter-2].textContent,nvars)) return 'NUMERIC ASSIGNMENT';
-                    else if (foundIn(innerTablet.rows[0].cells[counter-2].textContent,tvars)) return 'TEXT ASSIGNMENT';
+                    console.log(innerTablet.rows[0].cells[counter-4].textContent);
+                    var result = innerTablet.rows[0].cells[counter-4].textContent;
+                    if (foundIn(innerTablet.rows[0].cells[counter-2].textContent,nvars) || foundIn(innerTablet.rows[0].cells[counter-4].textContent.concat(']'),nArrays)) return 'NUMERIC ASSIGNMENT';
+                    else if (foundIn(innerTablet.rows[0].cells[counter-2].textContent,nvars) || foundIn(innerTablet.rows[0].cells[counter-4].textContent.concat(']'),tArrays)) return 'TEXT ASSIGNMENT';
                     else return 0;
                 }
             }
@@ -1562,7 +1567,7 @@ function Editor(sandboxNum) {
                 createStringPad("Text Entry Box", "Enter a text constant", textEntry);
                                 break;
             case "text variable":
-                createSelector("Text Var Selection", tvars, idConfirm);
+                createSelector("Text Var Selection", tvars.concat(tArrays), idConfirm);
                 break;
             case "numeric function call":
                 createSelector("Function Call Selection", nFuns, funConfirm);
@@ -1581,7 +1586,7 @@ function Editor(sandboxNum) {
                 break;
 				
 			case "numeric variable":
-                createSelector("Numeric Var Selection", nvars, idConfirm);
+                createSelector("Numeric Var Selection", nvars.concat(nArrays), idConfirm);
 				break;
 
             default:
