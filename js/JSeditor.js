@@ -603,7 +603,7 @@ function JSEditor(divID) {
 			/*Weston edit end*/
 			else if (cellVal == 'ID' && clickRow[1] == 'for' && cellNum == 3)
 			{
-				console.log("for id");
+//				console.log("for id");s
 				createSelector("Counter Selection", nvars, forId);
 			}
 			else if (cellVal == 'ID' && clickRow.indexOf('var') >= 0) {
