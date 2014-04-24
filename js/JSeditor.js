@@ -1568,12 +1568,12 @@ function JSEditor(divID) {
   }
 
 	function nameDialogConfirm(result) {
-        console.log(clickRow[clickedCellNum]);
+		console.log(clickRow[clickedCellNum]);
 		// empty string is not valid inpute
 		if (result == "")
 		{
 			//NEED ALERT
-
+		}
 		// empty string is not valid inpute
 		if (result == "")
 		{
@@ -1662,7 +1662,7 @@ function JSEditor(divID) {
 //		$("#selector").dialog('close');
 		
 		//returnToNormalColor();
-	}
+	
 	}
 
 	function idConfirm(result) {	
