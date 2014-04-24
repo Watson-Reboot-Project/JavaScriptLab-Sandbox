@@ -43,6 +43,8 @@ function JSEditor(divID) {
 	var varsNamed = []; //variable that have only been given a name and do not have a type
 	var varNames = [];
 	var namesRef = [];
+    var nArrays = [];
+    var tArrays = [];
     var compKeys = ["while", "if"];
     var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
     var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
@@ -609,6 +611,10 @@ function JSEditor(divID) {
 			{
 				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
 			}
+            else if (cellVal == 'index')
+            {
+                createNumPad(0,null,"Index", "Select an index of the array.", true, 10, enterNum);
+            }
 			else if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && clickRow.indexOf('function' >= 0)){
 				console.log("add parameter?");
 			}
@@ -1553,10 +1559,11 @@ function JSEditor(divID) {
     }
 
 	function nameDialogConfirm(result) {
+        console.log(clickRow[clickedCellNum]);
 		// empty string is not valid inpute
 		if (result == "")
 		{
-			$("#selector").dialog('close');
+			//NEED ALERT
 			return;
 		}
 
@@ -1592,6 +1599,15 @@ function JSEditor(divID) {
 			varsNamed.push(result);
 		}
 		//if the variable does have a type, then add it to namesUsed
+        else if (clickRow[clickedCellNum+3] == 'Array') {
+            if (clickRow[clickedCellNum + 8] == 'TYPE') {
+                varsNamed.push(result + "[]");
+            }
+            else {
+                varsNamed.splice(varsNamed.indexOf(result + "[]"));
+                namesUsed.push(result + "[]");
+            }
+        }
 		else{
 			//remove the name from varsNamed
 			varsNamed.splice(varsNamed.indexOf(result),1);
@@ -1603,8 +1619,14 @@ function JSEditor(divID) {
 
 		var lastCellindex = clickRow.length-1;
         //clickRow[lastCellindex-1]
-		if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result);
-		else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result);
+        if (clickRow[clickedCellNum+3] == 'Array') {
+            if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result+"[]");
+            else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result+"[]");
+        }
+        else {
+            if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result);
+            else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result);
+        }
 		//$("#nameDialog").dialog('close');
         console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
 //		$("#selector").dialog('close');
