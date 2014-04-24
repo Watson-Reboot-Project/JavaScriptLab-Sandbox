@@ -30,6 +30,7 @@ function JSEditor(divID) {
 	
 	/* Weston variables */
 	var funcsNamed = []; //functions that have a name
+    var scopedVars = [["global"]]; //list of scopes
 	var vFuns = [];
 	var nFuns = [];
 	var tFuns = [];
@@ -38,13 +39,11 @@ function JSEditor(divID) {
 	var nvars = [];
 	var tvars = [];
     var wtypes = ["text", "numeric"];
-	var resWords = ["new", "this", "var", "ID", "list", "Array", "function", ""];
+	var resWords = ["new", "this", "var", "ID", "list", "Array", "function", "", "while", "for", "if", "then", "else"];
 	var namesUsed = []; //variables that have been name and given a type
 	var varsNamed = []; //variable that have only been given a name and do not have a type
-	var varNames = [];
+//	var varNames = [];
 	var namesRef = [];
-    var nArrays = [];
-    var tArrays = [];
     var compKeys = ["while", "if"];
     var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
     var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
@@ -613,9 +612,9 @@ function JSEditor(divID) {
 			}
             else if (cellVal == 'index')
             {
-                createNumPad(0,null,"Index", "Select an index of the array.", true, 10, enterNum);
+                createSelector("Constant or Variable?", ["Constant", "Variable"], indexConfirm);
             }
-			else if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && clickRow.indexOf('function' >= 0)){
+			else if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && (clickRow.indexOf('function') >= 0) && (clickRow.indexOf('ID') < 0)){
 				console.log("add parameter?");
 			}
 		}
@@ -2390,6 +2389,19 @@ function JSEditor(divID) {
 		//get the clickRow again, since stuff has changed
 		clickRow = editor.rowToArrayHtml(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
   }
+    
+    function indexConfirm(result) {
+        switch(result) {
+            case ("Constant"):
+                createNumPad(0, null, "Number Entry", "Enter an index to reference", false, 10, enterNum);
+                break;
+            case ("Variable"):
+                createSelector("Variable Selection", nvars, idConfirm);
+                break;
+            default:
+                break;
+        }
+    }
     
   function createSelector(title, optionS, callback) {
         var newSel = new Selector();
