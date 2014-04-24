@@ -69,6 +69,9 @@ function JSEditor(divID) {
 	this.isNewLine = isNewLine;
 	this.checkPromptFlag = checkPromptFlag;
 	this.reset = reset;
+    
+    var scopes = [];
+    scopes.push(new Scope("global"));
 	
 	init();					// initialize some important stuff
 
@@ -614,9 +617,26 @@ function JSEditor(divID) {
             {
                 createSelector("Constant or Variable?", ["Constant", "Variable"], indexConfirm);
             }
-			else if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && (clickRow.indexOf('function') >= 0) && (clickRow.indexOf('ID') < 0)){
+			else if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && (clickRow.indexOf('function') >= 0) && (clickRow.indexOf('ID') != 2)){
+                while(!clickedCell.hasClass('closeParen')){
+                    clickedCell = clickedCell.next();
+                }
+                clickedCell = clickedCell.prev();
+                if (clickedCell.text() == "*/") {
+                    editor.addCell(clickedCell,[{text: ",&nbsp;"}]);
+                    clickedCell = clickedCell.next();
+                }
 				console.log("add parameter?");
+                editor.addCell(clickedCell,
+                               [{text:"ID", type: "parameter"},
+                                {text:"&nbsp;/*", type: "datatype"},
+                                {text:"TYPE", type: "datatype paramType"},
+                                {text:"*/", type: "datatype"}]
+                );
 			}
+                else if (clickedCell.hasClass('paramType')) {
+                    createSelector("Type options", vtypes, paramTypeConfirm);
+                }
 		}
 		
 		return false;
@@ -2403,6 +2423,13 @@ function JSEditor(divID) {
         }
     }
     
+    
+    function paramTypeConfirm(result) {
+        if (result == null)
+            return;
+        clickedCell.text(result);
+    }
+    
   function createSelector(title, optionS, callback) {
         var newSel = new Selector();
         newSel.open(title, optionS, callback, document.getElementById(divID));
@@ -2422,4 +2449,14 @@ function JSEditor(divID) {
         var alert = new Alert();
         alert.open(title, msg, bool, callback, document.getElementById(divID));
   }
+}
+
+function Scope(myName) {
+    var name;
+    var tvars;
+    var nvars;
+    
+    this.name = myName;
+    this.tvars = [];
+    this.nvars = [];
 }
