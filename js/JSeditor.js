@@ -2251,11 +2251,6 @@ function JSEditor(divID) {
 		highlightCurrentStep(row);
 		selRow = rowNum;*/
 		console.log(row);
-		editor.selectAndHighlightRowByIndex(row);
-	}
-
-	function reset() {
-		selectLine(editor.getRowCount() - 1);
 		if (row == 3 && programCount == 3) {
 			return;
 		}
