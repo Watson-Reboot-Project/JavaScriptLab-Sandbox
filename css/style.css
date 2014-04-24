@@ -3,27 +3,31 @@ body {
    font-family: Courier New, 'Lucida Sans Unicode';
 }
 
+#body {
+   margin:0 auto;
+   /*max-width: 720px;*/
+}
+
 #codeTitle {
    padding-top: 0px;
    margin-top: 0px;
    margin-bottom: 0px;
 }
 
-#programCode {
-   width: 35%;
-   height: 368px;
-   float: left;
-   overflow: auto;
-   clear: left;
-   border: 1px solid black;
+.codeAndButtons{
+	/*overflow: hidden;*/
+}
+
+.programCode {
+   /*width: 35%;
+   height: 368px;*/
+   /*float: left;*/
+   /*overflow: auto;*/
+   /*clear: left;*/
+   /*border: 1px solid black;*/
    margin-bottom: 5px;
+   /*the height for this element is set in controller.js to be the same as #buttons*/
 }
-
-#editorDiv {
-   overflow: auto;
-}
-
-#fig1Editor td tr { overflow: auto; }
 
 #insertDiv {
    width: 15px;
@@ -33,13 +37,11 @@ body {
 
 #offsetDiv {
    width: auto;
-   height: 1.5%;
+   /*height: 1.5%;*/
    overflow: auto;
 }
 
-#insertTable td { }
-
-#insertTable  {
+#insertTable {
    width: 1px;
    font-size: 14px;
    float: left;
@@ -48,16 +50,20 @@ body {
    margin: 0px;
 }
 
-.rightButton {width: 100%; font-size: 100%; }
+button[type=button] {
+   width: 9em;
+   height: 2.2em;
+}
 
 #buttons {
    margin-left: 5px;
    margin-right: 5px;
    padding-left: 0.2%;
    width: auto;
-   float: left;
+   height: auto;
+   float: right;
    overflow: auto;
-   margin: 0 0;
+   /*margin: 0 0;*/
 }
 
 #varTitle {
@@ -67,8 +73,8 @@ body {
 }
 
 .outterDiv {
-   width: 35%;
-   clear: left;
+   /*width: 35%;*/
+   clear: both;
    margin-bottom: 15px;
 }
 
@@ -78,52 +84,55 @@ body {
 }
 
 #outputBox {
+   /*width: auto;
+   height: 100px;*/
    clear: left;
 }
 
-.rwButton {width:20%;}
-
 #runWalk {
    padding-top: 10px;
-   width: 35%;
+   /*width: 35%;*/
    overflow: auto;
    margin: 0 0; 
 }
 
 table {
    border: none;
-   border-collapse: collapse;
+   border-collapse:collapse;
    padding: 0px;
    margin: 0px;
 }
 
 td {
-   border: none;
-   border-collapse: collapse;
+   border:none;
+   border-collapse:collapse;
    padding: 0px;
    margin: 0px;
 }
-
 .innerTable {
-   overflow: scroll;
+   /*overflow: scroll;*/
    border: none;
-   border-collapse: collapse;
+   border-collapse:collapse;
    padding: 0px;
    margin: 0px;
 }
 
-.innerTable td tr { overflow: auto;}
 .varDiv {
    margin-top: 5px;
-   height: 100px;
-   overflow: auto;
-   resize: none;
-   border: 1px solid black;
+	overflow:auto;
+    /*width: auto;*/
+	height: 100px;
+    resize: none;
+	border: 1px solid black;
+}
+
+.varHeader{
+	font-weight: bold;
 }
 
 .normal {
-   border-spacing: 15px 1px;
-   border-collapse: separate;
+	border-spacing: 15px 1px;
+	border-collapse: separate;
 }
 
 /** For ipad and ipad mini **/

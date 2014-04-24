@@ -35,55 +35,51 @@ function Controller(sandboxNum) {
 	var red = "#D9534F";
 	var redHover = "#D2322D";
 	var figDiv = document.getElementById("fig" + sandboxNum + "Div");
-
-	figDiv.innerHTML =
-           '<div id="selector" style="text-align:center"></div> \
-           <h4 id="codeTitle">Code Window</h4> \
-           <div id="programCode"> \
-             <div id="insertDiv">\
-               <div id="offsetDiv"></div>\
-               <table id="insertTable"></table>\
-             </div>\
-             <div id="editorDiv">\
-               <table id="fig' + sandboxNum + 'Editor"></table> \
-             </div>\
-           </div>\
-           <div id="buttons"> \
-             <div><button id="fig' + sandboxNum + 'AddVar"        type="button" class="rightButton">Variable</button></div> \
-             <div><button id="fig' + sandboxNum + 'AddArr"        type="button" onclick="figure.getEditor().addVariable("array")" class="rightButton">Array</button></div> \
-             <div><button id="fig' + sandboxNum + 'AddFunc"       type="button" onclick="figure.getEditor().addFunction()" class="rightButton">Declare Function</button></div> \
-             <div><button id="fig' + sandboxNum + 'Assign"        type="button" onclick="figure.getEditor().addOneLineElement("assignment")" class="rightButton">Assign</button></div> \
-             <div><button id="fig' + sandboxNum + 'Write"         type="button" onclick="figure.getEditor().addOneLineElement("write")" class="rightButton">Write</button></div> \
-             <div><button id="fig' + sandboxNum + 'Writeln"       type="button" onclick="figure.getEditor().addOneLineElement("writeln")" class="rightButton">Writeln</button></div> \
-             <div><button id="fig' + sandboxNum + 'StringPrompt"  type="button" onclick="figure.getEditor().addOneLineElement("stringPrompt")" class="rightButton">String Prompt</button></div> \
-             <div><button id="fig' + sandboxNum + 'NumericPrompt" type="button" onclick="figure.getEditor().addOneLineElement("numericPrompt")" class="rightButton">Numeric Prompt</button></div> \
-             <div><button id="fig' + sandboxNum + 'While"         type="button" onclick="figure.getEditor().addWhile()" class="rightButton">While</button></div> \
-             <div><button id="fig' + sandboxNum + 'AddFor"        type="button" onclick="figure.getEditor().addFor()" class="rightButton">For</button></div> \
-             <div><button id="fig' + sandboxNum + 'AddIfThen"     type="button" onclick="figure.getEditor().addIfThen()" class="rightButton">If...Then</button></div> \
-             <div><button id="fig' + sandboxNum + 'AddIfElse"     type="button" onclick="figure.getEditor().addIfElse()" class="rightButton">If...Else</button></div> \
-             <div><button id="fig' + sandboxNum + 'FuncCall"      type="button" onclick="figure.getEditor().addOneLineElement("functionCall")" class="rightButton">Call Function</button></div> \
-             <div><button id="fig' + sandboxNum + 'Return"        type="button" onclick="figure.getEditor().addOneLineElement("return")" class="rightButton">Return</button></div> \
-           </div> \
-           <div id="fig1OutVarBox" class="outterDiv"> \
-             <h4 id="varTitle">Variables</h4> \
-             <div id="fig' + sandboxNum + 'VarBox" class="varDiv"> \
-               <table id="fig' + sandboxNum + 'VarTable" class="normal"></table> \
-             </div> \
-           </div> \
-           <div class="outterDiv"> \
-             <h4 id="outTitle">Output</h4> \
-             <div id="fig' + sandboxNum + 'OutputBox" class="varDiv"> \
-               <table id="fig' + sandboxNum + 'OutputTable"></table> \
-             </div> \
-           </div>\
-           <div id="runWalk" align="center"> \
-             <button id="fig' + sandboxNum + 'RunButton" type="button" style="color:#FFFFFF;background-color:' + green + '" class="rwButton">Run</button> \
-             <button id="fig' + sandboxNum + 'WalkButton" type="button" style="color:#FFFFFF;background-color:' + orange + '" class="rwButton">Walk</button> \
-           </div>';
-           
-  var editorTable = document.getElementById("fig" + sandboxNum + "Editor");
-	var editor = new Editor(sandboxNum);
-
+	
+	figDiv.innerHTML = '<div id="selector" style="text-align:center"></div> \
+		<h4 id="codeTitle">Code Window</h4> \
+		<div class="codeAndButtons"> \
+			<div id="buttons"> \
+				<div><button id="fig' + sandboxNum + 'AddVar"        type="button">Variable</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddArr"        type="button" onclick="figure.getEditor().addVariable("array")">Array</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddFunc"       type="button" onclick="figure.getEditor().addFunction()">Declare Function</button></div> \
+				<div><button id="fig' + sandboxNum + 'Assign"        type="button" onclick="figure.getEditor().addOneLineElement("assignment")">Assign</button></div> \
+				<div><button id="fig' + sandboxNum + 'Write"         type="button" onclick="figure.getEditor().addOneLineElement("write")">Write</button></div> \
+				<div><button id="fig' + sandboxNum + 'Writeln"       type="button" onclick="figure.getEditor().addOneLineElement("writeln")">Writeln</button></div> \
+				<div><button id="fig' + sandboxNum + 'StringPrompt"  type="button" onclick="figure.getEditor().addOneLineElement("stringPrompt")">String Prompt</button></div> \
+				<div><button id="fig' + sandboxNum + 'NumericPrompt" type="button" onclick="figure.getEditor().addOneLineElement("numericPrompt")">Numeric Prompt</button></div> \
+				<div><button id="fig' + sandboxNum + 'While"         type="button" onclick="figure.getEditor().addWhile()">While</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddFor"        type="button" onclick="figure.getEditor().addFor()">For</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddIfThen"     type="button" onclick="figure.getEditor().addIfThen()">If...Then</button></div> \
+				<div><button id="fig' + sandboxNum + 'AddIfElse"     type="button" onclick="figure.getEditor().addIfElse()">If...Else</button></div> \
+				<div><button id="fig' + sandboxNum + 'FuncCall"      type="button" onclick="figure.getEditor().addOneLineElement("functionCall")">Call Function</button></div> \
+				<div><button id="fig' + sandboxNum + 'Return"        type="button" onclick="figure.getEditor().addOneLineElement("return")">Return</button></div> \
+			</div> \
+			<div id="fig' + sandboxNum + 'Editor" class="programCode"> </div>\
+		</div> \
+		<div id="fig1OutVarBox" class="outterDiv"> \
+		  <h4 id="varTitle">Variables</h4> \
+		  <div id="fig' + sandboxNum + 'VarBox" class="varDiv"> \
+			<table id="fig' + sandboxNum + 'VarTable" class="normal"></table> \
+		  </div> \
+		</div> \
+		<div class="outterDiv"> \
+			<h4 id="outTitle">Output</h4> \
+			<div id="fig' + sandboxNum + 'OutputBox" class="varDiv"> \
+				<table id="fig' + sandboxNum + 'OutputTable"></table> \
+			</div> \
+		</div> \
+		<div id="runWalk" align="center"> \
+		  <button id="fig' + sandboxNum + 'RunButton" type="button" style="color:#FFFFFF;background-color:' + green + '">Run</button> \
+		  <button id="fig' + sandboxNum + 'WalkButton" type="button" style="color:#FFFFFF;background-color:' + orange + '">Walk</button> \
+		</div>';
+   
+	//subract 6 for the width of the border of .textArea, if the border ever changes, this will have to change too
+	$('#fig' + sandboxNum + 'Editor').height($('#buttons').height() - 6);
+	
+   	//var editorTable = document.getElementById("fig" + sandboxNum + "Editor");
+	var editor = new JSEditor("fig" + sandboxNum + "Editor");
+	
 	outputTable = document.getElementById("fig" + sandboxNum + "OutputTable");
 	var outputBox = document.getElementById("fig" + sandboxNum + "OutputBox");
 	var outputBox = document.getElementById("fig" + sandboxNum + "OutputBox");
@@ -92,11 +88,11 @@ function Controller(sandboxNum) {
 	nextRowInd++;
 	varBox = document.getElementById("fig" + sandboxNum + "VarBox");
 	varTable = document.getElementById("fig" + sandboxNum + "VarTable");
-
+	
 	this.walkButton = walkButton;
 	this.runButton = runButton;
 	this.updateVariables = updateVariables;
-
+	
 	var addVarButton = document.getElementById("fig" + sandboxNum + "AddVar");
 	var addArrButton = document.getElementById("fig" + sandboxNum + "AddArr");
 	var addFuncButton = document.getElementById("fig" + sandboxNum + "AddFunc");
@@ -113,7 +109,7 @@ function Controller(sandboxNum) {
 	var returnButton = document.getElementById("fig" + sandboxNum + "Return");
 	var walkButtonObj = document.getElementById("fig" + sandboxNum + "WalkButton");
 	var runButtonObj = document.getElementById("fig" + sandboxNum + "RunButton");
-
+	
 	addVarButton.onclick = function () { editor.addVariable("variable"); };
 	addArrButton.onclick = function () { editor.addVariable("array"); };
 	addFuncButton.onclick = function () { editor.addFunction(); };
@@ -130,18 +126,18 @@ function Controller(sandboxNum) {
 	returnButton.onclick = function () { editor.addOneLineElement("return"); };
 	walkButtonObj.onclick = function() { walkButton(); }
 	runButtonObj.onclick = function() { runButton(); }
-
+	
 	$(document).ready(function() {
-            $("#fig" + sandboxNum + "OutVarBox").hide();
+            $("#fig" + sandboxNum + "OutVarBox").hide(); 
 	 });
-
+	 
 	$("#fig" + sandboxNum + "RunButton").mousemove(function() {
 		var button = document.getElementById("fig" + sandboxNum + "RunButton");
-
+		
 		if (button.textContent == "Run") button.style.backgroundColor = greenHover;
 		else button.style.backgroundColor = orangeHover;
 	});
-
+	
 	$("#fig" + sandboxNum + "RunButton").mouseout(function() {
 		var button = document.getElementById("fig" + sandboxNum + "RunButton");
 		if (button.textContent == "Run") button.style.backgroundColor = green;
@@ -153,13 +149,13 @@ function Controller(sandboxNum) {
 		if (button.textContent == "Walk") button.style.backgroundColor = orangeHover;
 		else button.style.backgroundColor = redHover;
 	});
-
+	
 	$("#fig" + sandboxNum + "WalkButton").mouseout(function() {
 		var button = document.getElementById("fig" + sandboxNum + "WalkButton");
 		if (button.textContent == "Walk") button.style.backgroundColor = orange;
 		else button.style.backgroundColor = red;
 	});
-
+	
 	function init(interpreter, scope) {
 		var wrapper = function (text) {
 			text = text ? text.toString() : '';
@@ -189,19 +185,19 @@ function Controller(sandboxNum) {
 		};
 		interpreter.setProperty(scope, 'document1writeln', interpreter.createNativeFunction(wrapper4));
 
-		var wrapper5 = function () {
+		var wrapper5 = function () {	
 			//return interpreter.createPrimitive(outputTable.value += text + "\n");
 			return interpreter.createPrimitive(dummyVar++);
 		};
 		interpreter.setProperty(scope, 'dummyFunction', interpreter.createNativeFunction(wrapper5));
 	};
-
+	
 	function outputWrite(text) {
 		var cell = outputTable.rows[outputTable.rows.length - 1].cells[0];
 		cell.setAttribute("style", "height:15px");
 		cell.textContent += text;
 	}
-
+	
 	function outputWriteln(text) {
 		if (text == " ") text = " ";
 		var cell = outputTable.rows[outputTable.rows.length - 1].cells[0];
@@ -210,7 +206,7 @@ function Controller(sandboxNum) {
 		var row = outputTable.insertRow(outputTable.rows.length);
 		row.insertCell(0);
 	}
-
+	
 	function stopPrompt() {
 		var temp = promptInput;
 		promptInput = "";
@@ -224,7 +220,7 @@ function Controller(sandboxNum) {
 		var row = outputTable.insertRow(outputTable.rows.length);
 		row.insertCell(0);
 		cell.contentEditable = false;
-
+		
 		cell = outputTable.rows[outputTable.rows.length - 1].cells[0];
 		cell.style.color = "red";
 		cell.contentEditable = true;
@@ -233,13 +229,13 @@ function Controller(sandboxNum) {
 		cell.setAttribute("id", id);
 		cell.setAttribute("type", "number");
 		editCellID = id;
-
+		
 		if (defaultStr.charAt(0) == '"') {
 			if (defaultStr.length == 2) defaultPromptInput = "";
 			else defaultPromptInput = defaultStr.slice(1, defaultStr.length - 1);
 		}
 		else defaultPromptInput = defaultStr;
-
+		
 		if (promptType == "numeric") setupNumericPrompt(id);
 		else {
 			setupStringPrompt(id);
@@ -247,14 +243,14 @@ function Controller(sandboxNum) {
 		}
 		row = outputTable.insertRow(outputTable.rows.length);
 		row.insertCell(0);
-
+		
 		return promptInput;
 	}
-
+	
 	function setupNumericPrompt(id) {
 		openNumPad(null, null, "This is a test", "Do things", false, 10).done(function(result) {
 			var cell = document.getElementById(id);
-
+			
 			if (result === null) {
 				promptInput = defaultPromptInput;
 				cell.textContent = defaultPromptInput;
@@ -263,20 +259,20 @@ function Controller(sandboxNum) {
 				promptInput = result;
 				cell.textContent = result;
 			}
-
+			
 			cell.contentEditable = false;
 			promptFlag = false;
-
+			
 			if (runMode == true || attemptingToRun == true) { attemptingToRun = false; runMode = false; runButton(); }
 			else { walkButton(); }
 		});
 	}
-
+	
 	function setupStringPrompt(id) {
 		openStringPad("This is a stringpad", "These are the instructions").done(function(result)
 		{
-			var cell = document.getElementById(id);
-
+			var cell = document.getElementById(id);	
+			
 			if (result === null) {
 				promptInput = defaultPromptInput;
 				cell.textContent = defaultPromptInput;
@@ -285,25 +281,25 @@ function Controller(sandboxNum) {
 				promptInput = result;
 				cell.textContent = result;
 			}
-
+				
 			cell.contentEditable = false;
 			promptFlag = false;
-
+				
 			if (runMode == true || attemptingToRun == true) { attemptingToRun = false; runMode = false; runButton(); }
 			else { walkButton(); }
 		});
 	}
-
+	
 	function setupNumericPrompt2(id) {
 		$("#" + id).keyup(function (event) {
 			var code = event.which || event.keyCode;
 			if (code == 16) {
 				shiftDown = false;	// since this is key up, shift down is now false
 			}
-
+			
 			promptInput = document.getElementById(id).textContent;	// update the prompt input upon each key up
 		});
-
+	
 		$("#" + id).keydown(function (event) {
 			var code = event.which || event.keyCode;
 			if (code == 16) {
@@ -324,15 +320,15 @@ function Controller(sandboxNum) {
 			}
 			else event.preventDefault();
 		});
-
+	
 		$("#" + id).keypress(function (event) {
 			var cell = document.getElementById(id);
 			var code = event.which || event.keyCode;
 			if (shiftDown == true) {
 				event.preventDefault();	// if shift is down, ignore the key regardless of key code
 				return;
-			}
-
+			}	
+			
 			if (code == 10 || code == 13) {	// enter key was pressed
 				event.preventDefault();
 				if (cell.textContent == "" || cell.textContent.length == 0) {
@@ -341,32 +337,32 @@ function Controller(sandboxNum) {
 					//alert("You should probably enter some input first!");
 					//return;
 				}
-
+				
 				cell.contentEditable = false;
 				promptFlag = false;
-
+				
 				if (runMode == true || attemptingToRun == true) { attemptingToRun = false; runMode = false; runButton(); }
 				else { walkButton(); }
 			}
 		});
 	}
-
+	
 	function setupStringPrompt2(id) {
-		$("#" + id).keyup(function (event) {
+		$("#" + id).keyup(function (event) {	
 			promptInput = document.getElementById(id).textContent;	// update the prompt input upon each key up
 		});
-
+	
 		$("#" + id).keydown(function (event) {
 			var code = event.which || event.keyCode;
 			if (code == 10 || code == 13) {
 				// enter key, allow it for now (will be caught by key press)
 			}
 		});
-
+	
 		$("#" + id).keypress(function (event) {
 			var cell = document.getElementById(id);
-			var code = event.which || event.keyCode;
-
+			var code = event.which || event.keyCode;	
+			
 			if (code == 10 || code == 13) {	// enter key was pressed
 				event.preventDefault();
 				if (cell.textContent == "" || cell.textContent.length == 0) {
@@ -375,23 +371,23 @@ function Controller(sandboxNum) {
 					//alert("You should probably enter some input first!");
 					//return;
 				}
-
+				
 				cell.contentEditable = false;
 				promptFlag = false;
-
+				
 				if (runMode == true || attemptingToRun == true) { attemptingToRun = false; runMode = false; runButton(); }
 				else { walkButton(); }
 			}
 		});
 	}
-
+	
 	function appendOutput(question, text) {
 		var cell = outputTable.rows[outputTable.rows.length - 1].cells[0];
 		cell.setAttribute("style", "height:1em");
 		cell.textContent += question;
 		var row = outputTable.insertRow(outputTable.rows.length);
 		row.insertCell(0);
-
+		
 		cell = outputTable.rows[outputTable.rows.length - 1].cells[0];
 		cell.setAttribute("style", "height:1em");
 		cell.innerHTML += "<font color='red'><b><i>" + text + "</b></i></font>";
@@ -400,11 +396,11 @@ function Controller(sandboxNum) {
 	}
 
 	function parseButton() {
-           var code = document.getElementById('code').value;
-           console.log("parse " + code);
-           myInterpreter = newInterpreter(code, init); disable('');
+		var code = document.getElementById('code').value;
+		myInterpreter = new Interpreter(code, init);
+		disable('');
 	}
-
+	
 	function walkButton() {
 		if (done == true) { reset(); return; }
 		if (attemptingToRun == true || runMode == true) {
@@ -426,13 +422,16 @@ function Controller(sandboxNum) {
 
 		if (editCell) editCell.contentEditable = false;
 
-		slideVarBox("down");
-
 		if (myInterpreter === null) {
 			var codeStr = editor.getEditorText();
-			console.log(codeStr);
+			// console.log(codeStr);
+      if (codeStr == "") {
+           editor.selectLine(3);
+           return;
+      }
 			myInterpreter = new Interpreter(codeStr, init, thisObj);
 		}
+    slideVarBox("down");
 		if (runMode == true) {
 			clearInterval(intervalID);
 			runMode = false;
@@ -442,9 +441,15 @@ function Controller(sandboxNum) {
 		}
 		while (walk() == false) { }
 	}
-
+	
 	function runButton() {
-		if (done) reset();
+	if (done) reset();
+
+      var codeStr = editor.getEditorText();
+      if (codeStr == "") {
+           editor.selectLine(3);
+           return;
+      }
 
 		if (runMode == true) {
 			clearInterval(intervalID);
@@ -501,10 +506,10 @@ function Controller(sandboxNum) {
 		runMode = true;
 		intervalID = setInterval(walk, 100);
 	}
-
+	
 	function slideVarBox(dir) {
 		if (showVarBox == false) return;
-
+		
 		if (!slidDown && dir == "down") {
 			$("#fig" + sandboxNum + "OutVarBox").slideDown("medium", function() {
 				//varBox.scrollTop = varBox.scrollHeight;
@@ -516,7 +521,7 @@ function Controller(sandboxNum) {
 			slidDown = false;
 		}
 	}
-
+	
 	function walk() {
 		var res;
 		var node;
@@ -524,18 +529,18 @@ function Controller(sandboxNum) {
 		var end;
 		var flag = false;
 		var status;
-
+		
 		if (done == true) {
 			runButtonObj.textContent = "Run";
 			reset();
 			return true;
 		}
-
+		
 		if (firstMove == true) {
 			outputTable.innerHTML = "";
 			var row = outputTable.insertRow(0);
 			row.insertCell(0);
-
+			
 			clearTable();
 			firstMove = false;
 		}
@@ -549,7 +554,7 @@ function Controller(sandboxNum) {
 				promptFlag = true;
 				if (runMode == true) clearInterval(intervalID);
 			}
-
+			
 			if (myInterpreter.step() == false) {
 				flag = true;
 				done = true;
@@ -565,9 +570,11 @@ function Controller(sandboxNum) {
 					end = node.end;
 				}
 			}
-
+			
 			status = editor.isNewLine(start, end);
+			console.log(status);
 			if (haltFlag == true) {
+				console.log("status 1 " + edirotr.selectLine(status[1]));
 				editor.selectLine(status[1]);
 				haltFlag = false;
 				break;
@@ -578,7 +585,7 @@ function Controller(sandboxNum) {
 					flag = true;
 				}
 			}
-
+			
 		}
 
 		outputBox.scrollTop = outputBox.scrollHeight;
@@ -597,7 +604,7 @@ function Controller(sandboxNum) {
 			return false;
 		}
 	}
-
+	
 	function reset() {
 		runButtonObj.textContent = "Run";
 		runButtonObj.style.backgroundColor = green;
@@ -615,7 +622,7 @@ function Controller(sandboxNum) {
 		editor.reset();
 		firstMove = true;
 	}
-
+	
 	function updateVariables(mode, scope, leftValue, rightValue) {
 		var found = false;
 		if (mode == "add") {
@@ -630,12 +637,12 @@ function Controller(sandboxNum) {
 			if (!found) {
 				var dataType = editor.getDatatypeSelectedLine();
 				if (dataType === null) dataType = (isString(rightValue)) ? "text" : "numeric";
-
+				
 				if (leftValue.data && rightValue.data) varArr.push([scope, leftValue.data, dataType, rightValue.data]);
 				else if (leftValue.data) varArr.push([scope, leftValue.data, dataType, rightValue]);
 				else if (rightValue.data) varArr.push([scope, leftValue, dataType, rightValue.data]);
 				else varArr.push([scope, leftValue, dataType, rightValue]);
-
+				
 				if (!scopeExists(scope)) scopeArr.push(scope);
 			}
 		}
@@ -649,10 +656,10 @@ function Controller(sandboxNum) {
 				}
 			}
 		}
-
+		
 		updateTable();
 	}
-
+	
 	function pollVariables() {
 		var scopeNum;
 		try {
@@ -661,47 +668,47 @@ function Controller(sandboxNum) {
 		catch (err) {
 			return;
 		}
-
+		
 		var count = 0;
 		if (scopeNum < 0) return;
-
+		
 		for (var i = 0; i < varArr.length; i++) {
 			if (getScopeNum(varArr[i][0]) > scopeNum) { updateVariables("del", varArr[i][0], varArr[i][1]); haltFlag = true; }
 		}
 	}
-
+	
 	function getScopeNum(scope) {
 		for (var i = 0; i < scopeArr.length; i++) if (scopeArr[i] == scope) return i;
 		return -1;
 	}
-
+	
 	function scopeExists(scope) {
 		for (var i = 0; i < scopeArr.length; i++) if (scopeArr[i] == scope) return true;
 		return false;
 	}
-
+	
 	function clearTable() {
 		varTable.innerHTML = "";
 		return;
 	}
-
-	function updateTable() {
+	
+	function updateTable() { 
 		varTable.innerHTML = "";
 		var row;
 		var cell;
 		var scopeNum;
-
+		
 		if (showScope) {
 			row = varTable.insertRow(0);
 			for (var i = 0; i < 4; i++) {
 				cell = row.insertCell(i);
-				if (i == 0) cell.textContent = "level";
-				else if (i == 1) cell.textContent = "variable";
-				else if (i == 2) cell.textContent = "type";
-				else cell.textContent = "value";
+				if (i == 0) {cell.textContent = "level"; cell.className = "varHeader";}
+				else if (i == 1) {cell.textContent = "variable"; cell.className = "varHeader";}
+				else if (i == 2) {cell.textContent = "type"; cell.className = "varHeader";}
+				else {cell.textContent = "value"; cell.className = "varHeader";}
 			}
 
-
+			
 			for (var i = 0; i < varArr.length; i++) {
 				row = varTable.insertRow(i + 1);
 				for (var j = 0; j < 4; j++) {
@@ -719,15 +726,15 @@ function Controller(sandboxNum) {
 			}
 		}
 		else {
-
+		
 			row = varTable.insertRow(0);
 			for (var i = 0; i < 3; i++) {
 				cell = row.insertCell(i);
-				if (i == 0) cell.textContent = "variable";
-				else if (i == 1) cell.textContent = "type";
-				else cell.textContent = "value";
+				if (i == 0) {cell.textContent = "variable"; cell.className = "varHeader";}
+				else if (i == 1) {cell.textContent = "type"; cell.className = "varHeader";}
+				else {cell.textContent = "value"; cell.className = "varHeader";}
 			}
-
+			
 			for (var i = 0; i < varArr.length; i++) {
 				row = varTable.insertRow(i + 1);
 				for (var j = 0; j < 3; j++) {
@@ -744,14 +751,14 @@ function Controller(sandboxNum) {
 			}
 		}
 	}
-
+	
 	var toString = Object.prototype.toString;
 
 	isString = function (obj) {
 		return toString.call(obj) == '[object String]';
 	}
-
+	
 	this.getEditor = getEditor;
 	function getEditor() { return editor; }
-
+	
 }
