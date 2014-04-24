@@ -1592,6 +1592,8 @@ function JSEditor(divID) {
 
 	function nameDialogConfirm(result) {
 		console.log(clickRow[clickedCellNum]);
+		if( /^[a-zA-Z]+$/.test(result) == false)
+			return;
 		// empty string is not valid inpute
 		if (result == "")
 		{
@@ -1855,7 +1857,11 @@ function JSEditor(divID) {
         //returnToNormalColor();                 
     }
     
-    function boolConfirm(result){
+    function boolConfirm(result){	
+		//if the result was null, the user clicked the cancel button, so don't do anything
+		if(result == null)
+			return;
+			
 //        $("#selector").dialog('close');
         var values = ["&nbsp;", "", "&nbsp;", "EXPR"];
         switch (result)
@@ -2336,6 +2342,9 @@ function JSEditor(divID) {
     }
     
   function enterNum(result) {
+		if(result == null)
+			return;
+		console.log(result);
         //Function called to replace a cell with a number
         clickedCell.text(result);
     }
