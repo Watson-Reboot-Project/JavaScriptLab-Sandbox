@@ -320,6 +320,10 @@ function Editor(divID, lineNumBool, syntaxHighlightingBool, lineNumStart, cellWi
 		}
 		
 		selRow = index;
+<<<<<<< HEAD
+=======
+		console.log ("serlrowelw " +selRow);
+>>>>>>> origin/EditorMobile
 		innerTable = codeTable.rows[selRow].cells[0].children[0];
 		innerTable.rows[0].cells[1].innerHTML = arrow;
 		

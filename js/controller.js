@@ -396,8 +396,8 @@ function Controller(sandboxNum) {
 	}
 
 	function parseButton() {
-		var code = document.getElementById('code').value
-			myInterpreter = new Interpreter(code, init);
+		var code = document.getElementById('code').value;
+		myInterpreter = new Interpreter(code, init);
 		disable('');
 	}
 	
@@ -410,7 +410,7 @@ function Controller(sandboxNum) {
 			reset();
 			return;
 		}
-		
+
 		//if (checkIfPrompt(true) == true) return;
 		var editCell = document.getElementById(editCellID);
 		if (promptFlag == true && promptInput.length == 0) {
@@ -419,16 +419,19 @@ function Controller(sandboxNum) {
 			promptFlag = false;
 		}
 		else promptFlag = false;
-		
+
 		if (editCell) editCell.contentEditable = false;
-		
-		slideVarBox("down");
-		
+
 		if (myInterpreter === null) {
 			var codeStr = editor.getEditorText();
-			console.log(codeStr);
+			// console.log(codeStr);
+      if (codeStr == "") {
+           editor.selectLine(3);
+           return;
+      }
 			myInterpreter = new Interpreter(codeStr, init, thisObj);
 		}
+    slideVarBox("down");
 		if (runMode == true) {
 			clearInterval(intervalID);
 			runMode = false;
@@ -440,17 +443,23 @@ function Controller(sandboxNum) {
 	}
 	
 	function runButton() {
-		if (done) reset();
-	
+	if (done) reset();
+
+      var codeStr = editor.getEditorText();
+      if (codeStr == "") {
+           editor.selectLine(3);
+           return;
+      }
+
 		if (runMode == true) {
 			clearInterval(intervalID);
 			runButtonObj.textContent = "Run";
-			runButtonObj.style.backgroundColor = green; 
+			runButtonObj.style.backgroundColor = green;
 			walkButtonObj.textContent = "Walk";
 			walkButtonObj.style.backgroundColor = orange;
 			runMode = false;
 			slideVarBox("down");
-			
+
 			return;
 		}
 		else {
@@ -483,7 +492,7 @@ function Controller(sandboxNum) {
 				return;
 			}
 		}
-		
+
 		walkButtonObj.textContent = "Reset";
 		walkButtonObj.style.backgroundColor = red;
 		runButtonObj.textContent = "Pause";
@@ -493,7 +502,7 @@ function Controller(sandboxNum) {
 			console.log(codeStr);
 			myInterpreter = new Interpreter(codeStr, init, thisObj);
 		}
-		
+
 		runMode = true;
 		intervalID = setInterval(walk, 100);
 	}
@@ -565,6 +574,7 @@ function Controller(sandboxNum) {
 			status = editor.isNewLine(start, end);
 			console.log(status);
 			if (haltFlag == true) {
+				console.log("status 1 " + edirotr.selectLine(status[1]));
 				editor.selectLine(status[1]);
 				haltFlag = false;
 				break;
