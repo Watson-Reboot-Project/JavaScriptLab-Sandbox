@@ -491,19 +491,19 @@ function JSEditor(divID) {
 				else if (clickRow[cellNum-11] == 'var')
 				{
 					console.log("array?");
-					if (foundIn(clickRow[cellNum-9], namesRef))
+					if (foundIn(clickRow[cellNum-9].concat("[]"), namesRef))
 					{
 						console.log("Can't change type. Is reffed.\n");
 					}
 					else
 					{
 						console.log("not reffed.");
-						if (foundIn(clickRow[cellNum-9], namesUsed))
+						if (foundIn(clickRow[cellNum-9].concat("[]"), namesUsed))
 						{
 							console.log("used.");
-							delN(clickRow[cellNum-9], nvars);
-							delN(clickRow[cellNum-9], tvars);
-							delN(clickRow[cellNum-9], namesUsed);
+							delN(clickRow[cellNum-9].concat("[]"), nvars);
+							delN(clickRow[cellNum-9].concat("[]"), tvars);
+							delN(clickRow[cellNum-9].concat("[]"), namesUsed);
 							createSelector("Select Type", vtypes, typeConfirm);
 		//                            $("#selector").empty();
 		//                            generateSelectionHTML(vtypes, "type");
@@ -1420,6 +1420,8 @@ function JSEditor(divID) {
     /*Weston edit end*/
     
 	function typeConfirm(result) {  // For confirming variable and array types
+        if (result == 'null')
+            return;
         if (clickRow[clickedCellNum-5] == 'var')
         {
             if (result == 'Text') {     // If they selected test before clicking okay
@@ -1441,11 +1443,13 @@ function JSEditor(divID) {
         }
         else if (clickRow[clickedCellNum-11] == 'var') //for arrays
         {
+            if (clickRow[clickedCellNum] == 'TYPE')
+                delN(clickRow[clickedCellNum-9].concat("[]"),varsNamed);
             if (result == 'Text') {     // If they selected test before clicking okay
                 clickedCell.text('TEXT');
                 if (clickRow[clickedCellNum-9] != 'ID')
                 {
-                    tvars.push(clickRow[clickedCellNum-9]);
+                    tvars.push(clickRow[clickedCellNum-9].concat("[]"));
                 }
             }
             else if (result == 'Numeric') {
@@ -1453,10 +1457,10 @@ function JSEditor(divID) {
                 if (clickRow[clickedCellNum-9] != 'ID')
                 {
                     //console.log(innerTablet.rows[0].cells[4].textContent);
-                    nvars.push(clickRow[clickedCellNum-9]);
+                    nvars.push(clickRow[clickedCellNum-9].concat("[]"));
                 }
             }
-            if (!foundIn(clickRow[clickedCellNum-9], namesUsed) && clickRow[clickedCellNum-9] != 'ID') namesUsed.push(clickRow[clickedCellNum-9]);
+            if (!foundIn(clickRow[clickedCellNum-9].concat("[]"), namesUsed) && clickRow[clickedCellNum-9] != 'ID') namesUsed.push(clickRow[clickedCellNum-9].concat("[]"));
         }
         console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
 //        $("#selector").dialog('close');
@@ -1590,7 +1594,6 @@ function JSEditor(divID) {
 		//if the name is in use already, abort
 		if (foundIn(result,varsNamed.concat(namesUsed).concat(funcsNamed)) == 1) {
 			console.log("Already exists (nameDialogconfirm)");
-			$("#selector").dialog('close');
 			return; //this will need to spawn a dialog box before returning
 		}
 
@@ -1598,7 +1601,6 @@ function JSEditor(divID) {
 		if (foundIn(result,resWords) == 1)
 		{
 			console.log(result + " is a reserved word.");
-			$("#selector").dialog('close');
 			return;
 		}
 
@@ -1632,18 +1634,18 @@ function JSEditor(divID) {
             }
 		}
 		
-		if(clickRow[clickedCellNum+3] == 'TYPE'){
-			varsNamed.push(result);
-		}
-		//if the variable does have a type, then add it to namesUsed
-		else{
-			//remove the name from varsNamed
-			varsNamed.splice(varsNamed.indexOf(result),1);
-			
-			//add the name to names used
-			namesUsed.push(result);
-		}
-		//namesUsed.push(result);
+//		if(clickRow[clickedCellNum+3] == 'TYPE'){
+//			varsNamed.push(result);
+//		}
+//		//if the variable does have a type, then add it to namesUsed
+//		else{
+//			//remove the name from varsNamed
+//			varsNamed.splice(varsNamed.indexOf(result),1);
+//			
+//			//add the name to names used
+//			namesUsed.push(result);
+//		}
+//		//namesUsed.push(result);
 
 		var lastCellindex = clickRow.length-1;
         //clickRow[lastCellindex-1]
@@ -1655,13 +1657,10 @@ function JSEditor(divID) {
             if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result);
             else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result);
         }
-		if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result);
-		else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result);
-		//$("#nameDialog").dialog('close');
+//		if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result);
+//		else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result);
         console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
-//		$("#selector").dialog('close');
-		
-		//returnToNormalColor();
+
 	
 	}
 
@@ -1685,7 +1684,7 @@ function JSEditor(divID) {
                 clickedCell.text(result);
             }
             console.log("id value: " + result);
-			clickedCell.text(result);
+//			clickedCell.text(result);
             console.log("\n" + result);
             namesRef.push(result);
             console.log(namesRef);
