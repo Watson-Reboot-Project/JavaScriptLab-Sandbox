@@ -43,11 +43,8 @@ function JSEditor(divID) {
 	var varsNamed = []; //variable that have only been given a name and do not have a type
 	var varNames = [];
 	var namesRef = [];
-<<<<<<< HEAD
     var nArrays = [];
     var tArrays = [];
-=======
->>>>>>> origin/EditorMobile
     var compKeys = ["while", "if"];
     var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
     var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
@@ -614,13 +611,10 @@ function JSEditor(divID) {
 			{
 				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
 			}
-<<<<<<< HEAD
             else if (cellVal == 'index')
             {
                 createNumPad(0,null,"Index", "Select an index of the array.", true, 10, enterNum);
             }
-=======
->>>>>>> origin/EditorMobile
 			else if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && clickRow.indexOf('function' >= 0)){
 				console.log("add parameter?");
 			}
@@ -950,6 +944,7 @@ function JSEditor(divID) {
 		//toggleEvents();									// toggle events to refresh them
 		//refreshLineCount();								// and also refresh line count
 	}
+
 
 	// addIfThen() is responsible for adding an If/Then control structure
 	function addIfThen() {
@@ -1467,7 +1462,7 @@ function JSEditor(divID) {
 //        $("#selector").dialog('close');
 	}
     
-    function ftypeConfirm(result) {  // For confirming types for functions
+  function ftypeConfirm(result) {  // For confirming types for functions
         if (result == 'Text') {     // If they selected test before clicking okay
             clickedCell.text('TEXT');
             if (clickRow[clickedCellNum-5] != 'ID')
@@ -1496,7 +1491,7 @@ function JSEditor(divID) {
 //        $("#selector").dialog('close');
 	}
     
-    function exprtype(){ //For determining the type of an EXPR in the code
+  function exprtype(){ //For determining the type of an EXPR in the code
         for (counter = 0; counter < clickRow.length; counter++)
         {
 			//if there's some kind of assignment, and there's no point in
@@ -1532,7 +1527,6 @@ function JSEditor(divID) {
                     else return 0;
                 }
             }
-<<<<<<< HEAD
             else if (clickRow[counter] == '=' && counter >= 4) {
                 //array assignment
                 console.log("Can only be an array assignment I think?");
@@ -1540,8 +1534,7 @@ function JSEditor(divID) {
                 else if (foundIn((clickRow[counter-4].concat(']')),tvars)) return 'TEXT ASSIGNMENT';
                 else return 0;
             }
-=======
->>>>>>> origin/EditorMobile
+
 			//if it's a while loop or an if statement
             else if (foundIn(clickRow[counter], compKeys))
             {
@@ -1572,21 +1565,19 @@ function JSEditor(divID) {
 		
 		//returnToNormalColor();
         return 0;
-    }
+  }
 
 	function nameDialogConfirm(result) {
-<<<<<<< HEAD
         console.log(clickRow[clickedCellNum]);
 		// empty string is not valid inpute
 		if (result == "")
 		{
 			//NEED ALERT
-=======
+
 		// empty string is not valid inpute
 		if (result == "")
 		{
 			$("#selector").dialog('close');
->>>>>>> origin/EditorMobile
 			return;
 		}
 
@@ -1618,7 +1609,6 @@ function JSEditor(divID) {
 		//console.log('\t\t' + (clickRow[clickedCellNum+3] != 'TYPE') + ' ' + (clickRow[clickedCellNum+3] !== 'TYPE'));
 		
 		//if the variable does not have a type, add it to varsNamed
-<<<<<<< HEAD
 		if (clickRow[clickedCellNum+3] == 'Array') {
             if (clickRow[clickedCellNum + 8] == 'TYPE') {
                 varsNamed.push(result + "[]");
@@ -1642,7 +1632,6 @@ function JSEditor(divID) {
             }
 		}
 		
-=======
 		if(clickRow[clickedCellNum+3] == 'TYPE'){
 			varsNamed.push(result);
 		}
@@ -1654,12 +1643,10 @@ function JSEditor(divID) {
 			//add the name to names used
 			namesUsed.push(result);
 		}
->>>>>>> origin/EditorMobile
 		//namesUsed.push(result);
 
 		var lastCellindex = clickRow.length-1;
         //clickRow[lastCellindex-1]
-<<<<<<< HEAD
         if (clickRow[clickedCellNum+3] == 'Array') {
             if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result+"[]");
             else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result+"[]");
@@ -1668,15 +1655,14 @@ function JSEditor(divID) {
             if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result);
             else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result);
         }
-=======
 		if (clickRow[lastCellindex-1] == 'NUMERIC') nvars.push(result);
 		else if (clickRow[lastCellindex-1] == 'TEXT') tvars.push(result);
->>>>>>> origin/EditorMobile
 		//$("#nameDialog").dialog('close');
         console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
 //		$("#selector").dialog('close');
 		
 		//returnToNormalColor();
+	}
 	}
 
 	function idConfirm(result) {	
@@ -1685,9 +1671,7 @@ function JSEditor(divID) {
 			return;
 
         if (foundIn(result, namesUsed))
-        {
-<<<<<<< HEAD
-            
+        {           
             console.log("id value: " + result);
             if (result[result.length-1] == "]") {
                 var str = result.substring(0,(result.length-1));
@@ -1700,10 +1684,8 @@ function JSEditor(divID) {
             else {
                 clickedCell.text(result);
             }
-=======
             console.log("id value: " + result);
 			clickedCell.text(result);
->>>>>>> origin/EditorMobile
             console.log("\n" + result);
             namesRef.push(result);
             console.log(namesRef);
@@ -2095,15 +2077,12 @@ function JSEditor(divID) {
 			if (numCells == 0) { continue; }
 			
 			if (numCells == 1) {
-<<<<<<< HEAD
 				if (row[0].indexOf("}") < 0 && row[0].indexOf("{") < 0 && row[0].indexOf("else") < 0) { rowType.push("blankLine"); continue; }
 				else bracketFlag = true;
-=======
 				if (row[0].indexOf("}") < 0 && row[0].indexOf("{") < 0 && row[0].indexOf("else") < 0) {
 					rowType.push("blankLine"); continue; }
 				else
 					bracketFlag = true;
->>>>>>> origin/EditorMobile
 			}
 
 			if (row[0].indexOf("function") >= 0) rowType.push("functionDeclaration");
@@ -2128,10 +2107,8 @@ function JSEditor(divID) {
 				//cellText = innerTable.rows[0].cells[j].textContent;
 				if (row[j].indexOf("//") >= 0) break;
 				if (row[j].indexOf("document.writeln") >= 0) {
-<<<<<<< HEAD
 					if (firstChar == false) { firstChar = true; charCountStart.push(charCount + 1); lineNums.push(i); }
 					if (!firstLine) firstLine = true;
-=======
 					if (firstChar == false) {
 						firstChar = true;
 						charCountStart.push(charCount + 1);
@@ -2141,15 +2118,12 @@ function JSEditor(divID) {
 					if (!firstLine)
 						firstLine = true;
 						
->>>>>>> origin/EditorMobile
 					codeStr += "document1writeln";
 					charCount += 16;
 				}
 				else if (row[j].indexOf("document.write") >= 0) {
-<<<<<<< HEAD
 					if (firstChar == false) { firstChar = true; charCountStart.push(charCount + 1); lineNums.push(i); }
 					if (!firstLine) firstLine = true;
-=======
 					if (firstChar == false) {
 						firstChar = true;
 						charCountStart.push(charCount + 1);
@@ -2159,30 +2133,24 @@ function JSEditor(divID) {
 					if (!firstLine)
 						firstLine = true;
 					
->>>>>>> origin/EditorMobile
 					codeStr += "document1write";
 					charCount += 14;
 				}
 				else {
 					if (row[j].indexOf(";") >= 0) {
 						semi = row[j].indexOf(";");
-<<<<<<< HEAD
 						for (var k = 0; k < semi + 1; k++) tempText += row[j].charAt(k);
-=======
 						
 						for (var k = 0; k < semi + 1; k++)
 							tempText += row[j].charAt(k);
 						
->>>>>>> origin/EditorMobile
 						row[j] = tempText;
 						firstLine = true;
 					}
 					
 					codeStr += row[j];
-<<<<<<< HEAD
 					if (firstChar == false && bracketFlag == false) { firstChar = true; charCountStart.push(charCount + 1); lineNums.push(i); }
 					if (!firstLine) firstLine = true;
-=======
 					if (firstChar == false && bracketFlag == false) {
 						firstChar = true; charCountStart.push(charCount + 1);
 						lineNums.push(i);
@@ -2190,7 +2158,6 @@ function JSEditor(divID) {
 					if (!firstLine)
 						firstLine = true;
 					
->>>>>>> origin/EditorMobile
 					charCount += row[j].length;
 				}
 				tempText = "";
@@ -2201,11 +2168,9 @@ function JSEditor(divID) {
 			firstChar = false;
 			bracketFlag = false;
 		}
-<<<<<<< HEAD
 		
 		rowNum = lineNums[0];
 		//selRow = rowNum;
-=======
 		// console.log("rowcount " + editor.getRowCount());
 		if (editor.getRowCount() == 4) {
 			rowNum = 3
@@ -2214,7 +2179,6 @@ function JSEditor(divID) {
 		 rowNum = lineNums[0];
 		// selRow = rowNum;
 		// console.log("rowNUm " + rowNum);
->>>>>>> origin/EditorMobile
 		editor.setSelectedRow(rowNum);
 		
 		codeStr = codeStr.replace("\xA0", " ");
@@ -2225,13 +2189,10 @@ function JSEditor(divID) {
 			else tCodeStr += " ";
 		}
 		codeStrLen = tCodeStr.length;
-<<<<<<< HEAD
 		
 		console.log(tCodeStr);
 		
-=======
 		// console.log(tCodeStr);
->>>>>>> origin/EditorMobile
 		return tCodeStr;
 	}
 
@@ -2289,14 +2250,12 @@ function JSEditor(divID) {
 		returnToNormalColor();
 		highlightCurrentStep(row);
 		selRow = rowNum;*/
-<<<<<<< HEAD
 		console.log(row);
 		editor.selectAndHighlightRowByIndex(row);
 	}
 
 	function reset() {
 		selectLine(editor.getRowCount() - 1);
-=======
 		if (row == 3 && programCount == 3) {
 			return;
 		}
@@ -2307,7 +2266,6 @@ function JSEditor(divID) {
 	function reset() {
 		var rowCount = editor.getRowCount()-1;
 		selectLine(rowCount);
->>>>>>> origin/EditorMobile
 		/*var rowNum = lineNums[0];
 		editor.selectAndHighlightRowByIndex(rowNum);*/
 		editor.clearHighlighting();
@@ -2331,7 +2289,7 @@ function JSEditor(divID) {
         cell.innerHTML = blank;
     }*/
     
-    function fcallType(result) {
+  function fcallType(result) {
         //Function called to allow selection of functions based on a type parameter
         switch (result)
         {
@@ -2349,12 +2307,12 @@ function JSEditor(divID) {
         }
     }
     
-    function textEntry(result) {
+  function textEntry(result) {
         clickedCell.text('"' + result + '"');
 		clickedCell.addClass("literal");
     }
     
-    function fChoose(result) {
+  function fChoose(result) {
         //Function that is called when selecting a function that replaces the text of a single cell
 		
 		//if the result was null, the user clicked the cancel button, so don't do anything
@@ -2364,12 +2322,12 @@ function JSEditor(divID) {
         clickedCell.text(result);
     }
     
-    function enterNum(result) {
+  function enterNum(result) {
         //Function called to replace a cell with a number
         clickedCell.text(result);
     }
     
-    function fIDconfirm(result) {
+  function fIDconfirm(result) {
         //Function called to assign an identifier to a function at its declaration
 		
 		//if the result was null, the user clicked the cancel button, so don't do anything
@@ -2411,7 +2369,7 @@ function JSEditor(divID) {
         }
 		
 		//push the name of this function onto funcsNamed
-		funcsNamed.push(result);
+	funcsNamed.push(result);
 		
         console.log("Names used: " + namesUsed);
         console.log("Void Functions: " + vFuns);
@@ -2419,7 +2377,7 @@ function JSEditor(divID) {
         console.log("Num Functions: " + nFuns);
     }
     
-    function forId(result) {
+  function forId(result) {
 //        clickedCell.textContent = result;
 		//if the result was null, the user clicked the cancel button, so don't do anything
 		if(result == null)
@@ -2437,24 +2395,24 @@ function JSEditor(divID) {
 		
 		//get the clickRow again, since stuff has changed
 		clickRow = editor.rowToArrayHtml(clickedCell.parent().parent().parent().parent().parent().index()); //will this work?
-    }
+  }
     
-    function createSelector(title, optionS, callback) {
+  function createSelector(title, optionS, callback) {
         var newSel = new Selector();
         newSel.open(title, optionS, callback, document.getElementById(divID));
-    }
+  }
     
-    function createStringPad(title, instructions, callback) {
+  function createStringPad(title, instructions, callback) {
         var newStrP = new StringPad();
         newStrP.open(title, instructions, callback, document.getElementById(divID));
-    }
+  }
     
-    function createNumPad(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback) {
+  function createNumPad(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback) {
 		var newNumpad = new NumberPad();
 		newNumpad.open(minValue, maxValue, titleStr, instructions, decimalAllowed, base, callback, document.getElementById(divID));
-    }
+   }
 
-    function createAlertBox(title, msg, bool, callback) {
+  function createAlertBox(title, msg, bool, callback) {
         var alert = new Alert();
         alert.open(title, msg, bool, callback, document.getElementById(divID));
   }
