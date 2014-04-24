@@ -1526,6 +1526,13 @@ function JSEditor(divID) {
                     else return 0;
                 }
             }
+            else if (clickRow[counter] == '=' && counter >= 4) {
+                //array assignment
+                console.log("Can only be an array assignment I think?");
+                if (foundIn((clickRow[counter-4].concat(']')),nvars)) return 'NUMERIC ASSIGNMENT';
+                else if (foundIn((clickRow[counter-4].concat(']')),tvars)) return 'TEXT ASSIGNMENT';
+                else return 0;
+            }
 			//if it's a while loop or an if statement
             else if (foundIn(clickRow[counter], compKeys))
             {
@@ -1595,11 +1602,7 @@ function JSEditor(divID) {
 		//console.log('\t\t' + (clickRow[clickedCellNum+3] != 'TYPE') + ' ' + (clickRow[clickedCellNum+3] !== 'TYPE'));
 		
 		//if the variable does not have a type, add it to varsNamed
-		if(clickRow[clickedCellNum+3] == 'TYPE'){
-			varsNamed.push(result);
-		}
-		//if the variable does have a type, then add it to namesUsed
-        else if (clickRow[clickedCellNum+3] == 'Array') {
+		if (clickRow[clickedCellNum+3] == 'Array') {
             if (clickRow[clickedCellNum + 8] == 'TYPE') {
                 varsNamed.push(result + "[]");
             }
@@ -1608,13 +1611,20 @@ function JSEditor(divID) {
                 namesUsed.push(result + "[]");
             }
         }
-		else{
-			//remove the name from varsNamed
-			varsNamed.splice(varsNamed.indexOf(result),1);
-			
-			//add the name to names used
-			namesUsed.push(result);
+		//if the variable does have a type, then add it to namesUsed
+        else {
+            if(clickRow[clickedCellNum+3] == 'TYPE'){
+                varsNamed.push(result);
+            }
+            else{
+                //remove the name from varsNamed
+                varsNamed.splice(varsNamed.indexOf(result),1);
+                
+                //add the name to names used
+                namesUsed.push(result);
+            }
 		}
+		
 		//namesUsed.push(result);
 
 		var lastCellindex = clickRow.length-1;
@@ -1641,8 +1651,19 @@ function JSEditor(divID) {
 
         if (foundIn(result, namesUsed))
         {
+            
             console.log("id value: " + result);
-			clickedCell.text(result);
+            if (result[result.length-1] == "]") {
+                var str = result.substring(0,(result.length-1));
+                clickedCell.text(str);
+                editor.addCell(clickedCell,
+                               [{text:"index"},
+                                {text:"]"}]
+                               );
+            }
+            else {
+                clickedCell.text(result);
+            }
             console.log("\n" + result);
             namesRef.push(result);
             console.log(namesRef);
