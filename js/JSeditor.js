@@ -30,7 +30,7 @@ function JSEditor(divID) {
 	
 	/* Weston variables */
 	var funcsNamed = []; //functions that have a name
-    var scopedVars = [["global"]]; //list of scopes
+//    var scopedVars = [["global"]]; //list of scopes
 	var vFuns = [];
 	var nFuns = [];
 	var tFuns = [];
@@ -421,6 +421,7 @@ function JSEditor(divID) {
 			clickedCellNum = cellNum;
 		
 			/* Weston's dialogs */
+                                clickHandler();
 			if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC' || cellVal == 'VOID')
 			{
 				if (clickRow[cellNum-7] == 'function')
@@ -825,10 +826,10 @@ function JSEditor(divID) {
 			editor.addRow(variableCount + 3,
 				[{text:"var", type:"keyword"},
 				{text:"&nbsp;"},
-				{text:"ID"},
+                 {text:"ID", type:"vname"},
 				{text:";&nbsp;"},
 				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype"},
+				{text:"TYPE", type:"datatype vtype"},
 				{text:"*/", type:"datatype"}]);
 		}
 		// if its an array
@@ -837,16 +838,16 @@ function JSEditor(divID) {
 			editor.addRow(variableCount + 3,
 				[{text:"var", type:"keyword"},
 				{text:"&nbsp;"},
-				{text:"ID"},
+                 {text:"ID", type:"vname array"},
 				{text:"&nbsp;=&nbsp;"},
 				{text:"new&nbsp;", type:"keyword"},
 				{text:"Array"},
 				{text:"(", type:"openParen"},
-				{text:"SIZE"},
+                 {text:"SIZE", type:"size"},
 				{text:")", type:"closeParen"},
 				{text:";"},
 				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype"},
+				{text:"TYPE", type:"datatype vtype array"},
 				{text:"*/", type:"datatype"}]);
 		}
 
@@ -874,11 +875,11 @@ function JSEditor(divID) {
 			//adds "ID = EXPR;
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-				{text:"ID"},
+                 {text:"ID", type:"aID"},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp"},
-				{text:"EXPR"},
+                 {text:"EXPR", type:"expr"},
 				{text:";"}]);
 		}
 		else if (element == "write") {
@@ -887,7 +888,7 @@ function JSEditor(divID) {
 				[{text:indentStr},
 				{text:"document.write", type:"keyword"},
 				{text:"(", type:"openParen"},
-				{text:"EXPR"},
+                 {text:"EXPR", type:"expr write"},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -897,7 +898,7 @@ function JSEditor(divID) {
 				[{text:indentStr},
 				{text:"document.writeln", type:"keyword"},
 				{text:"(", type:"openParen"},
-				{text:"EXPR"},
+                 {text:"EXPR", type: "expr write"},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -905,15 +906,15 @@ function JSEditor(divID) {
 			//adds "ID = prompt(EXPR, EXPR);"
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-				{text:"ID"},
+                 {text:"ID", type:"taID"},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp;"},
 				{text:"prompt", type:"keyword"},
 				{text:"(", type:"openParen"},
-				{text:"EXPR"},
+                 {text:"EXPR", type:"expr text"},
 				{text:",&nbsp;"},
-				{text:"EXPR"},
+                 {text:"EXPR", type:"expr text"},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -921,7 +922,7 @@ function JSEditor(divID) {
 			//adds "ID = parseFloat(prompt(EXPR, EXPR));
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-				{text:"ID"},
+                 {text:"ID", type:"naID"},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp;"},
@@ -929,9 +930,9 @@ function JSEditor(divID) {
 				{text:"(", type:"openParen"},
 				{text:"prompt", type:"keyword"},
 				{text:"(", type:"openParen"},
-				{text:"EXPR"},
+                 {text:"EXPR", type: "expr text"},
 				{text:","},
-				{text:"EXPR"},
+                 {text:"EXPR", type: "expr numeric"},
 				{text:")", type:"closeParen"},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
@@ -940,7 +941,7 @@ function JSEditor(divID) {
 			//adds "ID = FUNCTION();"
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-				{text:"FUNCTION"},
+                 {text:"FUNCTION", type: "fcall"},
 				{text:"(", type:"openParen"},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
@@ -951,7 +952,7 @@ function JSEditor(divID) {
 				[{text:indentStr},
 				{text:"return", type:"keyword"},
 				{text:"&nbsp;"},
-				{text:"EXPR"},
+                 {text:"EXPR", type:"expr return"},
 				{text:";"}]);
 		}
 
@@ -980,7 +981,7 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"if", type:"keyword"},
 			{text:"(", type:"openParen"},
-			{text:"EXPR"},
+             {text:"EXPR", type:"expr bool"},
 			{text:")", type:"closeParen"},
 			]);
 		
@@ -1016,7 +1017,7 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"if", type:"keyword"},
 			{text:"(", type:"openParen"},
-			{text:"EXPR"},
+             {text:"EXPR", type:"expr bool"},
 			{text:")", type:"closeParen"},
 			]);
 			
@@ -1067,7 +1068,7 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"while", type:"keyword"},
 			{text:"(", type:"openParen"},
-			{text:"EXPR"},
+             {text:"EXPR", type:"expr bool"},
 			{text:")", type:"closeParen"},
 			]);
 			
@@ -1103,18 +1104,18 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"for", type:"keyword"},
 			{text:"(", type:"openParen"},
-			{text:"ID"},
+             {text:"ID", type:"naID"},
 			{text:"&nbsp;"},
 			{text:"="},
 			{text:"&nbsp;"},
-			{text:"EXPR"},
+             {text:"EXPR", type:"expr numeric"},
 			{text:";&nbsp;"},
-			{text:"ID"},
+             {text:"ID", type:"forID"},
 			{text:"&nbsp;"},
 			{text:"&lt;&nbsp;"},
-			{text:"EXPR"},
+             {text:"EXPR", type:"expr numeric"},
 			{text:";&nbsp;"},
-			{text:"ID"},
+             {text:"ID", type:"forID"},
 			{text:"++"},
 			{text:")", type:"closeParen"}]);
 			
@@ -1208,12 +1209,12 @@ function JSEditor(divID) {
 		editor.addRow(beginRow++,
 			[{text:"function", type:"keyword"},
 			{text:"&nbsp;"},
-			{text:"ID"}, 
+             {text:"ID", type:"fname"},
 			{text:"(", type:"openParen"},
 			{text:")", type:"closeParen"},
 			{text:"&nbsp;"},
 			{text:"/*", type:"datatype"},
-			{text:"VOID", type:"datatype"},
+			{text:"VOID", type:"datatype ftype"},
 			{text:"*/", type:"datatype"}]);
 			
 		//adds "{"
@@ -2437,6 +2438,99 @@ function JSEditor(divID) {
         if (result == null)
             return;
         clickedCell.text(result);
+    }
+    
+    function clickHandler() {
+        if (clickedCell.hasClass("vname"))
+            vnameHandler();
+        else if (clickedCell.hasClass("pname"))
+            pnameHandler();
+        else if (clickedCell.hasClass("fname"))
+            fnameHandler();
+        else if (clickedCell.hasClass("vtype"))
+            vtypeHandler();
+        else if (clickedCell.hasClass("ptype"))
+            ptypeHandler();
+        else if (clickedCell.hasClass("ftype"))
+            ftypeHandler();
+        else if (clickedCell.hasClass("aID"))
+            aIDHandler();
+        else if (clickedCell.hasClass("taID"))
+            taIDHandler();
+        else if (clickedCell.hasClass("naID"))
+            naIDHandler();
+        else if (clickedCell.hasClass("varID"))
+            varIDHandler();
+        else if (clickedCell.hasClass("fcall"))
+            fcallHandler();
+        else if (clickedCell.hasClass("size"))
+            nConstantHandler();
+        else if (clickedCell.hasClass("index"))
+            nConstantHandler();
+        else if (clickedCell.hasClass("expr"))
+            exprHandler();
+    }
+    
+    function vnameHandler() {
+        if (clickedCell.hasClass("array")) {
+            console.log("this is an array's name");
+        }
+        else {
+            console.log("naming a standard variable");
+        }
+    }
+    
+    function pnameHandler() {
+        console.log("Naming a param");
+    }
+    
+    function fnameHandler() {
+        console.log("Naming a function");
+    }
+    
+    function vtypeHandler() {
+        if (clickedCell.hasClass("array")) {
+            console.log("typing an array");
+        }
+        else {
+            console.log("typing a standard var");
+        }
+    }
+    
+    function ptypeHandler() {
+        console.log("typing a param");
+    }
+    
+    function ftypeHandler() {
+        console.log("typing a function");
+    }
+    
+    function aIDHandler() {
+        console.log("choosing a variable to assign");
+    }
+    
+    function taIDHandler() {
+        console.log("choosing a text var to assign");
+    }
+    
+    function naIDHandler() {
+        console.log("choosing a numeric var to assign");
+    }
+    
+    function varIDHandler() {
+        console.log("choosing a var to be used in a boolean condition");
+    }
+    
+    function fcallHandler() {
+        console.log("choosing a function to call");
+    }
+    
+    function nConstantHandler() {
+        console.log("need to insert a numeric constant");
+    }
+    
+    function exprHandler() {
+        console.log("this will handle expression clicks");
     }
     
   function createSelector(title, optionS, callback) {
