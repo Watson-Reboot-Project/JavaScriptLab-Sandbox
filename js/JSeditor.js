@@ -70,6 +70,7 @@ function JSEditor(divID) {
 	this.checkPromptFlag = checkPromptFlag;
 	this.reset = reset;
     
+    var insertionScope = 0;
     var scope = 0;
     var scopes = [];
     scopes.push(new Scope("global"));
@@ -174,6 +175,7 @@ function JSEditor(divID) {
 			// we are trying to select, all of the logic we need should be taken
 			// care of in the insertion bar cursor logic
 			editor.selectRowByIndex(insertRowNum, true);
+            determineInsertionScope(insertRowNum);
 			
 			/*
 			// If all condition is passed move to the specified line
@@ -827,10 +829,10 @@ function JSEditor(divID) {
 			editor.addRow(variableCount + 3,
 				[{text:"var", type:"keyword"},
 				{text:"&nbsp;"},
-                 {text:"ID", type:"vname" + " " + scope}, //todo. Add this to everywhere involving variable declarations?
+                 {text:"ID", type:"vname scope" + scope}, //todo. Add this to everywhere involving variable declarations?
 				{text:";&nbsp;"},
 				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype vtype"},
+				{text:"TYPE", type:"datatype vtype scope" + scope},
 				{text:"*/", type:"datatype"}]);
 		}
 		// if its an array
@@ -839,7 +841,7 @@ function JSEditor(divID) {
 			editor.addRow(variableCount + 3,
 				[{text:"var", type:"keyword"},
 				{text:"&nbsp;"},
-                 {text:"ID", type:"vname array"},
+                 {text:"ID", type:"vname array scope" + scope},
 				{text:"&nbsp;=&nbsp;"},
 				{text:"new&nbsp;", type:"keyword"},
 				{text:"Array"},
@@ -848,7 +850,7 @@ function JSEditor(divID) {
 				{text:")", type:"closeParen"},
 				{text:";"},
 				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype vtype array"},
+				{text:"TYPE", type:"datatype vtype array scope" + scope},
 				{text:"*/", type:"datatype"}]);
 		}
 
@@ -876,11 +878,11 @@ function JSEditor(divID) {
 			//adds "ID = EXPR;
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-                 {text:"ID", type:"aID"},
+                 {text:"ID", type:"aID scope" + insertionScope},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp"},
-                 {text:"EXPR", type:"expr"},
+                 {text:"EXPR", type:"expr scope" + insertionScope},
 				{text:";"}]);
 		}
 		else if (element == "write") {
@@ -889,7 +891,7 @@ function JSEditor(divID) {
 				[{text:indentStr},
 				{text:"document.write", type:"keyword"},
 				{text:"(", type:"openParen"},
-                 {text:"EXPR", type:"expr write"},
+                 {text:"EXPR", type:"expr write scope" + insertionScope},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -899,7 +901,7 @@ function JSEditor(divID) {
 				[{text:indentStr},
 				{text:"document.writeln", type:"keyword"},
 				{text:"(", type:"openParen"},
-                 {text:"EXPR", type: "expr write"},
+                 {text:"EXPR", type: "expr write scope" + insertionScope},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -907,15 +909,15 @@ function JSEditor(divID) {
 			//adds "ID = prompt(EXPR, EXPR);"
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-                 {text:"ID", type:"taID"},
+                 {text:"ID", type:"taID scope" + insertionScope},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp;"},
 				{text:"prompt", type:"keyword"},
 				{text:"(", type:"openParen"},
-                 {text:"EXPR", type:"expr text"},
+                 {text:"EXPR", type:"expr text scope" + insertionScope},
 				{text:",&nbsp;"},
-                 {text:"EXPR", type:"expr text"},
+                 {text:"EXPR", type:"expr text scope" + insertionScope},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -923,7 +925,7 @@ function JSEditor(divID) {
 			//adds "ID = parseFloat(prompt(EXPR, EXPR));
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-                 {text:"ID", type:"naID"},
+                 {text:"ID", type:"naID scope" + insertionScope},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp;"},
@@ -931,9 +933,9 @@ function JSEditor(divID) {
 				{text:"(", type:"openParen"},
 				{text:"prompt", type:"keyword"},
 				{text:"(", type:"openParen"},
-                 {text:"EXPR", type: "expr text"},
+                 {text:"EXPR", type: "expr text scope" + insertionScope},
 				{text:","},
-                 {text:"EXPR", type: "expr numeric"},
+                 {text:"EXPR", type: "expr numeric scope" + insertionScope},
 				{text:")", type:"closeParen"},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
@@ -953,7 +955,7 @@ function JSEditor(divID) {
 				[{text:indentStr},
 				{text:"return", type:"keyword"},
 				{text:"&nbsp;"},
-                 {text:"EXPR", type:"expr return"},
+                 {text:"EXPR", type:"expr return scope" + insertionScope},
 				{text:";"}]);
 		}
 
@@ -982,7 +984,7 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"if", type:"keyword"},
 			{text:"(", type:"openParen"},
-             {text:"EXPR", type:"expr bool"},
+             {text:"EXPR", type:"expr bool scope" + insertionScope},
 			{text:")", type:"closeParen"},
 			]);
 		
@@ -1018,7 +1020,7 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"if", type:"keyword"},
 			{text:"(", type:"openParen"},
-             {text:"EXPR", type:"expr bool"},
+             {text:"EXPR", type:"expr bool scope" + insertionScope},
 			{text:")", type:"closeParen"},
 			]);
 			
@@ -1069,7 +1071,7 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"while", type:"keyword"},
 			{text:"(", type:"openParen"},
-             {text:"EXPR", type:"expr bool"},
+             {text:"EXPR", type:"expr bool scope" + insertionScope},
 			{text:")", type:"closeParen"},
 			]);
 			
@@ -1105,18 +1107,18 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"for", type:"keyword"},
 			{text:"(", type:"openParen"},
-             {text:"ID", type:"naID"},
+             {text:"ID", type:"naID scope" + insertionScope},
 			{text:"&nbsp;"},
 			{text:"="},
 			{text:"&nbsp;"},
-             {text:"EXPR", type:"expr numeric"},
+             {text:"EXPR", type:"expr numeric scope" + insertionScope},
 			{text:";&nbsp;"},
-             {text:"ID", type:"forID"},
+             {text:"ID", type:"forID scope" + insertionScope},
 			{text:"&nbsp;"},
 			{text:"&lt;&nbsp;"},
-             {text:"EXPR", type:"expr numeric"},
+             {text:"EXPR", type:"expr numeric scope" + insertionScope},
 			{text:";&nbsp;"},
-             {text:"ID", type:"forID"},
+             {text:"ID", type:"forID scope" + insertionScope},
 			{text:"++"},
 			{text:")", type:"closeParen"}]);
 			
@@ -1207,10 +1209,11 @@ function JSEditor(divID) {
 		}*/
 		
 		//adds "function ID() /*VOID*/"
+        scopes.push(new Scope(scopes.length));
 		editor.addRow(beginRow++,
 			[{text:"function", type:"keyword"},
 			{text:"&nbsp;"},
-             {text:"ID", type:"fname"},
+             {text:"ID", type:"fname scope" + scopes.length},
 			{text:"(", type:"openParen"},
 			{text:")", type:"closeParen"},
 			{text:"&nbsp;"},
@@ -2446,19 +2449,20 @@ function JSEditor(divID) {
     }
     
     function clickHandler() {
+//        printScopes(); rtodo
         console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
             vnameHandler(); //mostly implemented?
         else if (clickedCell.hasClass("pname"))
             pnameHandler();
         else if (clickedCell.hasClass("fname"))
-            fnameHandler();
+            fnameHandler(); //mostly implemented?
         else if (clickedCell.hasClass("vtype"))
             vtypeHandler(); //mostly implemented?
         else if (clickedCell.hasClass("ptype"))
             ptypeHandler();
         else if (clickedCell.hasClass("ftype"))
-            ftypeHandler();
+            ftypeHandler(); //mostly implemented
         else if (clickedCell.hasClass("aID"))
             aIDHandler();
         else if (clickedCell.hasClass("taID"))
@@ -2826,6 +2830,27 @@ function JSEditor(divID) {
         console.log("going to check if the var is reffed");
         if (namesRef.indexOf(name) >= 0)
             return true;
+    }
+    
+    function determineInsertionScope(insertRowNum) {
+        if (insertRowNum > programStart) {
+            insertionScope = 0;
+            return;
+        }
+        var row;
+        for(var i = insertRowNum; i >= 0; i--){
+            row = editor.rowToArray(i);
+            
+            if(row[0] == 'function'){
+                var j = scopes.length;
+                for (k = 1; k < j; k++) {
+                    if (row[2] == scopes[k].name) {
+                        insertionScope = k;
+                    }
+                }
+            }
+        }
+        
     }
     
   function createSelector(title, optionS, callback) {
