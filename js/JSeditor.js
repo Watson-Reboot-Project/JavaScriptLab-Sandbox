@@ -457,72 +457,72 @@ function JSEditor(divID) {
 						}
 					}
 				}
-				else if (clickRow[cellNum-5] == 'var')
-				{
-					console.log("HERE");
-					if (foundIn(clickRow[cellNum-3], namesRef))
-					{
-						console.log("Can't change type. Is reffed.\n");
-					}
-					else
-					{
-						console.log("not reffed.");
-						if (foundIn(clickRow[cellNum-3], namesUsed))
-						{
-							console.log("used.");
-							delN(clickRow[cellNum-3], nvars);
-							delN(clickRow[cellNum-3], tvars);
-							delN(clickRow[cellNum-3], namesUsed);
-							createSelector("Select Type", vtypes, typeConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(vtypes, "type");
-		//                            $("#selector").dialog('open');
-						}
-						else
-						{
-							console.log("not used.");
-							createSelector("Select Type", vtypes, typeConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(vtypes, "type");
-		//                            $("#selector").dialog('open');
-						}
-						
-						if(clickRow[cellNum-3] != 'ID' && !foundIn(clickRow[cellNum-3], namesRef)){
-							namesUsed.push(clickRow[cellNum-3]);
-						}
-					}
-				}
-				else if (clickRow[cellNum-11] == 'var')
-				{
-					console.log("array?");
-					if (foundIn(clickRow[cellNum-9].concat("[]"), namesRef))
-					{
-						console.log("Can't change type. Is reffed.\n");
-					}
-					else
-					{
-						console.log("not reffed.");
-						if (foundIn(clickRow[cellNum-9].concat("[]"), namesUsed))
-						{
-							console.log("used.");
-							delN(clickRow[cellNum-9].concat("[]"), nvars);
-							delN(clickRow[cellNum-9].concat("[]"), tvars);
-							delN(clickRow[cellNum-9].concat("[]"), namesUsed);
-							createSelector("Select Type", vtypes, typeConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(vtypes, "type");
-		//                            $("#selector").dialog('open');
-						}
-						else
-						{
-							console.log("not used.");
-							createSelector("Select Type", vtypes, typeConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(vtypes, "type");
-		//                            $("#selector").dialog('open');
-						}
-					}
-				}
+//				else if (clickRow[cellNum-5] == 'var')
+//				{
+//					console.log("HERE");
+//					if (foundIn(clickRow[cellNum-3], namesRef))
+//					{
+//						console.log("Can't change type. Is reffed.\n");
+//					}
+//					else
+//					{
+//						console.log("not reffed.");
+//						if (foundIn(clickRow[cellNum-3], namesUsed))
+//						{
+//							console.log("used.");
+//							delN(clickRow[cellNum-3], nvars);
+//							delN(clickRow[cellNum-3], tvars);
+//							delN(clickRow[cellNum-3], namesUsed);
+//							createSelector("Select Type", vtypes, typeConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(vtypes, "type");
+//		//                            $("#selector").dialog('open');
+//						}
+//						else
+//						{
+//							console.log("not used.");
+//							createSelector("Select Type", vtypes, typeConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(vtypes, "type");
+//		//                            $("#selector").dialog('open');
+//						}
+//						
+//						if(clickRow[cellNum-3] != 'ID' && !foundIn(clickRow[cellNum-3], namesRef)){
+//							namesUsed.push(clickRow[cellNum-3]);
+//						}
+//					}
+//				}
+//				else if (clickRow[cellNum-11] == 'var')
+//				{
+//					console.log("array?");
+//					if (foundIn(clickRow[cellNum-9].concat("[]"), namesRef))
+//					{
+//						console.log("Can't change type. Is reffed.\n");
+//					}
+//					else
+//					{
+//						console.log("not reffed.");
+//						if (foundIn(clickRow[cellNum-9].concat("[]"), namesUsed))
+//						{
+//							console.log("used.");
+//							delN(clickRow[cellNum-9].concat("[]"), nvars);
+//							delN(clickRow[cellNum-9].concat("[]"), tvars);
+//							delN(clickRow[cellNum-9].concat("[]"), namesUsed);
+//							createSelector("Select Type", vtypes, typeConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(vtypes, "type");
+//		//                            $("#selector").dialog('open');
+//						}
+//						else
+//						{
+//							console.log("not used.");
+//							createSelector("Select Type", vtypes, typeConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(vtypes, "type");
+//		//                            $("#selector").dialog('open');
+//						}
+//					}
+//				}
 			}
 			if (cellVal == 'EXPR')
 			{
@@ -827,7 +827,7 @@ function JSEditor(divID) {
 			editor.addRow(variableCount + 3,
 				[{text:"var", type:"keyword"},
 				{text:"&nbsp;"},
-                 {text:"ID", type:"vname"},
+                 {text:"ID", type:"vname" + " " + scope}, //todo. Add this to everywhere involving variable declarations?
 				{text:";&nbsp;"},
 				{text:"&nbsp;/*", type:"datatype"},
 				{text:"TYPE", type:"datatype vtype"},
@@ -2448,13 +2448,13 @@ function JSEditor(divID) {
     function clickHandler() {
         console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
-            vnameHandler();
+            vnameHandler(); //mostly implemented?
         else if (clickedCell.hasClass("pname"))
             pnameHandler();
         else if (clickedCell.hasClass("fname"))
             fnameHandler();
         else if (clickedCell.hasClass("vtype"))
-            vtypeHandler();
+            vtypeHandler(); //mostly implemented?
         else if (clickedCell.hasClass("ptype"))
             ptypeHandler();
         else if (clickedCell.hasClass("ftype"))
@@ -2475,6 +2475,11 @@ function JSEditor(divID) {
             nConstantHandler();
         else if (clickedCell.hasClass("expr"))
             exprHandler();
+    }
+    
+    function determineScope() {
+//        determine the scope of the clicked cell (todo)
+        console.log("Supposed to determine scope here");
     }
     
     function vnameCallback(result) {
@@ -2502,17 +2507,17 @@ function JSEditor(divID) {
             while (!(tCell.hasClass("vtype")))
                 tCell = tCell.next();
             if (tCell.hasClass("array")) {
-                if (tCell.text() == 'TEXT')
+                if (tCell.text() == 'Text')
                     scopes[scope].tvars.push(result.concat("[]"));
-                else if (tCell.text() == 'NUMERIC')
+                else if (tCell.text() == 'Numeric')
                     scopes[scope].nvars.push(result.concat("[]"));
                 else
                     scopes[scope].unvars.push(result.concat("[]"));
             }
             else {
-                if (tCell.text() == 'TEXT')
+                if (tCell.text() == 'Text')
                     scopes[scope].tvars.push(result);
-                else if (tCell.text() == 'NUMERIC')
+                else if (tCell.text() == 'Numeric')
                     scopes[scope].nvars.push(result);
                 else
                     scopes[scope].unvars.push(result);
@@ -2521,20 +2526,41 @@ function JSEditor(divID) {
         console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
     }
     
-    function vtypeCallback {
+    function vtypeCallback(result) {
         if (result == null)
             return;
         else {
+            determineScope();
             clickedCell.text(result);
+            console.log(result);
 //            locate cell containing variable name
             var nCell = clickedCell;
             while (!nCell.hasClass("vname"))
                 nCell = nCell.prev();
-            
-            if (nCell.text != 'ID') {
-                
+            console.log(nCell.text());
+            if (nCell.text() != 'ID') {
+                console.log("are we getting here");
+                if (clickedCell.hasClass("array")) {
+                    varExists(nCell.text().concat("[]"));
+                    if (result == 'Text')
+                        scopes[scope].tvars.push(nCell.text().concat("[]"));
+                    else if (result == 'Numeric')
+                        scopes[scope].nvars.push(nCell.text().concat("[]"));
+                    else
+                        console.log("WHAT DID YOU DO?!?!?");
+                }
+                else {
+                    varExists(nCell.text());
+                    if (result == 'Text')
+                        scopes[scope].tvars.push(nCell.text());
+                    else if (result == 'Numeric')
+                        scopes[scope].nvars.push(nCell.text());
+                    else
+                        console.log("WHAT DID YOU DO?!?!?");
+                }
             }
         }
+        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
     }
     
 //    function that handles the naming of variables and arrays
@@ -2563,7 +2589,6 @@ function JSEditor(divID) {
             createStringPad("Variable Name", "Please give the variable a name.", vnameCallback);
 //            console.log("naming a standard variable");
         }
-//        console.log(scopes[0].tvars + "\n" + scopes[0].nvars);
     }
     
     function pnameHandler() {
@@ -2580,7 +2605,8 @@ function JSEditor(divID) {
             var nCell = clickedCell;
             while (!nCell.hasClass("vname"))
                 nCell = nCell.prev();
-            if (nCell.text != 'ID') {
+            console.log(nCell.text());
+            if (nCell.text() != 'ID') {
                 if (varReffed(nCell.text().concat("[]"))) {
                     //create alert
                     return;
@@ -2594,7 +2620,7 @@ function JSEditor(divID) {
             while (!nCell.hasClass("vname"))
                 nCell = nCell.prev();
             
-            if (nCell.text != 'ID') {
+            if (nCell.text() != 'ID') {
                 if (varReffed(nCell.text().concat("[]"))) {
                     //create alert
                     return;
@@ -2661,7 +2687,7 @@ function JSEditor(divID) {
     }
     
     function varReffed(name) {
-        //need to check whether var is in list of referenced variables
+        //need to check whether var is in list of referenced variables (todo?)
         console.log("going to check if the var is reffed");
         if (namesRef.indexOf(name) >= 0)
             return true;
