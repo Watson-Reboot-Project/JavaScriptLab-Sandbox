@@ -70,6 +70,7 @@ function JSEditor(divID) {
 	this.checkPromptFlag = checkPromptFlag;
 	this.reset = reset;
     
+    var scope = 0;
     var scopes = [];
     scopes.push(new Scope("global"));
 	
@@ -607,9 +608,9 @@ function JSEditor(divID) {
 //				console.log("for id");s
 				createSelector("Counter Selection", nvars, forId);
 			}
-			else if (cellVal == 'ID' && clickRow.indexOf('var') >= 0) {
-				createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
-			}
+//			else if (cellVal == 'ID' && clickRow.indexOf('var') >= 0) {
+//				createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
+//			}
 			else if (cellVal == 'ID' && clickRow[cellNum+2] == '=')
 			{
 				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
@@ -1449,6 +1450,7 @@ function JSEditor(divID) {
                 if (clickRow[clickedCellNum-3] != 'ID')
                 {
                     tvars.push(clickRow[clickedCellNum-3]);
+                    scopes[0].tvars.push(clickRow[clickedCellNum-3]);
                 }
             }
             else if (result == 'Numeric') {
@@ -1457,6 +1459,7 @@ function JSEditor(divID) {
                 {
                     //console.log(innerTablet.rows[0].cells[4].textContent);
                     nvars.push(clickRow[clickedCellNum-3]);
+                    scopes[0].nvars.push(clickRow[clickedCellNum-3]);
                 }
             }
             if (!foundIn(clickRow[clickedCellNum-3], namesUsed) && clickRow[clickedCellNum-3] != 'ID') namesUsed.push(clickRow[clickedCellNum-3]);
@@ -1470,6 +1473,7 @@ function JSEditor(divID) {
                 if (clickRow[clickedCellNum-9] != 'ID')
                 {
                     tvars.push(clickRow[clickedCellNum-9].concat("[]"));
+                    scopes[0].tvars.push(clickRow[clickedCellNum-9].concat("[]"));
                 }
             }
             else if (result == 'Numeric') {
@@ -1478,11 +1482,12 @@ function JSEditor(divID) {
                 {
                     //console.log(innerTablet.rows[0].cells[4].textContent);
                     nvars.push(clickRow[clickedCellNum-9].concat("[]"));
+                    scopes[0].nvars.push(clickRow[clickedCellNum-9].concat("[]"));
                 }
             }
             if (!foundIn(clickRow[clickedCellNum-9].concat("[]"), namesUsed) && clickRow[clickedCellNum-9] != 'ID') namesUsed.push(clickRow[clickedCellNum-9].concat("[]"));
         }
-        console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed);
+        console.log("nvars: " + nvars +"\ntvars: " + tvars + "\nnamesUsed: " + namesUsed + "\n" + scopes[0].tvars + "\n" + scopes[0].nvars);
 //        $("#selector").dialog('close');
 	}
     
@@ -2441,6 +2446,7 @@ function JSEditor(divID) {
     }
     
     function clickHandler() {
+        console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
             vnameHandler();
         else if (clickedCell.hasClass("pname"))
@@ -2471,13 +2477,93 @@ function JSEditor(divID) {
             exprHandler();
     }
     
-    function vnameHandler() {
-        if (clickedCell.hasClass("array")) {
-            console.log("this is an array's name");
+    function vnameCallback(result) {
+        if (result == null)
+            return;
+        else if (namesUsed.indexOf(result) >= 0) {
+            //create alert name used
+            return;
+        }
+        else if (resWords.indexOf(result) >= 0) {
+            //create alert is reserved word
+            return;
         }
         else {
-            console.log("naming a standard variable");
+            if (clickedCell.hasClass("array")) {
+                varExists(clickedCell.text().concat("[]"));
+            }
+            else {
+                varExists(clickedCell.text());
+            }
+            clickedCell.text(result);
+            if (scopes.length > 1)
+                determineScope();
+            var tCell = clickedCell;
+            while (!(tCell.hasClass("vtype")))
+                tCell = tCell.next();
+            if (tCell.hasClass("array")) {
+                if (tCell.text() == 'TEXT')
+                    scopes[scope].tvars.push(result.concat("[]"));
+                else if (tCell.text() == 'NUMERIC')
+                    scopes[scope].nvars.push(result.concat("[]"));
+                else
+                    scopes[scope].unvars.push(result.concat("[]"));
+            }
+            else {
+                if (tCell.text() == 'TEXT')
+                    scopes[scope].tvars.push(result);
+                else if (tCell.text() == 'NUMERIC')
+                    scopes[scope].nvars.push(result);
+                else
+                    scopes[scope].unvars.push(result);
+            }
         }
+        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
+    }
+    
+    function vtypeCallback {
+        if (result == null)
+            return;
+        else {
+            clickedCell.text(result);
+//            locate cell containing variable name
+            var nCell = clickedCell;
+            while (!nCell.hasClass("vname"))
+                nCell = nCell.prev();
+            
+            if (nCell.text != 'ID') {
+                
+            }
+        }
+    }
+    
+//    function that handles the naming of variables and arrays
+    function vnameHandler() {
+        console.log("naming a var");
+        if (clickedCell.hasClass("array")) {
+//            if the cell doesn't contain 'id', the name already exists somewhere,
+//            so we need to make sure it isn't referenced before attempting to change it
+            if (clickedCell.text() != 'ID') {
+                if (varReffed(clickedCell.text().concat("[]"))) {
+                    //create alert
+                    return;
+                }
+            }
+            createStringPad("Variable Name", "Please give the array a name.", vnameCallback);
+        }
+        else {
+//            if the cell doesn't contain 'id', the name already exists somewhere,
+//            so we need to make sure it isn't referenced before attempting to change it
+            if (clickedCell.text() != 'ID') {
+                if (varReffed(clickedCell.text().concat("[]"))) {
+                    //create alert
+                    return;
+                }
+            }
+            createStringPad("Variable Name", "Please give the variable a name.", vnameCallback);
+//            console.log("naming a standard variable");
+        }
+//        console.log(scopes[0].tvars + "\n" + scopes[0].nvars);
     }
     
     function pnameHandler() {
@@ -2490,10 +2576,32 @@ function JSEditor(divID) {
     
     function vtypeHandler() {
         if (clickedCell.hasClass("array")) {
-            console.log("typing an array");
+//            console.log("typing an array");
+            var nCell = clickedCell;
+            while (!nCell.hasClass("vname"))
+                nCell = nCell.prev();
+            if (nCell.text != 'ID') {
+                if (varReffed(nCell.text().concat("[]"))) {
+                    //create alert
+                    return;
+                }
+            }
+            createSelector("Variable Types", vtypes, vtypeCallback);
         }
         else {
-            console.log("typing a standard var");
+//            locate the cell containing this var's name
+            var nCell = clickedCell;
+            while (!nCell.hasClass("vname"))
+                nCell = nCell.prev();
+            
+            if (nCell.text != 'ID') {
+                if (varReffed(nCell.text().concat("[]"))) {
+                    //create alert
+                    return;
+                }
+            }
+            createSelector("Variable Types", vtypes, vtypeCallback);
+//            console.log("typing a standard var");
         }
     }
     
@@ -2533,6 +2641,32 @@ function JSEditor(divID) {
         console.log("this will handle expression clicks");
     }
     
+    function varExists(name) {
+        var j = scopes.length;
+        for (i=0;i<j;i++) {
+            if (scopes[i].tvars.indexOf(name) >= 0) {
+                console.log("text var exists");
+                scopes[i].tvars.splice(scopes[i].tvars.indexOf(name), 1);
+                return;
+            }
+            else if (scopes[i].nvars.indexOf(name) >= 0) {
+                console.log("numeric var exists");
+                scopes[i].nvars.splice(scopes[i].nvars.indexOf(name), 1);
+                return;
+            }
+            else if (scopes[i].unvars.indexOf(name) >= 0) {
+                scopes[i].unvars.splice(scopes[i].unvars.indexOf(name), 1);
+            }
+        }
+    }
+    
+    function varReffed(name) {
+        //need to check whether var is in list of referenced variables
+        console.log("going to check if the var is reffed");
+        if (namesRef.indexOf(name) >= 0)
+            return true;
+    }
+    
   function createSelector(title, optionS, callback) {
         var newSel = new Selector();
         newSel.open(title, optionS, callback, document.getElementById(divID));
@@ -2555,11 +2689,13 @@ function JSEditor(divID) {
 }
 
 function Scope(myName) {
-    var name;
-    var tvars;
-    var nvars;
+    var name;       //a scope's name
+    var tvars;      //list of text vars for a scope
+    var nvars;      //list of numeric vars for a scope
+    var unvars;     //list of untyped vars for a scope
     
     this.name = myName;
     this.tvars = [];
     this.nvars = [];
+    this.unvars = [];
 }
