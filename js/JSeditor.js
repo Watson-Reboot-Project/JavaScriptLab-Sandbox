@@ -2511,8 +2511,13 @@ function JSEditor(divID) {
             return;
         }
         else {
-			if( /^[a-zA-Z]+$/.test(result) == false){
-				createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
+			if( /^[a-zA-Z]+$/.test(result[0]) == true){
+				if(/^[a-zA-Z0-9]+$/.test(result) == false){
+					createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
+					return;
+				}
+			}else{
+				createAlertBox("Invalid Character",result+" is invalid!",1,dummy);
 				return;
 			}
             namesUsed.push(result);
@@ -2565,8 +2570,13 @@ function JSEditor(divID) {
             return;
         }
 		
-        if( /^[a-zA-Z]+$/.test(result) == false){
-			createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
+        if( /^[a-zA-Z]+$/.test(result[0]) == true){
+			if(/^[a-zA-Z0-9]+$/.test(result) == false){
+				createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
+				return;
+			}
+		}else{
+			createAlertBox("Invalid Character",result+" is invalid!",1,dummy);
 			return;
 		}
         
