@@ -615,11 +615,11 @@ function JSEditor(divID) {
 //			{
 //				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
 //			}
-            if (cellVal == 'index')
-            {
-                createSelector("Constant or Variable?", ["Constant", "Variable"], indexConfirm);
-            }
-			else if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && (clickRow.indexOf('function') >= 0) && (clickRow.indexOf('ID') != 2)){
+//            if (cellVal == 'index')
+//            {
+//                createSelector("Constant or Variable?", ["Constant", "Variable"], indexConfirm);
+//            }
+			 if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && (clickRow.indexOf('function') >= 0) && (clickRow.indexOf('ID') != 2)){
                 while(!clickedCell.hasClass('closeParen')){
                     clickedCell = clickedCell.next();
                 }
@@ -1212,11 +1212,11 @@ function JSEditor(divID) {
 			[{text:"function", type:"keyword"},
 			{text:"&nbsp;"},
              {text:"ID", type:"fname scope" + scopes.length},
-			{text:"(", type:"openParen"},
-			{text:")", type:"closeParen"},
+			{text:"(", type:"openParen foParen"},
+			{text:")", type:"closeParen fcParen"},
 			{text:"&nbsp;"},
 			{text:"/*", type:"datatype"},
-			{text:"VOID", type:"datatype ftype"},
+			{text:"Void", type:"datatype ftype"},
 			{text:"*/", type:"datatype"}]);
 			
 		//adds "{"
@@ -2649,7 +2649,14 @@ function JSEditor(divID) {
             namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
         }
         
-        clickedCell.text(result);
+        if (result[result.length-1] == ']') {
+            var str = result.substring(0,(result.length-1));
+            clickedCell.text(str);
+            editor.addCell(clickedCell,[{text:"index", type:"index"}, {text:"]"}]);
+        }
+        else {
+            clickedCell.text(result);
+        }
         namesRef.push(result);
         var nlist = scopes[0].nvars;
         var tlist = scopes[0].tvars;
@@ -2685,7 +2692,14 @@ function JSEditor(divID) {
         if (clickedCell.text() != 'ID') {
             namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
         }
-        clickedCell.text(result);
+        if (result[result.length-1] == ']') {
+            var str = result.substring(0,(result.length-1));
+            clickedCell.text(str);
+            editor.addCell(clickedCell,[{text:"index", type:"index"}, {text:"]"}]);
+        }
+        else {
+            clickedCell.text(result);
+        }
         namesRef.push(result);
     }
     
@@ -2696,7 +2710,14 @@ function JSEditor(divID) {
         if (clickedCell.text() != 'ID') {
             namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
         }
-        clickedCell.text(result);
+        if (result[result.length-1] == ']') {
+            var str = result.substring(0,(result.length-1));
+            clickedCell.text(str);
+            editor.addCell(clickedCell,[{text:"index", type:"index"}, {text:"]"}]);
+        }
+        else {
+            clickedCell.text(result);
+        }
         namesRef.push(result);
         
         if (clickedCell.hasClass("iforID")) {
@@ -2788,6 +2809,22 @@ function JSEditor(divID) {
             return;
         
         clickedCell.text(result); //todo this probably needs MORE to it
+    }
+    
+    function indexCallback(result) {
+        determineScope();
+        if (result == null)
+            return;
+        else if (result == "Constant") {
+            createNumPad(0, null, "Numeric Entry", "Please enter an index to reference.", 0, 10, nConstantCallback);
+        }
+        
+        else if (result == "Variable") {
+            var list = scopes[0].nvars;
+            if (scope != 0)
+                list = list.concat(scopes[scope].nvars);
+            createSelector("Numeric Variables", list, nvarCallback);
+        }
     }
     
     function wexprCallback(result) {
@@ -2910,7 +2947,14 @@ function JSEditor(divID) {
     function nvarCallback(result) {
         if (result == null)
             return;
-        clickedCell.text(result);
+        if (result[result.length-1] == ']') {
+            var str = result.substring(0,(result.length-1));
+            clickedCell.text(str);
+            editor.addCell(clickedCell,[{text:"index", type:"index"}, {text:"]"}]);
+        }
+        else {
+            clickedCell.text(result);
+        }
     }
     
     function nfunCallback(result) {
@@ -3157,6 +3201,10 @@ function JSEditor(divID) {
     function sizeHandler() {
 //        console.log("need to insert a numeric constant"); rtodo
         createNumPad(0, null, "Size Entry", "Set the size of your array.", 0, 10, nConstantCallback);
+    }
+    
+    function indexHandler() {
+        createSelector("Index Options", ["Constant", "Variable"], indexCallback);
     }
     
     function exprHandler() {
