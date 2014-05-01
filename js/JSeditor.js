@@ -526,66 +526,66 @@ function JSEditor(divID) {
 //					}
 //				}
 //			}
-			if (cellVal == 'EXPR')
-			{
-				switch (exprtype())
-				{
-					case ('PRINT'):
-							console.log('print');
-							createSelector("Print Type Selection", wtypes, exprConfirm);
-							//dialog openSelector("Print Types", wtypes).done(function(returned) { exprConfirm(returned); returnToNormalColor(); });
-							break;
-					case ('BOOL'):
-							console.log("bool");
-							createSelector("Comparison Type Selection", btypes, boolConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(btypes, "bool");
-		//                            $("#selector").dialog('open');
-							break;
-					case ('TEXT ASSIGNMENT'):
-							createSelector("Text Selection", tExpr, exprSelConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(tExpr, "expr");
-		//                            $("#selector").dialog('open');
-						break;
-					case ('NUMERIC ASSIGNMENT'):
-							createSelector("Numeric Selection", nExpr, exprSelConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(nExpr, "expr");
-		//                            $("#selector").dialog('open');
-							break;
-					case ('PROMPTMSG'):
-							createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(["text constant", "text variable"], "expr");
-		//                            $("#selector").dialog('open');
-						break;
-					case ('PROMPTDFLT'):
-							createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(["text constant", "text variable"], "expr");
-		//                            $("#selector").dialog('open');
-						break;
-					case ('PARSEDFLT'):
-							createNumPad(null, null, "Default", "Enter a default value for this prompt.", true, 10, enterNum);
-							//dialog openNumPad(null,null,"Enter default value", "some text", false, 10).done(function(result) {clickedCell.textContent = result; });
-							
-						break;
-					case ('NUMERIC COMPARISON'):
-							createSelector("Comparison Type Selection?", nExpr, exprSelConfirm);
-		//                            $("#selector").empty();
-		//                            generateSelectionHTML(nExpr, "expr")
-		//                            $("#selector").dialog('open');
-						break;
-					case ('RETURN'):
-							createSelector("What type?????", wtypes, exprConfirm);
-							//dialog openSelector("What type?", wtypes).done(function(returned) { exprConfirm(returned); });
-							break;
-					default:
-						break;
-				}
-			}
-			else if (cellVal == 'ID' && cellNum > 1 && foundIn(clickRow[cellNum-2],compKeys))
+//			if (cellVal == 'EXPR')
+//			{
+//				switch (exprtype())
+//				{
+//					case ('PRINT'):
+//							console.log('print');
+//							createSelector("Print Type Selection", wtypes, exprConfirm);
+//							//dialog openSelector("Print Types", wtypes).done(function(returned) { exprConfirm(returned); returnToNormalColor(); });
+//							break;
+//					case ('BOOL'):
+//							console.log("bool");
+//							createSelector("Comparison Type Selection", btypes, boolConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(btypes, "bool");
+//		//                            $("#selector").dialog('open');
+//							break;
+//					case ('TEXT ASSIGNMENT'):
+//							createSelector("Text Selection", tExpr, exprSelConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(tExpr, "expr");
+//		//                            $("#selector").dialog('open');
+//						break;
+//					case ('NUMERIC ASSIGNMENT'):
+//							createSelector("Numeric Selection", nExpr, exprSelConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(nExpr, "expr");
+//		//                            $("#selector").dialog('open');
+//							break;
+//					case ('PROMPTMSG'):
+//							createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(["text constant", "text variable"], "expr");
+//		//                            $("#selector").dialog('open');
+//						break;
+//					case ('PROMPTDFLT'):
+//							createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(["text constant", "text variable"], "expr");
+//		//                            $("#selector").dialog('open');
+//						break;
+//					case ('PARSEDFLT'):
+//							createNumPad(null, null, "Default", "Enter a default value for this prompt.", true, 10, enterNum);
+//							//dialog openNumPad(null,null,"Enter default value", "some text", false, 10).done(function(result) {clickedCell.textContent = result; });
+//							
+//						break;
+//					case ('NUMERIC COMPARISON'):
+//							createSelector("Comparison Type Selection?", nExpr, exprSelConfirm);
+//		//                            $("#selector").empty();
+//		//                            generateSelectionHTML(nExpr, "expr")
+//		//                            $("#selector").dialog('open');
+//						break;
+//					case ('RETURN'):
+//							createSelector("What type?????", wtypes, exprConfirm);
+//							//dialog openSelector("What type?", wtypes).done(function(returned) { exprConfirm(returned); });
+//							break;
+//					default:
+//						break;
+//				}
+//			}
+			if (cellVal == 'ID' && cellNum > 1 && foundIn(clickRow[cellNum-2],compKeys))
 			{
 				//Choosing the left side of a comparison in a while or if
 				createSelector("Choose an identifier.", namesUsed, idConfirm);
@@ -595,28 +595,28 @@ function JSEditor(divID) {
 //				//Assigning an identifier to a function
 //				createStringPad("Function ID", "Please name the function.", fIDconfirm);
 //			}
-			else if (cellVal == 'FUNCTION') {
-				//Calling a function
-				createSelector("Function Call", ftypes, fcallType);
-			}
-			else if (cellVal == 'SIZE')
-			{
-				//Choosing a size for an Array
-				createNumPad(0,null,"Array Size", "Enter a size for the array.", false, 10, enterNum);
-			}
+//			else if (cellVal == 'FUNCTION') {
+//				//Calling a function
+//				createSelector("Function Call", ftypes, fcallType);
+//			}
+//			else if (cellVal == 'SIZE')
+//			{
+//				//Choosing a size for an Array
+//				createNumPad(0,null,"Array Size", "Enter a size for the array.", false, 10, enterNum);
+//			}
 			/*Weston edit end*/
-			else if (cellVal == 'ID' && clickRow[1] == 'for' && cellNum == 3)
-			{
-//				console.log("for id");s
-				createSelector("Counter Selection", nvars, forId);
-			}
+//			else if (cellVal == 'ID' && clickRow[1] == 'for' && cellNum == 3)
+//			{
+////				console.log("for id");s
+//				createSelector("Counter Selection", nvars, forId);
+//			}
 //			else if (cellVal == 'ID' && clickRow.indexOf('var') >= 0) {
 //				createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
 //			}
-			else if (cellVal == 'ID' && clickRow[cellNum+2] == '=')
-			{
-				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
-			}
+//			else if (cellVal == 'ID' && clickRow[cellNum+2] == '=')
+//			{
+//				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
+//			}
             else if (cellVal == 'index')
             {
                 createSelector("Constant or Variable?", ["Constant", "Variable"], indexConfirm);
@@ -1107,7 +1107,7 @@ function JSEditor(divID) {
 			[{text:indentStr},
 			{text:"for", type:"keyword"},
 			{text:"(", type:"openParen"},
-             {text:"ID", type:"naID scope" + insertionScope},
+             {text:"ID", type:"naID iforID scope" + insertionScope},
 			{text:"&nbsp;"},
 			{text:"="},
 			{text:"&nbsp;"},
@@ -2464,26 +2464,34 @@ function JSEditor(divID) {
         else if (clickedCell.hasClass("ftype"))
             ftypeHandler(); //mostly implemented
         else if (clickedCell.hasClass("aID"))
-            aIDHandler();
+            aIDHandler(); //mostly implemented
         else if (clickedCell.hasClass("taID"))
-            taIDHandler();
+            taIDHandler(); //mostly implemented
         else if (clickedCell.hasClass("naID"))
-            naIDHandler();
+            naIDHandler(); //mostly implemented
         else if (clickedCell.hasClass("varID"))
-            varIDHandler();
+            varIDHandler(); //mostly implemented
         else if (clickedCell.hasClass("fcall"))
-            fcallHandler();
+            fcallHandler();  //mostly implemented
         else if (clickedCell.hasClass("size"))
-            nConstantHandler();
+            sizeHandler(); //mostly implemented
         else if (clickedCell.hasClass("index"))
-            nConstantHandler();
+            indexHandler(); //mostly implemented
         else if (clickedCell.hasClass("expr"))
             exprHandler();
     }
     
     function determineScope() {
 //        determine the scope of the clicked cell (todo)
-        console.log("Supposed to determine scope here");
+//        console.log("Supposed to determine scope here"); rtodo
+        var j = scopes.length;
+        for (i=0;i<j;i++) {
+            if (clickedCell.hasClass(("scope" + i))) {
+                scope = i;
+                console.log(scope); //rtodo
+                return;
+            }
+        }
     }
     
     function vnameCallback(result) {
@@ -2542,7 +2550,8 @@ function JSEditor(divID) {
             //create alert is reserved word todo
             return;
         }
-        namesUsed.push(result);
+        
+
         funExists(clickedCell.text());
         if (clickedCell.text() != 'ID') {
             scopeAlter(clickedCell.text(),result);
@@ -2550,6 +2559,7 @@ function JSEditor(divID) {
         else {
             scopes.push(new Scope(result));
             printScopes();
+            namesUsed.push(result);
         }
         clickedCell.text(result);
         var tCell = clickedCell;
@@ -2561,7 +2571,7 @@ function JSEditor(divID) {
             nFuns.push(result);
         else if (tCell.text() == 'Void')
             vFuns.push(result);
-        console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns);
+        console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns + "\nNamesUsed: " + namesUsed);
     }
     
     function vtypeCallback(result) {
@@ -2631,6 +2641,155 @@ function JSEditor(divID) {
             }
         }
         console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns);
+    }
+    
+    function aIDCallback(result) {
+        if (result == null)
+            return;
+        
+        if (clickedCell.text() != 'ID') {
+            namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
+        }
+        
+        clickedCell.text(result);
+        namesRef.push(result);
+        var nlist = scopes[0].nvars;
+        var tlist = scopes[0].tvars;
+        if (scope != 0) {
+            nlist.concat(scopes[scope].nvars);
+            tlist.concat(scopes[scope].tvars);
+        }
+        $(clickedCell).removeClass("aID");
+        
+        var eCell = clickedCell;
+        while (!eCell.hasClass("expr"))
+            eCell = eCell.next();
+        
+        if (nlist.indexOf(result) >= 0) {
+            $(clickedCell).addClass("naID");
+            $(eCell).addClass("numeric");
+        }
+        else if (tlist.indexOf(result) >= 0) {
+            $(clickedCell).addClass("taID");
+            $(eCell).addClass("text");
+        }
+        else {
+            console.log("problem in aIDCallback");
+        }
+        console.log($(clickedCell).attr('class')); //rtodo
+        
+    }
+    
+    function taIDCallback(result) {
+        if (result == null)
+            return;
+        
+        if (clickedCell.text() != 'ID') {
+            namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
+        }
+        clickedCell.text(result);
+        namesRef.push(result);
+    }
+    
+    function naIDCallback(result) {
+        if (result == null)
+            return;
+        
+        if (clickedCell.text() != 'ID') {
+            namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
+        }
+        clickedCell.text(result);
+        namesRef.push(result);
+        
+        if (clickedCell.hasClass("iforID")) {
+            var x = 2;
+            var fCell = clickedCell;
+            while (x > 0) {
+                fCell = fCell.next();
+                while (!fCell.hasClass("forID"))
+                    fCell = fCell.next();
+                fCell.text(result);
+                x--;
+            }
+        }
+    }
+    
+    function varIDCallback(result) {
+        if (result == null)
+            return;
+        
+        
+        var eCell = clickedCell;
+        while (!eCell.hasClass("expr"))
+            eCell = eCell.next();
+        
+        if (clickedCell.text() != 'ID') {
+            namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
+            if (eCell.text() == 'EXPR') {
+                if (eCell.hasClass("numeric"))
+                    $(eCell).removeClass("numeric");
+                else if (eCell.hasClass("text"))
+                    $(eCell).removeClass("text");
+            }
+        }
+        
+        clickedCell.text(result);
+        namesRef.push(result);
+        var nlist = scopes[0].nvars;
+        var tlist = scopes[0].tvars;
+        if (scope != 0) {
+            nlist.concat(scopes[scope].nvars);
+            tlist.concat(scopes[scope].tvars);
+        }
+//        $(clickedCell).removeClass("aID");
+        
+        
+        if (nlist.indexOf(result) >= 0) {
+//            $(clickedCell).addClass("naID");
+            $(eCell).addClass("numeric");
+        }
+        else if (tlist.indexOf(result) >= 0) {
+//            $(clickedCell).addClass("taID");
+            $(eCell).addClass("text");
+        }
+        else {
+            console.log("problem in varIDCallback");
+        }
+        console.log($(clickedCell).attr('class')); //rtodo
+        
+    }
+    
+    function fcallCallback(result) {
+        if (result == null)
+            return;
+        
+        if (clickedCell.text() != 'FUNCTION') {
+            namesRef.splice(namesRef.indexOf(clickedCell.text()));
+        }
+        namesRef.push(result);
+//        console.log(result);
+        clickedCell.text(result);
+        var fcalled = scopes[getFunction(result)];
+        if (fcalled.param.length == 0)
+            return;
+        else {
+            var pCell = clickedCell.next();
+            for (i=0;i<fcalled.param.length;i++) {
+                if (i > 0) {
+                    editor.addCell(pCell, [{text:", "}]);
+                    pCell = pCell.next();
+                }
+                editor.addCell(pCell, [{text:"ID", type: "pID " + fcalled.param[i]}]);
+                pCell = pCell.next();
+            }
+        }
+    }
+    
+    function nConstantCallback(result) {
+        if (result == null)
+            return;
+        
+        clickedCell.text(result); //todo this probably needs MORE to it
     }
     
 //    function that handles the naming of variables and arrays
@@ -2745,27 +2904,69 @@ function JSEditor(divID) {
     }
     
     function aIDHandler() {
-        console.log("choosing a variable to assign");
+        console.log("choosing a variable to assign"); //rtodo
+        determineScope();
+        var list = scopes[0].tvars.concat(scopes[0].nvars);
+        if (scope != 0)
+            list = list.concat(scopes[scope].tvars.concat(scopes[scope].nvars));
+        createSelector("Variables", list, aIDCallback);
     }
     
     function taIDHandler() {
-        console.log("choosing a text var to assign");
+        console.log("choosing a text var to assign"); //rtodo
+        determineScope();
+        var list = scopes[0].tvars;
+        if (scope != 0)
+            list = list.concat(scopes[scope].tvars);
+        createSelector("Variables", list, taIDCallback);
     }
     
     function naIDHandler() {
-        console.log("choosing a numeric var to assign");
+        console.log("choosing a numeric var to assign"); //rtodo
+        determineScope();
+        var list = scopes[0].nvars;
+        if (scope != 0)
+            list = list.concat(scopes[scope].nvars);
+        createSelector("Variables", list, naIDCallback);
     }
     
     function varIDHandler() {
         console.log("choosing a var to be used in a boolean condition");
+        determineScope();
+        
+        var eCell = clickedCell;
+        while (!eCell.hasClass("expr"))
+            eCell = eCell.next();
+        
+        var list;
+        if (eCell.text() == "EXPR") {
+            list = scopes[0].tvars.concat(scopes[0].nvars);
+            if (scope != 0)
+                list = list.concat(scopes[scope].tvars.concat(scopes[scope].nvars));
+        }
+        else {
+            if (eCell.hasClass("text")) {
+                list = scopes[0].tvars;
+                if (scope != 0)
+                    list = list.concat(scopes[scope].tvars);
+            }
+            else if (eCell.hasClass("numeric")) {
+                list = scopes[0].nvars;
+                if (scope != 0)
+                    list = list.concat(scopes[scope].nvars);
+            }
+        }
+        createSelector("Variables", list, varIDCallback);
     }
     
     function fcallHandler() {
         console.log("choosing a function to call");
+        createSelector("Void Functions", vFuns, fcallCallback);
     }
     
-    function nConstantHandler() {
-        console.log("need to insert a numeric constant");
+    function sizeHandler() { //todo this should probably take a parameter to alter the title and instructions
+//        console.log("need to insert a numeric constant"); rtodo
+        createNumPad(0, null, "Size Entry", "Set the size of your array.", 0, 10, nConstantCallback);
     }
     
     function exprHandler() {
@@ -2805,6 +3006,8 @@ function JSEditor(divID) {
     
     function scopeAlter(oldName,newName) {
         var j = scopes.length;
+        namesUsed.splice(namesUsed.indexOf(oldName),1);
+        namesUsed.push(newName);
         for (i=1; i < j; i++) {
             if (scopes[i].name == oldName) {
                 scopes[i].name = newName;
@@ -2850,7 +3053,13 @@ function JSEditor(divID) {
                 }
             }
         }
-        
+    }
+    
+    function getFunction(fname) {
+        for (i=0;i<scopes.length;i++) {
+            if (scopes[i].name = fname)
+                return i;
+        }
     }
     
   function createSelector(title, optionS, callback) {
@@ -2879,9 +3088,11 @@ function Scope(myName) {
     var tvars;      //list of text vars for a scope
     var nvars;      //list of numeric vars for a scope
     var unvars;     //list of untyped vars for a scope
+    var param;      //list of the types of params in order
     
     this.name = myName;
     this.tvars = [];
     this.nvars = [];
     this.unvars = [];
+    this.param = [];
 }
