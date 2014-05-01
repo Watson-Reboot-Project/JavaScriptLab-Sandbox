@@ -8,7 +8,7 @@
 
 function JSEditor(divID) {
 	
-	var editor = new Editor(divID, "javascript", "infinity", true, true, 1, true, true);
+	var editor = new Editor(divID, "javascript", "infinity", true, true, 1, true, true, false);
 	
 	var variableCount = 0;									// keeps count of the amount of variables
 	var funcCount = 0;										// keeps count of number of functions
