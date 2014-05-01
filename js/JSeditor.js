@@ -45,9 +45,10 @@ function JSEditor(divID) {
 //	var varNames = [];
 	var namesRef = [];
     var compKeys = ["while", "if"];
-    var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
-    var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
-    var nExprtypes = ["EXPR + EXPR", "EXPR - EXPR", "EXPR * EXPR", "EXPR / EXPR", "EXPR % EXPR", "(EXPR)"];
+//    var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
+//    var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
+    
+//    var nExprtypes = ["EXPR + EXPR", "EXPR - EXPR", "EXPR * EXPR", "EXPR / EXPR", "EXPR % EXPR", "(EXPR)"];
     var btypes = ["EXPR == EXPR", "EXPR != EXPR", "EXPR > EXPR", "EXPR >= EXPR", "EXPR < EXPR", "EXPR <= EXPR"];
 	//var innerTablet;
 	var clickRow;
@@ -584,12 +585,12 @@ function JSEditor(divID) {
 //					default:
 //						break;
 //				}
+////			}
+//			if (cellVal == 'ID' && cellNum > 1 && foundIn(clickRow[cellNum-2],compKeys))
+//			{
+//				//Choosing the left side of a comparison in a while or if
+//				createSelector("Choose an identifier.", namesUsed, idConfirm);
 //			}
-			if (cellVal == 'ID' && cellNum > 1 && foundIn(clickRow[cellNum-2],compKeys))
-			{
-				//Choosing the left side of a comparison in a while or if
-				createSelector("Choose an identifier.", namesUsed, idConfirm);
-			}
 //			else if (cellVal == 'ID' && cellNum > 1 && clickRow[cellNum-2] == 'function')
 //			{
 //				//Assigning an identifier to a function
@@ -617,7 +618,7 @@ function JSEditor(divID) {
 //			{
 //				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
 //			}
-            else if (cellVal == 'index')
+            if (cellVal == 'index')
             {
                 createSelector("Constant or Variable?", ["Constant", "Variable"], indexConfirm);
             }
@@ -2792,6 +2793,177 @@ function JSEditor(divID) {
         clickedCell.text(result); //todo this probably needs MORE to it
     }
     
+    function wexprCallback(result) {
+        if (result == null)
+            return;
+        else if (result == "Text") {
+            $(clickedCell).removeClass("write");
+            $(clickedCell.addClass("text"));
+            createSelector("Text Expression", ["Constant", "Variable", "Function Call", "EXPR + EXPR"], texprCallback);
+        }
+        else if (result == "Numeric") {
+            $(clickedCell).removeClass("write");
+            $(clickedCell.addClass("numeric"));
+            createSelector("Numeric Expression", ["Constant", "Variable", "Function Call", "EXPR"], nexprCallback);
+        }
+        else {
+            console.log("Error in wexprCallback");
+        }
+    }
+    
+    function texprCallback(result) {
+        determineScope
+        if (result == null)
+            return;
+        else if (result == "Constant") {
+            createStringPad("Text Constant", "Please enter a string constant.", tconstCallback);
+        }
+        else if (result == "Variable") {
+            var list = scopes[0].tvars;
+            if (scope != 0)
+                list = list.concat(scopes[scope].tvars);
+            createSelector("Text Variables", list, tvarCallback);
+        }
+        else if (result == "Function Call") {
+            createSelector("Text Functions", tFuns, tfunCallback);
+        }
+        else if (result == "EXPR + EXPR") {
+            clickedCell.text("EXPR");
+            editor.addCell(clickedCell, [{text:"&nbsp+&nbsp;"}, {text:"EXPR",type:"expr text scope" + scope}]);
+            return;
+        }
+    }
+    
+    function tconstCallback(result) {
+        if (result == null)
+            return;
+        else {
+            clickedCell.text('"' + result + '"');
+        }
+    }
+    
+    function tvarCallback(result) {
+        if (result == null)
+            return;
+        clickedCell.text(result);
+    }
+    
+    function tfunCallback(result) {
+        namesRef.push(result);
+        //        console.log(result); rtodo
+        clickedCell.text(result);
+        editor.addCell(clickedCell, [{text:"(", type:"openParen"}, {text:")", type:"closeParen"}]);
+        var fcalled = scopes[getFunction(result)];
+        if (fcalled.param.length == 0)
+            return;
+        else {
+            var pCell = clickedCell.next();
+            for (i=0;i<fcalled.param.length;i++) {
+                if (i > 0) {
+                    editor.addCell(pCell, [{text:", "}]);
+                    pCell = pCell.next();
+                }
+                editor.addCell(pCell, [{text:"ID", type: "pID " + fcalled.param[i]}]);
+                pCell = pCell.next();
+            }
+        }
+    }
+    
+    function nexprCallback(result) {
+        determineScope
+        if (result == null)
+            return;
+        else if (result == "Constant") {
+//            createNumPad( omegatodo
+        }
+        else if (result == "Variable") {
+            var list = scopes[0].nvars;
+            if (scope != 0)
+                list = list.concat(scopes[scope].nvars);
+            createSelector("Numeric Variables", list, nvarCallback);
+        }
+        else if (result == "Function Call") {
+            createSelector("Numeric Functions", nFuns, nfunCallback);
+        }
+        else if (result == "EXPR") {
+            createSelector("Expressions", ["EXPR + EXPR", "EXPR - EXPR", "EXPR * EXPR", "EXPR / EXPR", "EXPR % EXPR", "(EXPR)"], nexprCallback)
+        }
+        else if (result == "EXPR + EXPR") {
+            editor.addCell(clickedCell, [{text:"&nbsp;+&nbsp;"}, {text:"EXPR", type:"expr numeric scope" + scope}]);
+            return;
+        }
+        else if (result == "EXPR - EXPR") {
+            editor.addCell(clickedCell, [{text:"&nbsp;-&nbsp;"}, {text:"EXPR", type:"expr numeric scope" + scope}]);
+            return;
+        }
+        else if (result == "EXPR * EXPR") {
+            editor.addCell(clickedCell, [{text:"&nbsp;*&nbsp;"}, {text:"EXPR", type:"expr numeric scope" + scope}]);
+            return;
+        }
+        else if (result == "EXPR / EXPR") {
+            editor.addCell(clickedCell, [{text:"&nbsp;/&nbsp;"}, {text:"EXPR", type:"expr numeric scope" + scope}]);
+            return;
+        }
+        else if (result == "EXPR % EXPR") {
+            editor.addCell(clickedCell, [{text:"&nbsp;%&nbsp;"}, {text:"EXPR", type:"expr numeric scope" + scope}]);
+            return;
+        }
+    }
+    
+    function nvarCallback(result) {
+        if (result == null)
+            return;
+        clickedCell.text(result);
+    }
+    
+    function nfunCallback(result) {
+        namesRef.push(result);
+        //        console.log(result); rtodo
+        clickedCell.text(result);
+        editor.addCell(clickedCell, [{text:"(", type:"openParen"}, {text:")", type:"closeParen"}]);
+        var fcalled = scopes[getFunction(result)];
+        if (fcalled.param.length == 0)
+            return;
+        else {
+            var pCell = clickedCell.next();
+            for (i=0;i<fcalled.param.length;i++) {
+                if (i > 0) {
+                    editor.addCell(pCell, [{text:", "}]);
+                    pCell = pCell.next();
+                }
+                editor.addCell(pCell, [{text:"ID", type: "pID " + fcalled.param[i]}]);
+                pCell = pCell.next();
+            }
+        }
+    }
+    
+    function bexprCallback(result) {
+        determineS
+        if (result == null)
+            return;
+        else if (result == "EXPR == EXPR") {
+            $(clickedCell).removeClass("bool");
+            $(clickedCell).removeClass("expr");
+            clickedCell.text("ID");
+            $(clickedCell).addClass("varID");
+        }
+        else if (result == "EXPR != EXPR") {
+            
+        }
+        else if (result == "EXPR > EXPR") {
+            
+        }
+        else if (result == "EXPR >= EXPR") {
+            
+        }
+        else if (result == "EXPR < EXPR") {
+            
+        }
+        else if (result == "EXPR <= EXPR") {
+            
+        }
+    }
+    
 //    function that handles the naming of variables and arrays
     function vnameHandler() {
         console.log("naming a var"); //rtodo
@@ -2964,13 +3136,21 @@ function JSEditor(divID) {
         createSelector("Void Functions", vFuns, fcallCallback);
     }
     
-    function sizeHandler() { //todo this should probably take a parameter to alter the title and instructions
+    function sizeHandler() {
 //        console.log("need to insert a numeric constant"); rtodo
         createNumPad(0, null, "Size Entry", "Set the size of your array.", 0, 10, nConstantCallback);
     }
     
     function exprHandler() {
-        console.log("this will handle expression clicks");
+//        console.log("this will handle expression clicks"); rtodo
+        if (clickedCell.hasClass("write"))
+            createSelector("Write Expression", ["Text", "Numeric"], wexprCallback);
+        else if (clickedCell.hasClass("text"))
+            createSelector("Text Expression", ["Constant", "Variable", "Function Call", "EXPR + EXPR"], texprCallback);
+        else if (clickedCell.hasClass("numeric"))
+            createSelector("Numeric Expression", ["Constant", "Variable", "Function Call", "EXPR"], nexprCallback);
+        else if (clickedCell.hasClass("bool"))
+            createSelector("Boolean Expression", btypes, bexprCallback);
     }
     
     function varExists(name) {
