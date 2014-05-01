@@ -8,7 +8,7 @@
 
 function JSEditor(divID) {
 	
-	var editor = new Editor(divID, true, true, 1, -1, true);
+	var editor = new Editor(divID, "javascript", "infinity", true, true, 1, true, true);
 	
 	var variableCount = 0;									// keeps count of the amount of variables
 	var funcCount = 0;										// keeps count of number of functions
@@ -84,23 +84,20 @@ function JSEditor(divID) {
 		var cell;
 		var innerTable;
 
-		// iterate twice
-		for (var i = 0; i < 3; i++) {
-			// depending on the iteraton, we do different things
-			if (i == 0) {
-				editor.addRow(i,
-					[{text:"//&nbsp;", type:"comment"},
-					{text:"Scratch Pad", type:"comment"}]);
-			}	// first iteration: add "// Scratch Pad" to the first row, style it
-			else if (i == 1){
-				editor.addRow(i,
-					[{text:"&nbsp;"}]);
-			}
-			else if (i == 2) {
-				editor.addRow(i,
-					[{text:"//&nbsp;", type:"comment"},
-					{text:"Main Program", type:"comment"}]);
-			}
+		//if there is not already data for this editor, add initial stuff
+		if(!editor.checkEditorData()){
+			//add initial text
+			editor.addRow(0,
+				[{text:"//&nbsp;", type:"comment"},
+				{text:"Scratch Pad", type:"comment"}]);
+
+			editor.addRow(1,
+				[{text:"&nbsp;"}]);
+
+			editor.addRow(2,
+				[{text:"//&nbsp;", type:"comment"},
+				{text:"Main Program", type:"comment"}]);
+
 		}
 
 		//addNewInsertRow();
