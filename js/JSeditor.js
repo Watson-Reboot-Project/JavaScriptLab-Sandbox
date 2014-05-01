@@ -1600,6 +1600,7 @@ function JSEditor(divID) {
 	function nameDialogConfirm(result) {
 		console.log(clickRow[clickedCellNum]);
 		if( /^[a-zA-Z]+$/.test(result) == false)
+			alert("Please use only alphabetical letters!");
 			return;
 		// empty string is not valid inpute
 		if (result == "")
@@ -1609,6 +1610,7 @@ function JSEditor(divID) {
 		// empty string is not valid inpute
 		if (result == "")
 		{
+			alert("Empty String");
 			$("#selector").dialog('close');
 			return;
 		}
@@ -2493,17 +2495,26 @@ function JSEditor(divID) {
     }
     
     function vnameCallback(result) {
-        if (result == null)
+        if (result == null){
             return;
+		}
         else if (namesUsed.indexOf(result) >= 0) {
+			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
         }
         else if (resWords.indexOf(result) >= 0) {
+			if(result == '')
+				result = "Empty String";
+			createAlertBox("Invalid Entry",result+" is Reserved",1,dummy);
             //create alert is reserved word todo
             return;
         }
         else {
+			if( /^[a-zA-Z]+$/.test(result) == false){
+				createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
+				return;
+			}
             namesUsed.push(result);
             if (clickedCell.hasClass("array")) {
                 varExists(clickedCell.text().concat("[]"));
@@ -2541,13 +2552,23 @@ function JSEditor(divID) {
         if (result == null)
             return;
         else if (namesUsed.indexOf(result) >= 0) {
+			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
         }
         else if (resWords.indexOf(result) >= 0) {
+			if(result == '')
+				result = "Empty String";
+			createAlertBox("Invalid Entry",result+" is Reserved",1,dummy);
+
             //create alert is reserved word todo
             return;
         }
+		
+        if( /^[a-zA-Z]+$/.test(result) == false){
+			createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
+			return;
+		}
         
 
         funExists(clickedCell.text());
@@ -3278,6 +3299,10 @@ function JSEditor(divID) {
   function createAlertBox(title, msg, bool, callback) {
         var alert = new Alert();
         alert.open(title, msg, bool, callback, document.getElementById(divID));
+  }
+  
+  function dummy(result){
+	return;
   }
 }
 
