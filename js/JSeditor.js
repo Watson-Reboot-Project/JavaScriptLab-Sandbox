@@ -2479,7 +2479,7 @@ function JSEditor(divID) {
         else if (clickedCell.hasClass("index"))
             indexHandler(); //mostly implemented
         else if (clickedCell.hasClass("expr"))
-            exprHandler();
+            exprHandler(); //mostly implemented
     }
     
     function determineScope() {
@@ -2874,7 +2874,7 @@ function JSEditor(divID) {
         if (result == null)
             return;
         else if (result == "Constant") {
-//            createNumPad( omegatodo
+            createNumPad(null, null, "Numeric Entry", "Please enter a numeric value.", true, 10, nConstantCallback);
         }
         else if (result == "Variable") {
             var list = scopes[0].nvars;
@@ -2938,7 +2938,7 @@ function JSEditor(divID) {
     }
     
     function bexprCallback(result) {
-        determineS
+        determineScope();
         if (result == null)
             return;
         else if (result == "EXPR == EXPR") {
@@ -2946,21 +2946,42 @@ function JSEditor(divID) {
             $(clickedCell).removeClass("expr");
             clickedCell.text("ID");
             $(clickedCell).addClass("varID");
+            editor.addCell(clickedCell, [{text:"&nbsp;==&nbsp;"}, {text:"EXPR", type:"expr scope " + scope}]);
         }
         else if (result == "EXPR != EXPR") {
-            
+            $(clickedCell).removeClass("bool");
+            $(clickedCell).removeClass("expr");
+            clickedCell.text("ID");
+            $(clickedCell).addClass("varID");
+            editor.addCell(clickedCell, [{text:"&nbsp;!=&nbsp;"}, {text:"EXPR", type:"expr scope " + scope}]);
         }
         else if (result == "EXPR > EXPR") {
-            
+            $(clickedCell).removeClass("bool");
+            $(clickedCell).removeClass("expr");
+            clickedCell.text("ID");
+            $(clickedCell).addClass("varID");
+            editor.addCell(clickedCell, [{text:"&nbsp;>&nbsp;"}, {text:"EXPR", type:"expr scope " + scope}]);
         }
         else if (result == "EXPR >= EXPR") {
-            
+            $(clickedCell).removeClass("bool");
+            $(clickedCell).removeClass("expr");
+            clickedCell.text("ID");
+            $(clickedCell).addClass("varID");
+            editor.addCell(clickedCell, [{text:"&nbsp;>=&nbsp;"}, {text:"EXPR", type:"expr scope " + scope}]);
         }
         else if (result == "EXPR < EXPR") {
-            
+            $(clickedCell).removeClass("bool");
+            $(clickedCell).removeClass("expr");
+            clickedCell.text("ID");
+            $(clickedCell).addClass("varID");
+            editor.addCell(clickedCell, [{text:"&nbsp;<&nbsp;"}, {text:"EXPR", type:"expr scope " + scope}]);
         }
         else if (result == "EXPR <= EXPR") {
-            
+            $(clickedCell).removeClass("bool");
+            $(clickedCell).removeClass("expr");
+            clickedCell.text("ID");
+            $(clickedCell).addClass("varID");
+            editor.addCell(clickedCell, [{text:"&nbsp;<=&nbsp;"}, {text:"EXPR", type:"expr scope " + scope}]);
         }
     }
     
