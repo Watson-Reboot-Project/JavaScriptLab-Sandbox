@@ -41,10 +41,10 @@ function JSEditor(divID) {
     var wtypes = ["text", "numeric"];
 	var resWords = ["new", "this", "var", "ID", "list", "Array", "function", "", "while", "for", "if", "then", "else"];
 	var namesUsed = []; //variables that have been name and given a type
-	var varsNamed = []; //variable that have only been given a name and do not have a type
+//	var varsNamed = []; //variable that have only been given a name and do not have a type
 //	var varNames = [];
 	var namesRef = [];
-    var compKeys = ["while", "if"];
+//    var compKeys = ["while", "if"];
 //    var nExpr = ["numeric constant", "numeric variable", "numeric function call", "EXPR"];
 //    var tExpr = ["text constant", "text variable", "text function call", "EXPR + EXPR"];
     
@@ -74,7 +74,8 @@ function JSEditor(divID) {
     var insertionScope = 0;
     var scope = 0;
     var scopes = [];
-    scopes.push(new Scope("global"));
+    var scopeCount = 1;
+    scopes.push(new Scope("global", 0));
 	
 	init();					// initialize some important stuff
 
@@ -1207,16 +1208,16 @@ function JSEditor(divID) {
 		}*/
 		
 		//adds "function ID() /*VOID*/"
-        scopes.push(new Scope(scopes.length));
+        scopes.push(new Scope(scopes.length, scopeCount));
 		editor.addRow(beginRow++,
 			[{text:"function", type:"keyword"},
 			{text:"&nbsp;"},
-             {text:"ID", type:"fname scope" + scopes.length},
+             {text:"ID", type:"fname scope" + scopeCount},
 			{text:"(", type:"openParen foParen"},
 			{text:")", type:"closeParen fcParen"},
 			{text:"&nbsp;"},
 			{text:"/*", type:"datatype"},
-			{text:"Void", type:"datatype ftype"},
+			{text:"Void", type:"datatype ftype scope" + scopeCount},
 			{text:"*/", type:"datatype"}]);
 			
 		//adds "{"
@@ -2551,9 +2552,11 @@ function JSEditor(divID) {
             }
         }
         console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
+        console.log("namesUsed: " + namesUsed);
     }
     
     function fnameCallback(result) {
+        determineScope();
         if (result == null)
             return;
         else if (namesUsed.indexOf(result) >= 0) {
@@ -2581,14 +2584,17 @@ function JSEditor(divID) {
 		}
         
 
-        funExists(clickedCell.text());
+        
         if (clickedCell.text() != 'ID') {
-            scopeAlter(clickedCell.text(),result);
+            console.log("namesUsed befpre: " + namesUsed);
+            funExists(clickedCell.text());
+            scopeAlter(clickedCell.text(), result);
+            console.log("after: " + namesUsed);
         }
         else {
-            scopes.push(new Scope(result));
+//            scopes.push(new Scope(result));
+            scopeAlter(scope,result);
             printScopes();
-            namesUsed.push(result);
         }
         clickedCell.text(result);
         var tCell = clickedCell;
@@ -3279,6 +3285,8 @@ function JSEditor(divID) {
             nFuns.splice(nFuns.indexOf(name),1);
         else if (vFuns.indexOf(name) >= 0)
             vFuns.splice(vFuns.indexOf(name),1);
+        else if (namesUsed.indexOf(name) >=1)
+            namesUsed.splice(namesUsed.indexOf(name),1);
     }
     
     function scopeAlter(oldName,newName) {
@@ -3302,6 +3310,8 @@ function JSEditor(divID) {
             console.log("\tnvars: " + scopes[i].nvars);
             console.log("\ttvars: " + scopes[i].tvars);
             console.log("\tunvars: " + scopes[i].unvars);
+            console.log("\tparam: " + scopes[i].param);
+            console.log("\tscopenum: " + scopes[i].scopenum);
         }
     }
     
@@ -3321,10 +3331,10 @@ function JSEditor(divID) {
         for(var i = insertRowNum; i >= 0; i--){
             row = editor.rowToArray(i);
             
-            if(row[0] == 'function'){
+            if(row[4].hasClass("fname")){
                 var j = scopes.length;
                 for (k = 1; k < j; k++) {
-                    if (row[2] == scopes[k].name) {
+                    if (row[4].hasClass("scope" + k)) {
                         insertionScope = k;
                     }
                 }
@@ -3364,16 +3374,18 @@ function JSEditor(divID) {
   }
 }
 
-function Scope(myName) {
+function Scope(myName, s) {
     var name;       //a scope's name
     var tvars;      //list of text vars for a scope
     var nvars;      //list of numeric vars for a scope
     var unvars;     //list of untyped vars for a scope
     var param;      //list of the types of params in order
+    var scopenum;
     
     this.name = myName;
     this.tvars = [];
     this.nvars = [];
     this.unvars = [];
     this.param = [];
+    this.scopenum = s;
 }
