@@ -1109,6 +1109,6 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	/* unload - a jQuery event handler for unloading the page, just saves the editor
 	*/
 	$( window ).unload(function() {
-		//saveEditor();
+		saveEditor();
 	});
 }
