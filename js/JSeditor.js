@@ -351,7 +351,7 @@ function JSEditor(divID) {
 
 							//console.log("\there7 " + varName + " " + (varName !== "ID"));
 							if (varName != "ID" && referenceCheck(varName, rowNum)) {
-								 createAlertBox("Notice", "You must not reference this variable if you want to delete it", true, null);
+								 createAlertBox("Notice", "You must not reference this variable if you want to delete it.", true, null);
 									return;
 							}
 
@@ -821,6 +821,13 @@ function JSEditor(divID) {
 			//selRow++;		// increase the selected row
 			programCount += 2;
 		}
+        
+        var vscope;
+        var list;
+        for (i=0;i<scopes.length;i++) {
+            if (scopes[i].name != 'ID')
+                list.push(scopes[i].name);
+        }
 		
 		// if the element is a variable
 		if (element == "variable") {
