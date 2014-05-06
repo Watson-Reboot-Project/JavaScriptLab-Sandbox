@@ -6,9 +6,10 @@
 *			is to mimic Watson as it is now.
 ************************************************************************************/
 
-function JSEditor(divID) {
+function JSEditor(divID, chapterName, exerciseNum) {
 	
-	var editor = new Editor(divID, "javascript", "infinity", true, true, 1, true, true, false);
+	var editor = new Editor(divID, chapterName, exerciseNum, true, true, 1, true, true, true);
+	editor.loadEditor('figcontainer-exer' + exerciseNum + 'Editor', divID, true);
 	
 	var variableCount = 0;									// keeps count of the amount of variables
 	var funcCount = 0;										// keeps count of number of functions
@@ -70,6 +71,9 @@ function JSEditor(divID) {
 	this.isNewLine = isNewLine;
 	this.checkPromptFlag = checkPromptFlag;
 	this.reset = reset;
+	
+	//call WatsonEditor's saveEditor
+	this.saveEditor = editor.saveEditor;
     
     var varinx = 3;
     var insertionScope = 0;
@@ -86,8 +90,10 @@ function JSEditor(divID) {
 		var cell;
 		var innerTable;
 
+			console.log("here4",!editor.checkEditorData());
 		//if there is not already data for this editor, add initial stuff
 		if(!editor.checkEditorData()){
+			console.log("here5");
 			//add initial text
 			editor.addRow(0,
 				[{text:"//&nbsp;", type:"comment"},
@@ -822,13 +828,6 @@ function JSEditor(divID) {
 			//selRow++;		// increase the selected row
 			programCount += 2;
 		}
-//        
-//        var vscope;
-//        var list;
-//        for (i=0;i<scopes.length;i++) {
-//            if (scopes[i].name != 'ID')
-//                list.push(scopes[i].name);
-//        }
 		
 		// if the element is a variable
 		if (element == "variable") {
@@ -2460,7 +2459,6 @@ function JSEditor(divID) {
     }
     
     function clickHandler() {
-        scope = 0;
 //        printScopes(); rtodo
         console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
@@ -2857,7 +2855,6 @@ function JSEditor(divID) {
         if (fcalled.param.length == 0)
             return;
         else {
-//            console.log("hi");
             var pCell = clickedCell.next();
             for (i=0;i<fcalled.param.length;i++) {
                 console.log(i);
@@ -3595,6 +3592,14 @@ function JSEditor(divID) {
   function dummy(result){
 	return;
   }
+
+	this.clearEditor = clearEditor;
+	function clearEditor(){
+		console.log("here2");
+		editor.clearEditor();
+		editor = new Editor(divID, chapterName, exerciseNum, true, true, 1, true, true, true);
+		//init();
+	}
 }
 
 function Scope(myName, s) {
