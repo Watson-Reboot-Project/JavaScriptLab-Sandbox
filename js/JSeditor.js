@@ -71,6 +71,7 @@ function JSEditor(divID) {
 	this.checkPromptFlag = checkPromptFlag;
 	this.reset = reset;
     
+    var varinx = 3;
     var insertionScope = 0;
     var scope = 0;
     var scopes = [];
@@ -175,7 +176,7 @@ function JSEditor(divID) {
 			// care of in the insertion bar cursor logic
 			editor.selectRowByIndex(insertRowNum, true);
             determineInsertionScope(insertRowNum);
-			
+            determineVarinx(insertRowNum);
 			/*
 			// If all condition is passed move to the specified line
 			if (insertRowNum > selRow) {
@@ -821,33 +822,33 @@ function JSEditor(divID) {
 			//selRow++;		// increase the selected row
 			programCount += 2;
 		}
-        
-        var vscope;
-        var list;
-        for (i=0;i<scopes.length;i++) {
-            if (scopes[i].name != 'ID')
-                list.push(scopes[i].name);
-        }
+//        
+//        var vscope;
+//        var list;
+//        for (i=0;i<scopes.length;i++) {
+//            if (scopes[i].name != 'ID')
+//                list.push(scopes[i].name);
+//        }
 		
 		// if the element is a variable
 		if (element == "variable") {
 			//adds "var ID; /*TYPE*/"
-			editor.addRow(variableCount + 3,
+			editor.addRow(varinx,
 				[{text:"var", type:"keyword"},
 				{text:"&nbsp;"},
-                 {text:"ID", type:"vname scope" + scope}, //todo. Add this to everywhere involving variable declarations?
+                 {text:"ID", type:"vname scope" + insertionScope}, //todo. Add this to everywhere involving variable declarations?
 				{text:";&nbsp;"},
 				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype vtype scope" + 0},
+				{text:"TYPE", type:"datatype vtype scope" + insertionScope},
 				{text:"*/", type:"datatype"}]);
 		}
 		// if its an array
 		else if (element == "array") {
 			//add "var ID = new Array(size); /*TYPE*/"
-			editor.addRow(variableCount + 3,
+			editor.addRow(varinx,
 				[{text:"var", type:"keyword"},
 				{text:"&nbsp;"},
-                 {text:"ID", type:"vname array scope" + 0},
+                 {text:"ID", type:"vname array scope" + insertionScope},
 				{text:"&nbsp;=&nbsp;"},
 				{text:"new&nbsp;", type:"keyword"},
 				{text:"Array"},
@@ -856,14 +857,16 @@ function JSEditor(divID) {
 				{text:")", type:"closeParen"},
 				{text:";"},
 				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype vtype array scope" + 0},
+				{text:"TYPE", type:"datatype vtype array scope" + insertionScope},
 				{text:"*/", type:"datatype"}]);
 		}
 
 		//selRow++;			// increase the selected row
-		variableCount++;	// increase the variable count
+        if (insertionScope == 0)
+            variableCount++;	// increase the variable count
 		programStart++;		// increase the program start line
 		programCount++;
+        varinx++;
 		//toggleEvents();		// toggle events to refresh the newly created row
 		//refreshLineCount();	// refresh the line count
 	}
@@ -3524,6 +3527,34 @@ function JSEditor(divID) {
                 }
             }
         }
+    }
+    
+    function determineVarinx(insertRowNum) {
+        if (insertRowNum > (programStart - 1)) {
+            varinx = variableCount + 3;
+            console.log("last variable row index" + varinx);
+            return;
+        }
+        var row;
+        for (i = insertRowNum; i>=0; i--) {
+            console.log("for loop: " + i);
+            row = editor.rowToArrayHtml(i);
+            console.log(row);
+            if (row.length > 3) {
+                console.log(row[0]);
+                if (row[0] == 'function') {
+                    varinx = i + 2;
+                    console.log("last variable row index" + varinx);
+                    return;
+                }
+                else if (row[0] == 'var') {
+                    varinx = i + 1;
+                    console.log("last variable row index" + varinx);
+                    return;
+                }
+            }
+        }
+        
     }
     
     function getFunction(fname) {
