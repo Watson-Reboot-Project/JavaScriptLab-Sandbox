@@ -51,8 +51,9 @@ body {
 }
 
 button[type=button] {
-   width: 9em;
-   height: 2.2em;
+	width: 9em;
+	height: 2.2em;
+	font-family: Arial;
 }
 
 #buttons {
@@ -62,7 +63,7 @@ button[type=button] {
    width: auto;
    height: auto;
    float: right;
-   overflow: auto;
+   /*overflow: auto;*/
    /*margin: 0 0;*/
 }
 
@@ -92,7 +93,7 @@ button[type=button] {
 #runWalk {
    padding-top: 10px;
    /*width: 35%;*/
-   overflow: auto;
+   /*overflow: auto;*/
    margin: 0 0; 
 }
 
