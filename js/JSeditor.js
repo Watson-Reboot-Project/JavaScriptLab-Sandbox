@@ -2460,6 +2460,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     
     function clickHandler() {
 //        printScopes(); rtodo
+        determineScope();
         console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
             vnameHandler(); //mostly implemented?
