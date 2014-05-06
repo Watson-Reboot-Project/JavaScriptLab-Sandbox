@@ -6,9 +6,10 @@
 *			is to mimic Watson as it is now.
 ************************************************************************************/
 
-function JSEditor(divID) {
+function JSEditor(divID, chapterName, exerciseNum) {
 	
-	var editor = new Editor(divID, "javascript", "infinity", true, true, 1, true, true, false);
+	var editor = new Editor(divID, chapterName, exerciseNum, true, true, 1, true, true, true);
+	editor.loadEditor('figcontainer-exer' + exerciseNum + 'Editor', divID, true);
 	
 	var variableCount = 0;									// keeps count of the amount of variables
 	var funcCount = 0;										// keeps count of number of functions
@@ -70,11 +71,14 @@ function JSEditor(divID) {
 	this.isNewLine = isNewLine;
 	this.checkPromptFlag = checkPromptFlag;
 	this.reset = reset;
+	
+	//call WatsonEditor's saveEditor
+	this.saveEditor = editor.saveEditor;
     
     var insertionScope = 0;
     var scope = 0;
     var scopes = [];
-    var scopeCount = 0;
+    var scopeCount = 1;
     scopes.push(new Scope("global", 0));
 	
 	init();					// initialize some important stuff
@@ -85,8 +89,10 @@ function JSEditor(divID) {
 		var cell;
 		var innerTable;
 
+			console.log("here4",!editor.checkEditorData());
 		//if there is not already data for this editor, add initial stuff
 		if(!editor.checkEditorData()){
+			console.log("here5");
 			//add initial text
 			editor.addRow(0,
 				[{text:"//&nbsp;", type:"comment"},
@@ -351,7 +357,7 @@ function JSEditor(divID) {
 
 							//console.log("\there7 " + varName + " " + (varName !== "ID"));
 							if (varName != "ID" && referenceCheck(varName, rowNum)) {
-								 createAlertBox("Notice", "You must not reference this variable if you want to delete it.", true, null);
+								 createAlertBox("Notice", "You must not reference this variable if you want to delete it", true, null);
 									return;
 							}
 
@@ -620,26 +626,26 @@ function JSEditor(divID) {
 //            {
 //                createSelector("Constant or Variable?", ["Constant", "Variable"], indexConfirm);
 //            }
-//			 if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && (clickRow.indexOf('function') >= 0) && (clickRow.indexOf('ID') != 2)){
-//                while(!clickedCell.hasClass('closeParen')){
-//                    clickedCell = clickedCell.next();
-//                }
-//                clickedCell = clickedCell.prev();
-//                if (clickedCell.text() == "*/") {
-//                    editor.addCell(clickedCell,[{text: ",&nbsp;"}]);
-//                    clickedCell = clickedCell.next();
-//                }
-//				console.log("add parameter?");
-//                editor.addCell(clickedCell,
-//                               [{text:"ID", type: "parameter"},
-//                                {text:"&nbsp;/*", type: "datatype"},
-//                                {text:"TYPE", type: "datatype paramType"},
-//                                {text:"*/", type: "datatype"}]
-//                );
-//			}
-//                if (clickedCell.hasClass('paramType')) {
-//                    createSelector("Type options", vtypes, paramTypeConfirm);
-//                }
+			 if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && (clickRow.indexOf('function') >= 0) && (clickRow.indexOf('ID') != 2)){
+                while(!clickedCell.hasClass('closeParen')){
+                    clickedCell = clickedCell.next();
+                }
+                clickedCell = clickedCell.prev();
+                if (clickedCell.text() == "*/") {
+                    editor.addCell(clickedCell,[{text: ",&nbsp;"}]);
+                    clickedCell = clickedCell.next();
+                }
+				console.log("add parameter?");
+                editor.addCell(clickedCell,
+                               [{text:"ID", type: "parameter"},
+                                {text:"&nbsp;/*", type: "datatype"},
+                                {text:"TYPE", type: "datatype paramType"},
+                                {text:"*/", type: "datatype"}]
+                );
+			}
+                else if (clickedCell.hasClass('paramType')) {
+                    createSelector("Type options", vtypes, paramTypeConfirm);
+                }
 		}
 		
 		return false;
@@ -821,13 +827,6 @@ function JSEditor(divID) {
 			//selRow++;		// increase the selected row
 			programCount += 2;
 		}
-        
-        var vscope;
-        var list;
-        for (i=0;i<scopes.length;i++) {
-            if (scopes[i].name != 'ID')
-                list.push(scopes[i].name);
-        }
 		
 		// if the element is a variable
 		if (element == "variable") {
@@ -838,7 +837,7 @@ function JSEditor(divID) {
                  {text:"ID", type:"vname scope" + scope}, //todo. Add this to everywhere involving variable declarations?
 				{text:";&nbsp;"},
 				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype vtype scope" + 0},
+				{text:"TYPE", type:"datatype vtype scope" + scope},
 				{text:"*/", type:"datatype"}]);
 		}
 		// if its an array
@@ -847,7 +846,7 @@ function JSEditor(divID) {
 			editor.addRow(variableCount + 3,
 				[{text:"var", type:"keyword"},
 				{text:"&nbsp;"},
-                 {text:"ID", type:"vname array scope" + 0},
+                 {text:"ID", type:"vname array scope" + scope},
 				{text:"&nbsp;=&nbsp;"},
 				{text:"new&nbsp;", type:"keyword"},
 				{text:"Array"},
@@ -856,7 +855,7 @@ function JSEditor(divID) {
 				{text:")", type:"closeParen"},
 				{text:";"},
 				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype vtype array scope" + 0},
+				{text:"TYPE", type:"datatype vtype array scope" + scope},
 				{text:"*/", type:"datatype"}]);
 		}
 
@@ -950,7 +949,7 @@ function JSEditor(divID) {
 			//adds "ID = FUNCTION();"
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-                 {text:"FUNCTION", type: "fcall scope" + insertionScope},
+                 {text:"FUNCTION", type: "fcall"},
 				{text:"(", type:"openParen"},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
@@ -1215,13 +1214,13 @@ function JSEditor(divID) {
 		}*/
 		
 		//adds "function ID() /*VOID*/"
-        scopes.push(new Scope(scopes.length, ++scopeCount));
+        scopes.push(new Scope(scopes.length, scopeCount));
 		editor.addRow(beginRow++,
 			[{text:"function", type:"keyword"},
 			{text:"&nbsp;"},
              {text:"ID", type:"fname scope" + scopeCount},
-			{text:"(", type:"openParen foParen scope" + scopeCount},
-			{text:")", type:"closeParen fcParen scope" + scopeCount},
+			{text:"(", type:"openParen foParen"},
+			{text:")", type:"closeParen fcParen"},
 			{text:"&nbsp;"},
 			{text:"/*", type:"datatype"},
 			{text:"Void", type:"datatype ftype scope" + scopeCount},
@@ -2457,7 +2456,6 @@ function JSEditor(divID) {
     }
     
     function clickHandler() {
-        scope = 0;
 //        printScopes(); rtodo
         console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
@@ -2488,17 +2486,6 @@ function JSEditor(divID) {
             indexHandler(); //mostly implemented
         else if (clickedCell.hasClass("expr"))
             exprHandler(); //mostly implemented
-        else if (clickedCell.hasClass("foParen") || clickedCell.hasClass("fcParen"))
-            parenHandler();
-        else if (clickedCell.hasClass("pID"))
-            pIDHandler();
-    }
-    
-    function pIDHandler() {
-        if (clickedCell.hasClass("text"))
-            createSelector("Text Parameter Selection", ["Constant", "Variable"], texprCallback);
-        else if (clickedCell.hasClass("numeric"))
-            createSelector("Numeric Parameter Selection", ["Constant", "Variable"], nexprCallback);
     }
     
     function determineScope() {
@@ -2515,7 +2502,6 @@ function JSEditor(divID) {
     }
     
     function vnameCallback(result) {
-        determineScope();
         if (result == null){
             return;
 		}
@@ -2543,10 +2529,10 @@ function JSEditor(divID) {
 			}
             namesUsed.push(result);
             if (clickedCell.hasClass("array")) {
-                varExists(clickedCell.text().concat("[]"), scope);
+                varExists(clickedCell.text().concat("[]"));
             }
             else {
-                varExists(clickedCell.text(), scope);
+                varExists(clickedCell.text());
             }
             clickedCell.text(result);
             if (scopes.length > 1)
@@ -2648,7 +2634,7 @@ function JSEditor(divID) {
 //            console.log("are we getting here"); rtodo
 //            handle array case
             if (clickedCell.hasClass("array")) {
-                varExists(nCell.text().concat("[]"), scope);
+                varExists(nCell.text().concat("[]"));
                 if (result == 'Text')
                     scopes[scope].tvars.push(nCell.text().concat("[]"));
                 else if (result == 'Numeric')
@@ -2658,7 +2644,7 @@ function JSEditor(divID) {
             }
 //            handle standard variable case
             else {
-                varExists(nCell.text(), scope);
+                varExists(nCell.text());
                 if (result == 'Text')
                     scopes[scope].tvars.push(nCell.text());
                 else if (result == 'Numeric')
@@ -2836,8 +2822,6 @@ function JSEditor(divID) {
     }
     
     function fcallCallback(result) {
-        printScopes();
-        determineScope();
         if (result == null)
             return;
         
@@ -2847,22 +2831,17 @@ function JSEditor(divID) {
         namesRef.push(result);
 //        console.log(result);
         clickedCell.text(result);
-        var fcalled = getFunction(result);
-        console.log(fcalled.name);
-//        console.log(fcalled.param);
-//        console.log(fcalled.param.length);
+        var fcalled = scopes[getFunction(result)];
         if (fcalled.param.length == 0)
             return;
         else {
-//            console.log("hi");
             var pCell = clickedCell.next();
             for (i=0;i<fcalled.param.length;i++) {
-                console.log(i);
                 if (i > 0) {
                     editor.addCell(pCell, [{text:", "}]);
                     pCell = pCell.next();
                 }
-                editor.addCell(pCell, [{text:"ID", type: "pID " + fcalled.param[i] + " scope" + scope}]);
+                editor.addCell(pCell, [{text:"ID", type: "pID " + fcalled.param[i]}]);
                 pCell = pCell.next();
             }
         }
@@ -2910,7 +2889,7 @@ function JSEditor(divID) {
     }
     
     function texprCallback(result) {
-        determineScope();
+        determineScope
         if (result == null)
             return;
         else if (result == "Constant") {
@@ -2968,7 +2947,7 @@ function JSEditor(divID) {
     }
     
     function nexprCallback(result) {
-        determineScope();
+        determineScope
         if (result == null)
             return;
         else if (result == "Constant") {
@@ -3090,112 +3069,6 @@ function JSEditor(divID) {
         }
     }
     
-    function parenCallback(result) {
-        determineScope();
-        console.log(scope);
-        var pnum = getpnum(scope);
-        console.log(pnum);
-        if (result == null)
-            return;
-        else if (!result)
-            return;
-        while(!clickedCell.hasClass('fcParen')){
-            clickedCell = clickedCell.next();
-        }
-        clickedCell = clickedCell.prev();
-        if (clickedCell.text() == "*/") {
-            editor.addCell(clickedCell,[{text: ",&nbsp;"}]);
-            clickedCell = clickedCell.next();
-        }
-//        console.log("add parameter?");
-        editor.addCell(clickedCell,
-                       [{text:"ID", type: "pname scope" + scope + " p" + pnum},
-                        {text:"&nbsp;/*", type: "datatype"},
-                        {text:"TYPE", type: "datatype ptype scope" + scope + " p" + pnum},
-                        {text:"*/", type: "datatype"}]
-                       );
-        scopes[scope].param.push("untyped");
-    }
-    
-    function pnameCallback(result) {
-        determineScope();
-        if (result == null){
-            return;
-		}
-        else if (namesUsed.indexOf(result) >= 0) {
-			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
-            //create alert name used todo
-            return;
-        }
-        else if (resWords.indexOf(result) >= 0) {
-			if(result == '')
-				result = "Empty String";
-			createAlertBox("Invalid Entry",result+" is Reserved",1,dummy);
-            //create alert is reserved word todo
-            return;
-        }
-        else {
-			if( /^[a-zA-Z]+$/.test(result[0]) == true){
-				if(/^[a-zA-Z0-9]+$/.test(result) == false){
-					createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
-					return;
-				}
-			}else{
-				createAlertBox("Invalid Character",result+" is invalid!",1,dummy);
-				return;
-			}
-            namesUsed.push(result);
-            varExists(clickedCell.text(), scope);
-            clickedCell.text(result);
-            if (scopes.length > 1)
-                determineScope();
-            var tCell = clickedCell;
-            while (!(tCell.hasClass("ptype")))
-                tCell = tCell.next();
-            if (tCell.text() == 'Text')
-                scopes[scope].tvars.push(result);
-            else if (tCell.text() == 'Numeric')
-                scopes[scope].nvars.push(result);
-            else
-                scopes[scope].unvars.push(result);
-        }
-        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
-        console.log("namesUsed: " + namesUsed);
-        printScopes();
-    }
-    
-    function ptypeCallback(result) {
-        if (result == null)
-            return;
-        determineScope();
-        var pnum = determinepnum();
-        console.log(pnum);
-        clickedCell.text(result);
-        //        console.log(result); rtodo
-        
-        //        locate cell containing variable name
-        var nCell = clickedCell;
-        while (!nCell.hasClass("pname"))
-            nCell = nCell.prev();
-        
-        //        console.log(nCell.text()); rtodo
-        //        if it has a name, remove it from the list it's in, and put it back in the proper list
-        if (nCell.text() != 'ID') {
-            varExists(nCell.text(), scope);
-            if (result == 'Text') {
-                scopes[scope].tvars.push(nCell.text());
-                scopes[scope].param[pnum] = 'text';
-            }
-            else if (result == 'Numeric') {
-                scopes[scope].nvars.push(nCell.text());
-                scopes[scope].param[pnum] = 'numeric';
-            }
-            else
-                console.log("WHAT DID YOU DO?!?!?");
-        }
-        printScopes();
-    }
-    
 //    function that handles the naming of variables and arrays
     function vnameHandler() {
         console.log("naming a var"); //rtodo
@@ -3216,7 +3089,7 @@ function JSEditor(divID) {
 //            if the cell doesn't contain 'id', the name already exists somewhere,
 //            so we need to make sure it isn't referenced before attempting to change it
             if (clickedCell.text() != 'ID') {
-                if (varReffed(clickedCell.text())) {
+                if (varReffed(clickedCell.text().concat("[]"))) {
                     //create alert todo
                     return;
                 }
@@ -3229,12 +3102,7 @@ function JSEditor(divID) {
     }
     
     function pnameHandler() {
-        if (clickedCell.text() != 'ID')
-            if (varReffed(clickedCell.text())) {
-                //create alert todo
-                return;
-            }
-        createStringPad("Parameter Name", "Please give the parameter a name.", pnameCallback);
+        console.log("Naming a param");
     }
     
     function fnameHandler() {
@@ -3278,7 +3146,7 @@ function JSEditor(divID) {
             
 //            check if the variable is reffed, and abort if it is
             if (nCell.text() != 'ID') {
-                if (varReffed(nCell.text())) {
+                if (varReffed(nCell.text().concat("[]"))) {
                     //create alert todo
                     return;
                 }
@@ -3291,24 +3159,7 @@ function JSEditor(divID) {
     }
     
     function ptypeHandler() {
-//        console.log("typing a param"); rtodo
-        
-        
-        //            locate the cell containing this var's name
-        var nCell = clickedCell;
-        while (!nCell.hasClass("pname"))
-            nCell = nCell.prev();
-        
-        //            check if the variable is reffed, and abort if it is
-        if (nCell.text() != 'ID') {
-            if (varReffed(nCell.text())) {
-                //create alert todo
-                return;
-            }
-        }
-        
-        //            if the variable is not reffed, spawn the selector for setting its type
-        createSelector("Parameter Types", vtypes, ptypeCallback);
+        console.log("typing a param");
     }
     
     function ftypeHandler() {
@@ -3411,47 +3262,25 @@ function JSEditor(divID) {
             createSelector("Boolean Expression", btypes, bexprCallback);
     }
     
-    function parenHandler() {
-        createAlertBox("Parameters", "Add another parameter?", 0, parenCallback);
-    }
-    
-    function varExists(name, scope) {
-        console.log(name + " " + scope);
-        console.log(scopes[scope].tvars);
-        console.log(scopes[scope].nvars);
-        console.log(scopes[scope].unvars);
+    function varExists(name) {
 //        todo: maybe change so that the scope is passed in with the name. Would allow for same named variables across diff scopes
 //        todo2: if above is done, must change all calls to this function
-        if (scopes[scope].tvars.indexOf(name) >= 0)
-            scopes[scope].tvars.splice(scopes[scope].tvars.indexOf(name), 1);
-        else if (scopes[scope].nvars.indexOf(name) >= 0)
-            scopes[scope].nvars.splice(scopes[scope].nvars.indexOf(name), 1);
-        else if (scopes[scope].unvars.indexOf(name) >= 0)
-            scopes[scope].unvars.splice(scopes[scope].unvars.indexOf(name), 1);
-//        var j = scopes.length;
-//        for (i=0;i<j;i++) {
-//            if (scopes[i].tvars.indexOf(name) >= 0) {
-//                console.log("text var exists"); // rtodo
-//                scopes[i].tvars.splice(scopes[i].tvars.indexOf(name), 1);
-//                return;
-//            }
-//            else if (scopes[i].nvars.indexOf(name) >= 0) {
-//                console.log("numeric var exists"); //rtodo
-//                scopes[i].nvars.splice(scopes[i].nvars.indexOf(name), 1);
-//                return;
-//            }
-//            else if (scopes[i].unvars.indexOf(name) >= 0) {
-//                scopes[i].unvars.splice(scopes[i].unvars.indexOf(name), 1);
-//                return;
-//            }
-//        }
-    }
-    
-    function determinepnum() {
-        var j = getpnum(scope);
-        for (i = 0; i< j+1;i++) {
-            if (clickedCell.hasClass("p" + i))
-                return i;
+        var j = scopes.length;
+        for (i=0;i<j;i++) {
+            if (scopes[i].tvars.indexOf(name) >= 0) {
+                console.log("text var exists"); // rtodo
+                scopes[i].tvars.splice(scopes[i].tvars.indexOf(name), 1);
+                return;
+            }
+            else if (scopes[i].nvars.indexOf(name) >= 0) {
+                console.log("numeric var exists"); //rtodo
+                scopes[i].nvars.splice(scopes[i].nvars.indexOf(name), 1);
+                return;
+            }
+            else if (scopes[i].unvars.indexOf(name) >= 0) {
+                scopes[i].unvars.splice(scopes[i].unvars.indexOf(name), 1);
+                return;
+            }
         }
     }
     
@@ -3462,14 +3291,13 @@ function JSEditor(divID) {
             nFuns.splice(nFuns.indexOf(name),1);
         else if (vFuns.indexOf(name) >= 0)
             vFuns.splice(vFuns.indexOf(name),1);
-//        else if (namesUsed.indexOf(name) >=1)
-//            namesUsed.splice(namesUsed.indexOf(name),1);
+        else if (namesUsed.indexOf(name) >=1)
+            namesUsed.splice(namesUsed.indexOf(name),1);
     }
     
     function scopeAlter(oldName,newName) {
         var j = scopes.length;
-        if (oldName.isNaN)
-            namesUsed.splice(namesUsed.indexOf(oldName),1);
+        namesUsed.splice(namesUsed.indexOf(oldName),1);
         namesUsed.push(newName);
         for (i=1; i < j; i++) {
             if (scopes[i].name == oldName) {
@@ -3501,25 +3329,19 @@ function JSEditor(divID) {
     }
     
     function determineInsertionScope(insertRowNum) {
-        console.log(insertRowNum + "vs start at " + programStart);
-        if (insertRowNum > (programStart-1)) {
+        if (insertRowNum > programStart) {
             insertionScope = 0;
-            console.log("insertionScope: " + insertionScope);
             return;
         }
         var row;
         for(var i = insertRowNum; i >= 0; i--){
-            row = editor.rowToDOMArray(i);
-            if (row.length > 3) {
-                var cell = row[4];
-                if($(cell).hasClass("fname")){
-                    var j = scopes.length;
-                    for (k = 1; k < j; k++) {
-                        if ($(cell).hasClass("scope" + k)) {
-                            insertionScope = k;
-                            console.log("insertionScope: " + insertionScope);
-                            return;
-                        }
+            row = editor.rowToArray(i);
+            
+            if(row[4].hasClass("fname")){
+                var j = scopes.length;
+                for (k = 1; k < j; k++) {
+                    if (row[4].hasClass("scope" + k)) {
+                        insertionScope = k;
                     }
                 }
             }
@@ -3528,16 +3350,8 @@ function JSEditor(divID) {
     
     function getFunction(fname) {
         for (i=0;i<scopes.length;i++) {
-            if (scopes[i].name == fname)
-                return scopes[i];
-        }
-    }
-    
-    function getpnum(scope) {
-        for (i = 0; i<scopes.length;i++) {
-            if (scopes[i].scopenum == scope) {
-                return (scopes[i].param.length);
-            }
+            if (scopes[i].name = fname)
+                return i;
         }
     }
     
@@ -3564,6 +3378,14 @@ function JSEditor(divID) {
   function dummy(result){
 	return;
   }
+
+	this.clearEditor = clearEditor;
+	function clearEditor(){
+		console.log("here2");
+		editor.clearEditor();
+		editor = new Editor(divID, chapterName, exerciseNum, true, true, 1, true, true, true);
+		//init();
+	}
 }
 
 function Scope(myName, s) {

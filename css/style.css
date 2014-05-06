@@ -53,7 +53,48 @@ body {
 button[type=button] {
 	width: 9em;
 	height: 2.2em;
+	-webkit-appearance: button;
+	-webkit-writing-mode: horizontal-tb;
+	align-items: flex-start;
+	background-color: rgb(221, 221, 221);
+	border-bottom-color: rgb(221, 221, 221);
+	border-bottom-style: outset;
+	border-bottom-width: 2px;
+	border-image-outset: 0px;
+	border-image-repeat: stretch;
+	border-image-slice: 100%;
+	border-image-source: none;
+	border-image-width: 1;
+	border-left-color: rgb(221, 221, 221);
+	border-left-style: outset;
+	border-left-width: 2px;
+	border-right-color: rgb(221, 221, 221);
+	border-right-style: outset;
+	border-right-width: 2px;
+	border-top-color: rgb(221, 221, 221);
+	border-top-style: outset;
+	border-top-width: 2px;
+	box-sizing: border-box;
+	color: rgb(0, 0, 0);
+	cursor: default;
+	display: inline-block;
 	font-family: Arial;
+	letter-spacing: normal;
+	line-height: normal;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+	margin-top: 0px;
+	padding-bottom: 1px;
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 1px;
+	text-align: center;
+	text-indent: 0px;
+	text-shadow: none;
+	text-transform: none;
+	word-spacing: 0px;
+	writing-mode: lr-tb;
 }
 
 #buttons {
