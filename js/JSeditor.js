@@ -237,7 +237,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 						// to remove the trailing empty row.
 						var isFunction = false;
 						var funcName = "";
-                        var funcScope;
+                        var funcScope = 1;
 						// If the row contains the keyword function
 						// Decrease the function count
 						
@@ -246,8 +246,10 @@ function JSEditor(divID, chapterName, exerciseNum) {
 						if (clickRow[0] == "function") {
 							funcCount--;
 							funcName = clickRow[2];
-//                            determineScope($(clickDrow[2])); todo: fix this as well. part of function deletion
-//                            funcScope = scope;
+                            determineScope($(clickDrow[4])); //todo: fix this as well. part of function deletion
+                            funcScope = scope;
+                                console.log(funcScope);
+                                printScopes();
 							isFunction = true;
 						}
 
@@ -315,20 +317,6 @@ function JSEditor(divID, chapterName, exerciseNum) {
 								editor.selectRowByIndex(editor.getRowCount()-1, false);
 							}
 							
-							//if there are no more functions, delete "// Functions" and the extra line between the comment and the rest of the program
-							if(funcCount == 0){
-								deleteOneLineElement(rowNum-1);
-								deleteOneLineElement(rowNum-1);
-							}
-//                            if (scopes.length == 1) { todo: fix this as well: should not be using funcCount...
-//                                deleteOneLineElement(rowNum-1);
-//                                deleteOneLineElement(rowNum-1);
-//                            }
-							//else, only delete the extra line between functions
-							else{
-								deleteOneLineElement(rowNum);
-							}
-							
 							//remove from function list
 							if(vFuns.indexOf(funcName) >= 0)
 								vFuns.splice(vFuns.indexOf(funcName), 1);
@@ -336,15 +324,29 @@ function JSEditor(divID, chapterName, exerciseNum) {
 								nFuns.splice(nFuns.indexOf(funcName), 1);
 							if(tFuns.indexOf(funcName) >= 0)
 								tFuns.splice(tFuns.indexOf(funcName), 1);
-//                            for (fcount=0;fcount<scopes.length;fcount++) { todo: fix this!
-//                                if (scopes[fcount].scopenum == funcScope) {
-//                                    scopes.splice(fcount,1);
-//                                    break;
-//                                }
-//                            }
+                            for (fcount=0;fcount<scopes.length;fcount++) { //todo: fix this!
+                                if (scopes[fcount].scopenum == funcScope) {
+                                    scopes.splice(fcount,1);
+                                    break;
+                                }
+                            }
                             if (namesUsed.indexOf(funcName) >= 0)
                                 namesUsed.splice(namesUsed.indexOf(funcName),1);
-
+                                
+                            //if there are no more functions, delete "// Functions" and the extra line between the comment and the rest of the program
+//							if(funcCount == 0){
+//								deleteOneLineElement(rowNum-1);
+//								deleteOneLineElement(rowNum-1);
+//							}
+                            if (scopes.length == 1) { //todo: fix this as well: should not be using funcCount...
+                                deleteOneLineElement(rowNum-1);
+                                deleteOneLineElement(rowNum-1);
+                            }
+                            //else, only delete the extra line between functions
+                            else{
+                                deleteOneLineElement(rowNum);
+                            }
+                            printScopes();
 							isFunction = false;
 						}
 					}
@@ -443,7 +445,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				refreshLineCount();
 				*/
 				//editor.selectRowByIndex(rowNum-1,false);
-				
+                                determineVarinx(editor.getSelectedRowIndex());
+                                determineInsertionScope(editor.getSelectedRowIndex());
 				return;
 			}
 
@@ -2648,7 +2651,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
         else {
 //            scopes.push(new Scope(result));
             scopeAlter(scope,result);
-            printScopes();
+//            printScopes();
         }
         clickedCell.text(result);
         var tCell = clickedCell;
@@ -3500,8 +3503,9 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function scopeAlter(oldName,newName) {
+        console.log(oldName + " " + newName);
         var j = scopes.length;
-        if (oldName.isNaN)
+        if (namesUsed.indexOf(oldName) >= 0)
             namesUsed.splice(namesUsed.indexOf(oldName),1);
         namesUsed.push(newName);
         for (i=1; i < j; i++) {
