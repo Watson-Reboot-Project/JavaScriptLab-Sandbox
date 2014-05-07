@@ -237,6 +237,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 						// to remove the trailing empty row.
 						var isFunction = false;
 						var funcName = "";
+                        var funcScope;
 						// If the row contains the keyword function
 						// Decrease the function count
 						
@@ -245,6 +246,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 						if (clickRow[0] == "function") {
 							funcCount--;
 							funcName = clickRow[2];
+//                            determineScope($(clickDrow[2])); todo: fix this as well. part of function deletion
+//                            funcScope = scope;
 							isFunction = true;
 						}
 
@@ -317,6 +320,10 @@ function JSEditor(divID, chapterName, exerciseNum) {
 								deleteOneLineElement(rowNum-1);
 								deleteOneLineElement(rowNum-1);
 							}
+//                            if (scopes.length == 1) { todo: fix this as well: should not be using funcCount...
+//                                deleteOneLineElement(rowNum-1);
+//                                deleteOneLineElement(rowNum-1);
+//                            }
 							//else, only delete the extra line between functions
 							else{
 								deleteOneLineElement(rowNum);
@@ -329,6 +336,14 @@ function JSEditor(divID, chapterName, exerciseNum) {
 								nFuns.splice(nFuns.indexOf(funcName), 1);
 							if(tFuns.indexOf(funcName) >= 0)
 								tFuns.splice(tFuns.indexOf(funcName), 1);
+//                            for (fcount=0;fcount<scopes.length;fcount++) { todo: fix this!
+//                                if (scopes[fcount].scopenum == funcScope) {
+//                                    scopes.splice(fcount,1);
+//                                    break;
+//                                }
+//                            }
+                            if (namesUsed.indexOf(funcName) >= 0)
+                                namesUsed.splice(namesUsed.indexOf(funcName),1);
 
 							isFunction = false;
 						}
@@ -1234,7 +1249,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 		}*/
 		
 		//adds "function ID() /*VOID*/"
-        scopes.push(new Scope(scopes.length, ++scopeCount));
+        scopes.push(new Scope(++scopeCount, scopeCount));
 		editor.addRow(beginRow++,
 			[{text:"function", type:"keyword"},
 			{text:"&nbsp;"},
