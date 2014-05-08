@@ -35,8 +35,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 	var vFuns = [];
 	var nFuns = [];
 	var tFuns = [];
-	var ftypes = ["Text", "Numeric", "Void"];
-	var vtypes = ["Text", "Numeric"];
+	var ftypes = ["TEXT", "NUMERIC", "VOID"];
+	var vtypes = ["TEXT", "NUMERIC"];
 //	var nvars = [];
 //	var tvars = [];
     var wtypes = ["text", "numeric"];
@@ -181,9 +181,21 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			//since the editor checks to see if the insert cursor is on the line
 			// we are trying to select, all of the logic we need should be taken
 			// care of in the insertion bar cursor logic
+                                console.log("Selected row: " + selRow);
+                                console.log("insertRowNum: " + insertRowNum);
+//                                if ((insertRowNum <= programStart) && (selRow >= programStart))
+//                                programStart++;
+//                                if ((insertRowNum >= programStart) && (selRow <= programStart))
+//                                programStart--;
 			editor.selectRowByIndex(insertRowNum, true);
+                                console.log("selected row index after move: " + editor.getSelectedRowIndex());
+                                if ((editor.getSelectedRowIndex() < programStart) && (selRow >= programStart))
+                                programStart++;
+                                else if ((selRow < programStart) && (editor.getSelectedRowIndex() >= (programStart - 1)))
+                                programStart--;
             determineInsertionScope(insertRowNum);
             determineVarinx(insertRowNum);
+                                console.log("program start: " + programStart);
 			/*
 			// If all condition is passed move to the specified line
 			if (insertRowNum > selRow) {
@@ -197,6 +209,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 		}
 		//if we clicked anywhere else, probably on the code table
 		else{
+                                console.log("Hi?");
 			var cellVal = $(this).text();					// grab the cell value of clicked cell
 			var cellNum = $(this).index();					// grab the cell number of clicked cell
 			var rowNum = ($(this).parent().parent().parent().parent().parent().index());	// grab row number in codeTable of clicked cell
@@ -246,11 +259,11 @@ function JSEditor(divID, chapterName, exerciseNum) {
 						if (clickRow[0] == "function") {
 							funcCount--;
 							funcName = clickRow[2];
-                                console.log("class of cell: ");
-                                console.log("\t" + $(clickDrow[4]).attr('class'));
+//                                console.log("class of cell: ");
+//                                console.log("\t" + $(clickDrow[4]).attr('class'));
                             determineScope($(clickDrow[4])); //todo: fix this as well. part of function deletion
                             funcScope = scope;
-                                console.log(funcScope);
+//                                console.log(funcScope);
                                 printScopes();
 							isFunction = true;
 						}
@@ -317,6 +330,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 							//if the selected row was inside the function, move it to the end
 							if(isSelRowInside){
 								editor.selectRowByIndex(editor.getRowCount()-1, false);
+                                programStart--;
 							}
 							
 							//remove from function list
@@ -327,11 +341,11 @@ function JSEditor(divID, chapterName, exerciseNum) {
 							if(tFuns.indexOf(funcName) >= 0)
 								tFuns.splice(tFuns.indexOf(funcName), 1);
                             for (fcount=0;fcount<scopes.length;fcount++) { //todo: fix this!
-                                console.log(scope)
-                                console.log("\tscopenum: " + scopes[fcount].scopenum);
-                                console.log("\tfcount: " + fcount);
+//                                console.log(scope)
+//                                console.log("\tscopenum: " + scopes[fcount].scopenum);
+//                                console.log("\tfcount: " + fcount);
                                 if (scopes[fcount].scopenum == funcScope) {
-                                    console.log("supposed to break")
+//                                    console.log("supposed to break")
                                     scopes.splice(fcount,1);
                                     break;
                                 }
@@ -369,20 +383,34 @@ function JSEditor(divID, chapterName, exerciseNum) {
 							
 							var varName;
 							var varType;
+                            var arrayName = 0;
 							
 							//if row[0] is var, then this is a global variable
 							if(clickRow[0] == "var"){
-                                determineScope($(clickDrow[2]));
+//                                console.log($(clickDrow[2]).attr('class'));
+                                determineScope($(clickDrow[4]));
+                                if ($(clickDrow[4]).hasClass('array'))
+                                    arrayName = clickRow[2] + "[]";
 								varName = clickRow[2];
 								varType = clickRow[5];
+                                if ($(clickDrow[4]).hasClass('array'))
+                                    varType = clickRow[11];
+//                                console.log(varName);
 							}
 							//else this is a function variable
 							else{
-                                determineScope($(clickDrow[3]));
+                                determineScope($(clickDrow[5]));
+                                if ($(clickDrow[5]).hasClass('array'))
+                                    arrayName = clickRow[2] + "[]";
 								varName = clickRow[3];
 								varType = clickRow[6];
+                                if ($(clickDrow[5]).hasClass('array'))
+                                    varType = clickRow[12];
+//                                console.log(varName);
 							}
 
+                            if (arrayName)
+                                console.log(arrayName);
 							//console.log("\there7 " + varName + " " + (varName !== "ID"));
 							if (varName != "ID" && referenceCheck(varName, rowNum)) {
 								 createAlertBox("Notice", "You must not reference this variable if you want to delete it.", true, null);
@@ -394,19 +422,38 @@ function JSEditor(divID, chapterName, exerciseNum) {
 							if (varType === "TEXT") {
 //									var index = tvars.indexOf(varName);
 //									tvars.splice(index, 1);
-                                var index = scopes[scope].tvars.indexOf(varName);
-                                scopes[scope].tvars.splice(index,1);
+                                if (arrayName) {
+                                    var index = scopes[scope].tvars.indexOf(arrayName);
+                                    scopes[scope].tvars.splice(index,1);
+                                }
+                                else {
+                                    var index = scopes[scope].tvars.indexOf(varName);
+                                    scopes[scope].tvars.splice(index,1);
+                                }
 							}
 							// If we are removing a numeric variable then remove the variable from the numeric variable list
 							if (varType === "NUMERIC") {
 //									var index = nvars.indexOf(varName);
 //									nvars.splice(index, 1);
-                                var index = scopes[scope].nvars.indexOf(varName);
-                                scopes[scope].nvars.splice(index,1);
+                                if (arrayName) {
+                                    var index = scopes[scope].nvars.indexOf(arrayName);
+                                    scopes[scope].nvars.splice(index,1);
+                                }
+                                else {
+                                    var index = scopes[scope].nvars.indexOf(varName);
+                                    scopes[scope].nvars.splice(index,1);
+                                }
 							}
                             if (varType === "TYPE") {
-                                var index = scopes[scope].unvars.indexOf(varName);
-                                scopes[scope].unvars.splice(index,1);
+                                console.log(arrayName);
+                                if (arrayName) {
+                                    var index = scopes[scope].unvars.indexOf(arrayName);
+                                    scopes[scope].unvars.splice(index,1);
+                                }
+                                else {
+                                    var index = scopes[scope].unvars.indexOf(varName);
+                                    scopes[scope].unvars.splice(index,1);
+                                }
                             }
 							
 							//remove the variable name from namesUsed and varsNamed
@@ -415,7 +462,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 							
                             if (scope == 0) {
                                 variableCount--;
-                                console.log(variableCount);
+//                                console.log(variableCount);
                             }
                                 printScopes();
                                 varinx--;
@@ -426,7 +473,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 							//console.log("\there9 " + variableCount);
 							
 							// Remove the variable comment if no variable exists
-							if (variableCount == 0) {
+							if (variableCount == 0 && scope == 0) {
 								// We have to iterate twice to remove the empty space
 								// which is at the bottom of the variable section.
 								for (var i = 1; i <= 2; i++) {
@@ -453,6 +500,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				//editor.selectRowByIndex(rowNum-1,false);
                                 determineVarinx(editor.getSelectedRowIndex());
                                 determineInsertionScope(editor.getSelectedRowIndex());
+                                console.log("Prg strt after del: " + programStart);
 				return;
 			}
 
@@ -792,7 +840,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 	function canInsertBefore(row){
 		if (row.length <= 0) return false;
 		if (row[0].indexOf("//") >= 0) return false;
-		if (row[0] == 'var') return false;
+		if (row.indexOf('var') >= 0) return false;
 		if (row[0] == 'function') return false;
 		if (row[0] == '&nbsp;')  return false;
 		
@@ -870,36 +918,73 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			programCount += 2;
 		}
 		
-		// if the element is a variable
-		if (element == "variable") {
+        if (insertionScope == 0) {
+            // if the element is a variable
+            if (element == "variable") {
 			//adds "var ID; /*TYPE*/"
-			editor.addRow(varinx,
-				[{text:"var", type:"keyword"},
-				{text:"&nbsp;"},
-                 {text:"ID", type:"vname scope" + insertionScope}, //todo. Add this to everywhere involving variable declarations?
-				{text:";&nbsp;"},
-				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype vtype scope" + insertionScope},
-				{text:"*/", type:"datatype"}]);
-		}
-		// if its an array
-		else if (element == "array") {
-			//add "var ID = new Array(size); /*TYPE*/"
-			editor.addRow(varinx,
-				[{text:"var", type:"keyword"},
-				{text:"&nbsp;"},
-                 {text:"ID", type:"vname array scope" + insertionScope},
-				{text:"&nbsp;=&nbsp;"},
-				{text:"new&nbsp;", type:"keyword"},
-				{text:"Array"},
-				{text:"(", type:"openParen"},
-                 {text:"SIZE", type:"size"},
-				{text:")", type:"closeParen"},
-				{text:";"},
-				{text:"&nbsp;/*", type:"datatype"},
-				{text:"TYPE", type:"datatype vtype array scope" + insertionScope},
-				{text:"*/", type:"datatype"}]);
-		}
+                editor.addRow(varinx,
+                              [{text:"var", type:"keyword"},
+                               {text:"&nbsp;"},
+                               {text:"ID", type:"vname scope" + insertionScope}, //todo. Add this to everywhere involving variable declarations?
+                               {text:";&nbsp;"},
+                               {text:"&nbsp;/*", type:"datatype"},
+                               {text:"TYPE", type:"datatype vtype scope" + insertionScope},
+                               {text:"*/", type:"datatype"}]);
+            }
+            // if its an array
+            else if (element == "array") {
+                //add "var ID = new Array(size); /*TYPE*/"
+                editor.addRow(varinx,
+                          [{text:"var", type:"keyword"},
+                           {text:"&nbsp;"},
+                           {text:"ID", type:"vname array scope" + insertionScope},
+                           {text:"&nbsp;=&nbsp;"},
+                           {text:"new&nbsp;", type:"keyword"},
+                           {text:"Array"},
+                           {text:"(", type:"openParen"},
+                           {text:"SIZE", type:"size"},
+                           {text:")", type:"closeParen"},
+                           {text:";"},
+                           {text:"&nbsp;/*", type:"datatype"},
+                           {text:"TYPE", type:"datatype vtype array scope" + insertionScope},
+                           {text:"*/", type:"datatype"}]);
+            }
+        }
+        else {
+            console.log("WTF");
+            // if the element is a variable
+            if (element == "variable") {
+                //adds "var ID; /*TYPE*/"
+                editor.addRow(varinx,
+                              [{text:findIndentation(editor.getSelectedRowIndex())},
+                               {text:"var", type:"keyword"},
+                               {text:"&nbsp;"},
+                               {text:"ID", type:"vname scope" + insertionScope}, //todo. Add this to everywhere involving variable declarations?
+                               {text:";&nbsp;"},
+                               {text:"&nbsp;/*", type:"datatype"},
+                               {text:"TYPE", type:"datatype vtype scope" + insertionScope},
+                               {text:"*/", type:"datatype"}]);
+            }
+            // if its an array
+            else if (element == "array") {
+                //add "var ID = new Array(size); /*TYPE*/"
+                editor.addRow(varinx,
+                              [{text:findIndentation(editor.getSelectedRowIndex())},
+                               {text:"var", type:"keyword"},
+                               {text:"&nbsp;"},
+                               {text:"ID", type:"vname array scope" + insertionScope},
+                               {text:"&nbsp;=&nbsp;"},
+                               {text:"new&nbsp;", type:"keyword"},
+                               {text:"Array"},
+                               {text:"(", type:"openParen"},
+                               {text:"SIZE", type:"size"},
+                               {text:")", type:"closeParen"},
+                               {text:";"},
+                               {text:"&nbsp;/*", type:"datatype"},
+                               {text:"TYPE", type:"datatype vtype array scope" + insertionScope},
+                               {text:"*/", type:"datatype"}]);
+            }
+        }
 
 		//selRow++;			// increase the selected row
         if (insertionScope == 0)
@@ -1193,11 +1278,16 @@ function JSEditor(divID, chapterName, exerciseNum) {
 	// addFunction() adds a new function declaration before the program start and after the variables declarations
 	function addFunction() {
 		var beginRow;
+        var saveRow = editor.getSelectedRowIndex();
+//        editor.selectRowByIndex((programStart), true);
+        console.log(programStart);
         
 		// if the user hasn't edited the main program OR selected row is less than program start, we begin at the program start line
 		//if (firstMove) {
 		if (editor.getSelectedRowIndex() < programStart) {
-			beginRow = programStart;
+            editor.selectRowByIndex(editor.getRowCount()-1, false);
+            programStart--;
+			beginRow = programStart-1;
 		} else {
 			beginRow = programStart-1;
 		}
@@ -1267,7 +1357,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			{text:")", type:"closeParen fcParen scope" + scopeCount},
 			{text:"&nbsp;"},
 			{text:"/*", type:"datatype"},
-			{text:"Void", type:"datatype ftype scope" + scopeCount},
+			{text:"VOID", type:"datatype ftype scope" + scopeCount},
 			{text:"*/", type:"datatype"}]);
 			
 		//adds "{"
@@ -1286,6 +1376,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 		functionList.push("FUNCTION");				// push FUNCTION to the function list
 		//toggleEvents();								// refresh events
 		//refreshLineCount();							// refresh the line count
+        console.log("new program start: " + programStart);
 	}
 /*
 	// addRow() takes an innerTable, a string of cell values, and a start index and populates the innerTable with these values
@@ -2600,24 +2691,23 @@ function JSEditor(divID, chapterName, exerciseNum) {
             while (!(tCell.hasClass("vtype")))
                 tCell = tCell.next();
             if (tCell.hasClass("array")) {
-                if (tCell.text() == 'Text')
+                if (tCell.text() == 'TEXT')
                     scopes[scope].tvars.push(result.concat("[]"));
-                else if (tCell.text() == 'Numeric')
+                else if (tCell.text() == 'NUMERIC')
                     scopes[scope].nvars.push(result.concat("[]"));
                 else
                     scopes[scope].unvars.push(result.concat("[]"));
             }
             else {
-                if (tCell.text() == 'Text')
+                if (tCell.text() == 'TEXT')
                     scopes[scope].tvars.push(result);
-                else if (tCell.text() == 'Numeric')
+                else if (tCell.text() == 'NUMERIC')
                     scopes[scope].nvars.push(result);
                 else
                     scopes[scope].unvars.push(result);
             }
         }
-        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
-        console.log("namesUsed: " + namesUsed);
+        printScopes();
     }
     
     function fnameCallback(result) {
@@ -2651,10 +2741,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 
         
         if (clickedCell.text() != 'ID') {
-            console.log("namesUsed befpre: " + namesUsed);
             funExists(clickedCell.text());
             scopeAlter(clickedCell.text(), result);
-            console.log("after: " + namesUsed);
         }
         else {
 //            scopes.push(new Scope(result));
@@ -2672,6 +2760,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
         else if (tCell.text() == 'Void')
             vFuns.push(result);
         console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns + "\nNamesUsed: " + namesUsed);
+        printScopes();
     }
     
     function vtypeCallback(result) {
@@ -2694,9 +2783,9 @@ function JSEditor(divID, chapterName, exerciseNum) {
 //            handle array case
             if (clickedCell.hasClass("array")) {
                 varExists(nCell.text().concat("[]"), scope);
-                if (result == 'Text')
+                if (result == 'TEXT')
                     scopes[scope].tvars.push(nCell.text().concat("[]"));
-                else if (result == 'Numeric')
+                else if (result == 'NUMERIC')
                     scopes[scope].nvars.push(nCell.text().concat("[]"));
                 else
                     console.log("WHAT DID YOU DO?!?!?");
@@ -2704,16 +2793,18 @@ function JSEditor(divID, chapterName, exerciseNum) {
 //            handle standard variable case
             else {
                 varExists(nCell.text(), scope);
-                if (result == 'Text')
+                if (result == 'TEXT')
                     scopes[scope].tvars.push(nCell.text());
-                else if (result == 'Numeric')
+                else if (result == 'NUMERIC')
                     scopes[scope].nvars.push(nCell.text());
                 else
                     console.log("WHAT DID YOU DO?!?!?");
             }
+            scopes[scope].namesUsed.push(nCell.text());
         }
 //        testing log
-        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
+//        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
+        printScopes();
     }
     
     function ftypeCallback(result) {
@@ -2730,16 +2821,17 @@ function JSEditor(divID, chapterName, exerciseNum) {
         //if it has a name, remove it from the list it's in, and put it back in the proper list
         if (nCell.text() != 'ID') {
             funExists(nCell.text());
-            if (result == 'Text') {
+            if (result == 'TEXT') {
                 tFuns.push(nCell.text());
             }
-            else if (result == 'Numeric') {
+            else if (result == 'NUMERIC') {
                 nFuns.push(nCell.text());
             }
-            else if (result == 'Void') {
+            else if (result == 'VOID') {
                 vFuns.push(nCell.text());
             }
         }
+        scopes[scope].namesUsed.push(nCell.text());
         console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns);
     }
     
@@ -2783,7 +2875,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
         else {
             console.log("problem in aIDCallback");
         }
-        console.log($(clickedCell).attr('class')); //rtodo
+//        console.log($(clickedCell).attr('class')); //rtodo
         
     }
     
@@ -2876,7 +2968,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
         else {
             console.log("problem in varIDCallback");
         }
-        console.log($(clickedCell).attr('class')); //rtodo
+//        console.log($(clickedCell).attr('class')); //rtodo
         
     }
     
@@ -2893,7 +2985,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 //        console.log(result);
         clickedCell.text(result);
         var fcalled = getFunction(result);
-        console.log(fcalled.name);
+//        console.log(fcalled.name);
 //        console.log(fcalled.param);
 //        console.log(fcalled.param.length);
         if (fcalled.param.length == 0)
@@ -2901,7 +2993,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
         else {
             var pCell = clickedCell.next();
             for (i=0;i<fcalled.param.length;i++) {
-                console.log(i);
+//                console.log(i);
                 if (i > 0) {
                     editor.addCell(pCell, [{text:", "}]);
                     pCell = pCell.next();
@@ -3136,9 +3228,9 @@ function JSEditor(divID, chapterName, exerciseNum) {
     
     function parenCallback(result) {
         determineScope(clickedCell);
-        console.log(scope);
+//        console.log(scope);
         var pnum = getpnum(scope);
-        console.log(pnum);
+//        console.log(pnum);
         if (result == null)
             return;
         else if (!result)
@@ -3203,8 +3295,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
             else
                 scopes[scope].unvars.push(result);
         }
-        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
-        console.log("namesUsed: " + namesUsed);
+//        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
+//        console.log("namesUsed: " + namesUsed);
         printScopes();
     }
     
@@ -3213,7 +3305,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
             return;
         determineScope(clickedCell);
         var pnum = determinepnum();
-        console.log(pnum);
+//        console.log(pnum);
         clickedCell.text(result);
         //        console.log(result); rtodo
         
@@ -3242,7 +3334,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     
 //    function that handles the naming of variables and arrays
     function vnameHandler() {
-        console.log("naming a var"); //rtodo
+//        console.log("naming a var"); //rtodo
         if (clickedCell.hasClass("array")) {
 //            if the cell doesn't contain 'id', the name already exists somewhere,
 //            so we need to make sure it isn't referenced before attempting to change it
@@ -3356,7 +3448,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function ftypeHandler() {
-        console.log("typing a function"); // rtodo
+//        console.log("typing a function"); // rtodo
         
 //        locate the function's name
         var nCell = clickedCell;
@@ -3374,7 +3466,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function aIDHandler() {
-        console.log("choosing a variable to assign"); //rtodo
+//        console.log("choosing a variable to assign"); //rtodo
         determineScope(clickedCell);
         var list = scopes[0].tvars.concat(scopes[0].nvars);
         if (scope != 0)
@@ -3383,7 +3475,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function taIDHandler() {
-        console.log("choosing a text var to assign"); //rtodo
+//        console.log("choosing a text var to assign"); //rtodo
         determineScope(clickedCell);
         var list = scopes[0].tvars;
         if (scope != 0)
@@ -3392,7 +3484,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function naIDHandler() {
-        console.log("choosing a numeric var to assign"); //rtodo
+//        console.log("choosing a numeric var to assign"); //rtodo
         determineScope(clickedCell);
         var list = scopes[0].nvars;
         if (scope != 0)
@@ -3401,7 +3493,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function varIDHandler() {
-        console.log("choosing a var to be used in a boolean condition");
+//        console.log("choosing a var to be used in a boolean condition");
         determineScope(clickedCell);
         
         var eCell = clickedCell;
@@ -3430,7 +3522,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function fcallHandler() {
-        console.log("choosing a function to call");
+//        console.log("choosing a function to call");
         createSelector("Void Functions", vFuns, fcallCallback);
     }
     
@@ -3460,18 +3552,27 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function varExists(name, scope) {
-        console.log(name + " " + scope);
-        console.log(scopes[scope].tvars);
-        console.log(scopes[scope].nvars);
-        console.log(scopes[scope].unvars);
-//        todo: maybe change so that the scope is passed in with the name. Would allow for same named variables across diff scopes
-//        todo2: if above is done, must change all calls to this function
+//        console.log(name + " " + scope);
+//        console.log(scopes[scope].tvars);
+//        console.log(scopes[scope].nvars);
+//        console.log(scopes[scope].unvars);
+        printScopes();
+        var tname = name;
+        if (name[name.length-1] == "]") {
+            console.log("ARRAY");
+            tname = name.substring(0,(name.length-2));
+            console.log(tname);
+        }
+        console.log(tname);
         if (scopes[scope].tvars.indexOf(name) >= 0)
             scopes[scope].tvars.splice(scopes[scope].tvars.indexOf(name), 1);
         else if (scopes[scope].nvars.indexOf(name) >= 0)
             scopes[scope].nvars.splice(scopes[scope].nvars.indexOf(name), 1);
         else if (scopes[scope].unvars.indexOf(name) >= 0)
             scopes[scope].unvars.splice(scopes[scope].unvars.indexOf(name), 1);
+        if (scopes[scope].namesUsed.indexOf(tname) >= 0)
+            scopes[scope].namesUsed.splice(scopes[scope].namesUsed.indexOf(tname), 1);
+        
 //        var j = scopes.length;
 //        for (i=0;i<j;i++) {
 //            if (scopes[i].tvars.indexOf(name) >= 0) {
@@ -3511,7 +3612,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function scopeAlter(oldName,newName) {
-        console.log(oldName + " " + newName);
+//        console.log(oldName + " " + newName);
         var j = scopes.length;
         if (scopes[0].namesUsed.indexOf(oldName) >= 0)
             scopes[0].namesUsed.splice(namesUsed.indexOf(oldName),1);
@@ -3541,13 +3642,13 @@ function JSEditor(divID, chapterName, exerciseNum) {
     
     function varReffed(name) {
         //need to check whether var is in list of referenced variables (todo?)
-        console.log("going to check if the var is reffed");
+//        console.log("going to check if the var is reffed");
         if (namesRef.indexOf(name) >= 0)
             return true;
     }
     
     function determineInsertionScope(insertRowNum) {
-        console.log(insertRowNum + "vs start at " + programStart);
+//        console.log(insertRowNum + "vs start at " + programStart);
         if (insertRowNum > (programStart-1)) {
             insertionScope = 0;
             console.log("insertionScope: " + insertionScope);
@@ -3580,11 +3681,11 @@ function JSEditor(divID, chapterName, exerciseNum) {
         }
         var row;
         for (i = insertRowNum; i>=0; i--) {
-            console.log("for loop: " + i);
+//            console.log("for loop: " + i);
             row = editor.rowToArrayHtml(i);
-            console.log(row);
+//            console.log(row);
             if (row.length > 3) {
-                console.log(row[0]);
+//                console.log(row[0]);
                 if (row[0] == 'function') {
                     varinx = i + 2;
 //                    if (variableCount == 0)
