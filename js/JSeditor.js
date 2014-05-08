@@ -361,8 +361,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			/* Weston variables */
 			//innerTablet = codeTable.rows[rowNum].cells[0].children[0];
 			//clickedCell = innerTablet.rows[0].cells[cellNum];
-			clickRow = editor.rowToArrayHtml(rowNum);
-            clickDrow = editor.rowToDOMArray(rowNum);
+			clickRow = editor.rowToArrayHtml(rowNum);   //Array of html contents of cells in clickrow
+            clickDrow = editor.rowToDOMArray(rowNum);   //Row of DOM objects for the same row as clickRow
 			clickedCell = $(this);
 			clickedCellNum = cellNum;
 			
@@ -403,6 +403,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 						if (clickRow[0] == "function") {
 							funcCount--;
 							funcName = clickRow[2];
+                                console.log("class of cell: ");
+                                console.log("\t" + $(clickDrow[4]).attr('class'));
                             determineScope($(clickDrow[4])); //todo: fix this as well. part of function deletion
                             funcScope = scope;
                                 console.log(funcScope);
@@ -482,13 +484,17 @@ function JSEditor(divID, chapterName, exerciseNum) {
 							if(tFuns.indexOf(funcName) >= 0)
 								tFuns.splice(tFuns.indexOf(funcName), 1);
                             for (fcount=0;fcount<scopes.length;fcount++) { //todo: fix this!
+                                console.log(scope)
+                                console.log("\tscopenum: " + scopes[fcount].scopenum);
+                                console.log("\tfcount: " + fcount);
                                 if (scopes[fcount].scopenum == funcScope) {
+                                    console.log("supposed to break")
                                     scopes.splice(fcount,1);
                                     break;
                                 }
                             }
-                            if (namesUsed.indexOf(funcName) >= 0)
-                                namesUsed.splice(namesUsed.indexOf(funcName),1);
+                            if (scopes[0].namesUsed.indexOf(funcName) >= 0)
+                                scopes[0].namesUsed.splice(namesUsed.indexOf(funcName),1);
                                 
                             //if there are no more functions, delete "// Functions" and the extra line between the comment and the rest of the program
 //							if(funcCount == 0){
@@ -562,7 +568,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 							
 							//remove the variable name from namesUsed and varsNamed
 //							varsNamed.splice(varsNamed.indexOf(varName), 1);
-							namesUsed.splice(namesUsed.indexOf(varName), 1);
+							scopes[scope].namesUsed.splice(scopes[scope].namesUsed.indexOf(varName), 1);
 							
                             if (scope == 0) {
                                 variableCount--;
@@ -2697,8 +2703,10 @@ function JSEditor(divID, chapterName, exerciseNum) {
     function determineScope(cell) {
 //        determine the scope of the clicked cell (todo)
 //        console.log("Supposed to determine scope here"); rtodo
-        var j = scopes.length;
-        for (i=0;i<j;i++) {
+        console.log(cell.attr('class'));
+        var j = scopeCount;
+        for (i=0;i<=j;i++) {
+            console.log("Has class scope" + i + "?\n\t" + cell.hasClass("scope" + i));
             if (cell.hasClass(("scope" + i))) {
                 scope = i;
                 console.log(scope); //rtodo
@@ -2712,7 +2720,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
         if (result == null){
             return;
 		}
-        else if (namesUsed.indexOf(result) >= 0) {
+        else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
@@ -2734,7 +2742,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				createAlertBox("Invalid Character",result+" is invalid!",1,dummy);
 				return;
 			}
-            namesUsed.push(result);
+            scopes[scope].namesUsed.push(result);
             if (clickedCell.hasClass("array")) {
                 varExists(clickedCell.text().concat("[]"), scope);
             }
@@ -2772,7 +2780,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
         determineScope(clickedCell);
         if (result == null)
             return;
-        else if (namesUsed.indexOf(result) >= 0) {
+        else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
@@ -3314,7 +3322,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
         if (result == null){
             return;
 		}
-        else if (namesUsed.indexOf(result) >= 0) {
+        else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
@@ -3336,7 +3344,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				createAlertBox("Invalid Character",result+" is invalid!",1,dummy);
 				return;
 			}
-            namesUsed.push(result);
+            scopes[scope].namesUsed.push(result);
             varExists(clickedCell.text(), scope);
             clickedCell.text(result);
             if (scopes.length > 1)
@@ -3661,9 +3669,9 @@ function JSEditor(divID, chapterName, exerciseNum) {
     function scopeAlter(oldName,newName) {
         console.log(oldName + " " + newName);
         var j = scopes.length;
-        if (namesUsed.indexOf(oldName) >= 0)
-            namesUsed.splice(namesUsed.indexOf(oldName),1);
-        namesUsed.push(newName);
+        if (scopes[0].namesUsed.indexOf(oldName) >= 0)
+            scopes[0].namesUsed.splice(namesUsed.indexOf(oldName),1);
+        scopes[0].namesUsed.push(newName);
         for (i=1; i < j; i++) {
             if (scopes[i].name == oldName) {
                 scopes[i].name = newName;
@@ -3683,6 +3691,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
             console.log("\tunvars: " + scopes[i].unvars);
             console.log("\tparam: " + scopes[i].param);
             console.log("\tscopenum: " + scopes[i].scopenum);
+            console.log("\tnamesUsed: " + scopes[i].namesUsed);
         }
     }
     
@@ -3813,6 +3822,7 @@ function Scope(myName, s) {
     var unvars;     //list of untyped vars for a scope
     var param;      //list of the types of params in order
     var scopenum;
+    var namesUsed;
     
     this.name = myName;
     this.tvars = [];
@@ -3820,4 +3830,5 @@ function Scope(myName, s) {
     this.unvars = [];
     this.param = [];
     this.scopenum = s;
+    this.namesUsed = [];
 }
