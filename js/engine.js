@@ -58,7 +58,7 @@ function Engine(divID, editor){
 			walk();
 		}
 		
-		ga("send", "event", "javascript", "walk", "exercise" + exerciseNum);
+		//ga("send", "event", "javascript", "walk", "exercise" + exerciseNum);
 	}
 	
 	function runButton() {
@@ -77,7 +77,7 @@ function Engine(divID, editor){
 			intervalID = setInterval(walk, 100);
 		}
 		
-		ga("send", "event", "javascript", "run", "exercise" + exerciseNum);
+		//ga("send", "event", "javascript", "run", "exercise" + exerciseNum);
 	}
 	
 	function updateButtons() {

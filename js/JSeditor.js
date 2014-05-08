@@ -127,7 +127,9 @@ function JSEditor(divID, chapterName, exerciseNum) {
 	
 	// Run button listener
 	$("#fig" + divID + "Run").click(function() {
+		console.log("here1");
 		$("#fig" + divID + "OutVarBox").slideUp(function() {
+			console.log("here2");
 			engine.runButton();
 			slidDown = false;
 		});
