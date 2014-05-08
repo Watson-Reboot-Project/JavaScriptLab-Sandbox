@@ -3806,20 +3806,29 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function determineInsertionScope(insertRowNum) {
+        console.log("determining insertion scope starting at " + insertRowNum + "!");
 //        console.log(insertRowNum + "vs start at " + programStart);
         if (insertRowNum > (programStart-1)) {
+            console.log("global!");
             insertionScope = 0;
             console.log("insertionScope: " + insertionScope);
             return;
         }
         var row;
+        var rowContents;
         for(var i = insertRowNum; i >= 0; i--){
+//            rowContents = editor.rowToArrayHtml(i);
             row = editor.rowToDOMArray(i);
+//            console.log(rowContents);
             if (row.length > 3) {
                 var cell = row[4];
+//                console.log($(cell).attr('class'));
+//                console.log("Has class fname?\n\t" + $(cell).hasClass("fname"));
                 if($(cell).hasClass("fname")){
-                    var j = scopes.length;
-                    for (k = 1; k < j; k++) {
+//                    console.log("Had fname. let's check for stuff and things")
+                    var j = scopeCount;
+                    for (k = 1; k <= j; k++) {
+//                        console.log("Has class scope" + k + "?\n\t" + $(cell).hasClass("scope" + k));
                         if ($(cell).hasClass("scope" + k)) {
                             insertionScope = k;
                             console.log("insertionScope: " + insertionScope);
@@ -3834,6 +3843,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     function determineVarinx(insertRowNum) {
         if (insertRowNum > (programStart - 1)) {
             varinx = variableCount + 3;
+            console.log("should be a global var");
             console.log("last variable row index" + varinx);
             return;
         }
