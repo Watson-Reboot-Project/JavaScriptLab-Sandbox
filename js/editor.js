@@ -893,7 +893,7 @@ function Editor(divID, chapterName, exerciseNum, lineNumBool, syntaxHighlighting
 	/* clearEditor - clears the editor and uses the Watson Data Store to clear the editor's saved data
 	*/
 	function clearEditor(){
-		console.log('here3');
+		console.log('here3', dataStore);
 		dataStore.eraseExerciseData(chapterName, exerciseNum);
 	
 		codeTable.innerHTML = "";
