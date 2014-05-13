@@ -122,6 +122,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 	 	
 	// Walk button listener
 	$("#fig" + divID + "Walk").click(function() {
+		if(!checkAssign())
+			return;
 		engine.walkButton();
 	});
 	
@@ -130,6 +132,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 		console.log("here1");
 		$("#fig" + divID + "OutVarBox").slideUp(function() {
 			console.log("here2");
+			if(!checkAssign())
+				return;
 			engine.runButton();
 			slidDown = false;
 		});
@@ -168,7 +172,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 	var editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, false);
 	editor.loadEditor('figcontainer-exer' + exerciseNum + 'Editor', divID, true);
 	
-	var engine = new Engine(divID, editor);
+	var engine = new Engine(divID, chapterName, exerciseNum, editor);
 	
 	var variableCount = 0;									// keeps count of the amount of variables
 	var funcCount = 0;										// keeps count of number of functions
@@ -3926,6 +3930,43 @@ function JSEditor(divID, chapterName, exerciseNum) {
 		editor.clearEditor();
 		editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, true);
 	}
+	
+	//new function - Du
+	function checkAssign(){
+		var find = 0;
+		var cha = 4;
+		str = '';
+		id = '';
+		str += getEditorText();
+		while(true){
+			if(str.indexOf("var",find) != -1){
+				find = str.indexOf("var",find);
+				while(true){
+					if(str.charAt(find+cha) != ';' && str.charAt(find+cha) != ' '){
+						id += str.charAt(find+cha);
+						cha++;
+					}else{
+						break;
+					}
+				}
+				console.log(id);
+
+				if(str.search(id+" = ") != -1){
+					find = find + cha;
+					cha = 4;
+					id = '';
+				}else{
+					console.log("exit");
+					return false;
+				}
+			}else{
+				break;
+			}
+		}
+		return true;
+		console.log(str.indexOf("var",4));
+	}
+	//end function - Du
 }
 
 function Scope(myName, s) {
