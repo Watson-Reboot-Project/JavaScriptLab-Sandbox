@@ -2870,6 +2870,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     
     function fnameCallback(result) {
         determineScope(clickedCell);
+        console.log(scope);
         if (result == null)
             return;
         else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
@@ -2966,6 +2967,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
     }
     
     function ftypeCallback(result) {
+        determineScope(clickedCell);
         if (result == null)
             return;
         
