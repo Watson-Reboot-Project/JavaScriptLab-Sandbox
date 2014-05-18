@@ -6,7 +6,7 @@
 *			is to mimic Watson as it is now.
 ************************************************************************************/
 
-function JSEditor(divID, chapterName, exerciseNum) {
+function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 
 /* begin copy from old controller.js*****************/
 	var intervalID;
@@ -168,9 +168,18 @@ function JSEditor(divID, chapterName, exerciseNum) {
 	});
 	
 /* end copy from old controller.js*****************/
-
-	var editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, false);
-	editor.loadEditor('figcontainer-exer' + exerciseNum + 'Editor', divID, true);
+	
+	var editor;
+	
+	if(!isExplore){
+		editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, true);
+		editor.loadEditor('figcontainer-exer' + exerciseNum + 'Editor', 'fig' + divID + 'Editor', true);
+	}
+	else{
+		editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, false);
+		console.log('figJSFigure-' + exerciseNum + 'Editor');
+		editor.loadEditor('figJSFigure-' + exerciseNum + 'Editor', 'fig' + divID + 'Editor', true);
+	}
 	
 	var engine = new Engine(divID, chapterName, exerciseNum, editor);
 	
@@ -253,9 +262,9 @@ function JSEditor(divID, chapterName, exerciseNum) {
 		var cell;
 		var innerTable;
 
-			console.log("here4",!editor.checkEditorData());
+		console.log("here4",!editor.checkEditorData(true));
 		//if there is not already data for this editor, add initial stuff
-		if(!editor.checkEditorData()){
+		if(!editor.checkEditorData(true)){
 			console.log("here5");
 			//add initial text
 			editor.addRow(0,
@@ -1175,11 +1184,11 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			//adds "ID = EXPR;
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-                 {text:"ID", type:"aID scope" + insertionScope},
+                {text:"ID", type:"aID scope" + insertionScope},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp"},
-                 {text:"EXPR", type:"expr scope" + insertionScope},
+                {text:"EXPR", type:"expr scope" + insertionScope},
 				{text:";"}]);
 		}
 		else if (element == "write") {
@@ -1188,7 +1197,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				[{text:indentStr},
 				{text:"document.write", type:"keyword"},
 				{text:"(", type:"openParen"},
-                 {text:"EXPR", type:"expr write scope" + insertionScope},
+                {text:"EXPR", type:"expr write scope" + insertionScope},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -1198,7 +1207,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				[{text:indentStr},
 				{text:"document.writeln", type:"keyword"},
 				{text:"(", type:"openParen"},
-                 {text:"EXPR", type: "expr write scope" + insertionScope},
+                {text:"EXPR", type: "expr write scope" + insertionScope},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -1206,15 +1215,15 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			//adds "ID = prompt(EXPR, EXPR);"
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-                 {text:"ID", type:"taID scope" + insertionScope},
+				{text:"ID", type:"taID scope" + insertionScope},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp;"},
 				{text:"prompt", type:"keyword"},
 				{text:"(", type:"openParen"},
-                 {text:"EXPR", type:"expr text scope" + insertionScope},
+				{text:"EXPR", type:"expr text scope" + insertionScope},
 				{text:",&nbsp;"},
-                 {text:"EXPR", type:"expr text scope" + insertionScope},
+				{text:"EXPR", type:"expr text scope" + insertionScope},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
 		}
@@ -1222,7 +1231,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			//adds "ID = parseFloat(prompt(EXPR, EXPR));
 			editor.addRow(editor.getSelectedRowIndex(),
 				[{text:indentStr},
-                 {text:"ID", type:"naID scope" + insertionScope},
+                {text:"ID", type:"naID scope" + insertionScope},
 				{text:"&nbsp;"},
 				{text:"="},
 				{text:"&nbsp;"},
@@ -1230,9 +1239,9 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				{text:"(", type:"openParen"},
 				{text:"prompt", type:"keyword"},
 				{text:"(", type:"openParen"},
-                 {text:"EXPR", type: "expr text scope" + insertionScope},
+                {text:"EXPR", type: "expr text scope" + insertionScope},
 				{text:","},
-                 {text:"EXPR", type: "expr numeric scope" + insertionScope},
+                {text:"EXPR", type: "expr numeric scope" + insertionScope},
 				{text:")", type:"closeParen"},
 				{text:")", type:"closeParen"},
 				{text:";"}]);
@@ -1252,7 +1261,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				[{text:indentStr},
 				{text:"return", type:"keyword"},
 				{text:"&nbsp;"},
-                 {text:"EXPR", type:"expr return scope" + insertionScope},
+                {text:"EXPR", type:"expr return scope" + insertionScope},
 				{text:";"}]);
 		}
 
@@ -1281,7 +1290,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			[{text:indentStr},
 			{text:"if", type:"keyword"},
 			{text:"(", type:"openParen"},
-             {text:"EXPR", type:"expr bool scope" + insertionScope},
+            {text:"EXPR", type:"expr bool scope" + insertionScope},
 			{text:")", type:"closeParen"},
 			]);
 		
@@ -1368,9 +1377,8 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			[{text:indentStr},
 			{text:"while", type:"keyword"},
 			{text:"(", type:"openParen"},
-             {text:"EXPR", type:"expr bool scope" + insertionScope},
-			{text:")", type:"closeParen"},
-			]);
+            {text:"EXPR", type:"expr bool scope" + insertionScope},
+			{text:")", type:"closeParen"}]);
 			
 		//adds "{"
 		editor.addRow(editor.getSelectedRowIndex(),
@@ -1404,18 +1412,18 @@ function JSEditor(divID, chapterName, exerciseNum) {
 			[{text:indentStr},
 			{text:"for", type:"keyword"},
 			{text:"(", type:"openParen"},
-             {text:"ID", type:"naID iforID scope" + insertionScope},
+            {text:"ID", type:"naID iforID scope" + insertionScope},
 			{text:"&nbsp;"},
 			{text:"="},
 			{text:"&nbsp;"},
-             {text:"EXPR", type:"expr numeric scope" + insertionScope},
+            {text:"EXPR", type:"expr numeric scope" + insertionScope},
 			{text:";&nbsp;"},
-             {text:"ID", type:"forID scope" + insertionScope},
+            {text:"ID", type:"forID scope" + insertionScope},
 			{text:"&nbsp;"},
 			{text:"&lt;&nbsp;"},
-             {text:"EXPR", type:"expr numeric scope" + insertionScope},
+            {text:"EXPR", type:"expr numeric scope" + insertionScope},
 			{text:";&nbsp;"},
-             {text:"ID", type:"forID scope" + insertionScope},
+            {text:"ID", type:"forID scope" + insertionScope},
 			{text:"++"},
 			{text:")", type:"closeParen"}]);
 			
@@ -1515,7 +1523,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 		editor.addRow(beginRow++,
 			[{text:"function", type:"keyword"},
 			{text:"&nbsp;"},
-             {text:"ID", type:"fname scope" + scopeCount},
+            {text:"ID", type:"fname scope" + scopeCount},
 			{text:"(", type:"openParen foParen scope" + scopeCount},
 			{text:")", type:"closeParen fcParen scope" + scopeCount},
 			{text:"&nbsp;"},
@@ -2422,7 +2430,7 @@ function JSEditor(divID, chapterName, exerciseNum) {
 				else
 					bracketFlag = true;
 			}
-
+console.log(row);
 			if (row[0].indexOf("function") >= 0) rowType.push("functionDeclaration");
 			else if(row[0].indexOf("//") >= 0) rowType.push("comment");
 			else if(row.indexOf("{") >= 0) rowType.push("closeBracket");
