@@ -2882,6 +2882,7 @@ console.log(row);
     
     function fnameCallback(result) {
         determineScope(clickedCell);
+        console.log(scope);
         if (result == null)
             return;
         else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
