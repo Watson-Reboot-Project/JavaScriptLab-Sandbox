@@ -2978,6 +2978,7 @@ console.log(row);
     }
     
     function ftypeCallback(result) {
+        determineScope(clickedCell);
         if (result == null)
             return;
         
@@ -3939,27 +3940,49 @@ console.log(row);
 		editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, true);
 	}
 	
-	//new function - Du
+//new function - Du
+	//check for any unassigned variable
 	function checkAssign(){
+		//array
+		var arrays = false;
+		//where to start
 		var find = 0;
+		//where the id is located
 		var cha = 4;
+		//store the code
 		str = '';
+		//the variable
 		id = '';
 		str += getEditorText();
+		//if there is any ID variable at all return false
+		if(str.indexOf("ID",find) != -1) return false;
+		//while loop that goes through str to look for variables
 		while(true){
+			//if a variable is found check if it is assigned
 			if(str.indexOf("var",find) != -1){
+				//get the var location
 				find = str.indexOf("var",find);
+				//get the variable it into id
 				while(true){
+					//';' for normal variables ' ' for array variables
 					if(str.charAt(find+cha) != ';' && str.charAt(find+cha) != ' '){
+						if(str.charAt(find+cha) != ' ') arrays = true;
 						id += str.charAt(find+cha);
 						cha++;
 					}else{
 						break;
 					}
 				}
+				//print id out
 				console.log(id);
 
+				//search for the id if found return and find more variables, if not exit and return false
 				if(str.search(id+" = ") != -1){
+					if(arrays){
+						console.log("got it");
+						if(str.search(id+"\\[") == -1){ return false;}
+						arrays = false;
+					}
 					find = find + cha;
 					cha = 4;
 					id = '';
@@ -3971,6 +3994,7 @@ console.log(row);
 				break;
 			}
 		}
+		//if no error return true
 		return true;
 		console.log(str.indexOf("var",4));
 	}
