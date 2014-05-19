@@ -2982,7 +2982,7 @@ console.log(row);
         if (result == null)
             return;
         
-        determineScope(clickedCell); // rtodo
+//        determineScope(clickedCell); // rtodo
         
         // update the cell with the new type
         clickedCell.text(result);
@@ -3168,7 +3168,7 @@ console.log(row);
         }
     }
     
-    // variable ID callback
+    // variable ID callback for choosing left side of boolean comparisons
     function varIDCallback(result) {
         if (result == null)
             return;
@@ -3178,6 +3178,8 @@ console.log(row);
         while (!eCell.hasClass("expr"))
             eCell = eCell.next();
         
+        // If changing the variable, and the expression has not already been altered,
+        // "untype" that expression.
         if (clickedCell.text() != 'ID') {
             namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
             if (eCell.text() == 'EXPR') {
@@ -3188,23 +3190,26 @@ console.log(row);
             }
         }
         
+        // Update the cell contents and push to reference list.
         clickedCell.text(result);
         namesRef.push(result);
+        
+        // build lists to find find variable's type
         var nlist = scopes[0].nvars;
         var tlist = scopes[0].tvars;
         if (scope != 0) {
             nlist.concat(scopes[scope].nvars);
             tlist.concat(scopes[scope].tvars);
         }
-//        $(clickedCell).removeClass("aID");
+//        $(clickedCell).removeClass("aID"); rtodo
         
-        
+        // "Type" its associated expression
         if (nlist.indexOf(result) >= 0) {
-//            $(clickedCell).addClass("naID");
+//            $(clickedCell).addClass("naID"); rtodo
             $(eCell).addClass("numeric");
         }
         else if (tlist.indexOf(result) >= 0) {
-//            $(clickedCell).addClass("taID");
+//            $(clickedCell).addClass("taID"); rtodo
             $(eCell).addClass("text");
         }
         else {
@@ -3214,28 +3219,35 @@ console.log(row);
         
     }
     
+    // Callback for inserting function calls
     function fcallCallback(result) {
-        printScopes();
-        determineScope(clickedCell);
+//        printScopes(); rtoo
+//        determineScope(clickedCell); rtodo
+        // Handle cancel from dialog box
         if (result == null)
             return;
         
+        // Remove any old references and update reference list with new
         if (clickedCell.text() != 'FUNCTION') {
             namesRef.splice(namesRef.indexOf(clickedCell.text()));
         }
         namesRef.push(result);
-//        console.log(result);
+//        console.log(result); rtodo
+        // Update Cell contents
         clickedCell.text(result);
+        
+        // determine which scope was called
         var fcalled = getFunction(result);
-//        console.log(fcalled.name);
-//        console.log(fcalled.param);
-//        console.log(fcalled.param.length);
+//        console.log(fcalled.name); rtodo
+//        console.log(fcalled.param); rtodo
+//        console.log(fcalled.param.length); rtodo
+        // using the scope object returned above, add and type parameters appropriately
         if (fcalled.param.length == 0)
             return;
         else {
             var pCell = clickedCell.next();
             for (i=0;i<fcalled.param.length;i++) {
-//                console.log(i);
+//                console.log(i); rtodo
                 if (i > 0) {
                     editor.addCell(pCell, [{text:", "}]);
                     pCell = pCell.next();
@@ -3246,21 +3258,30 @@ console.log(row);
         }
     }
     
+    // Function to handle callback for numeric constants
     function nConstantCallback(result) {
+        // if cancel was clicked
         if (result == null)
             return;
         
-        clickedCell.text(result); //todo this probably needs MORE to it
+        // Update cell contents with return from dialog
+        clickedCell.text(result);
     }
     
+    // Callback for choosing an index to reference.
+    // Redirects with new dialog to insert either a constant or a numeric variable
     function indexCallback(result) {
-        determineScope(clickedCell);
+//        determineScope(clickedCell); rtodo
+        // Handle cancel
         if (result == null)
             return;
+        
+        // Create dialog for inserting numeric constant
         else if (result == "Constant") {
             createNumPad(0, null, "Numeric Entry", "Please enter an index to reference.", 0, 10, nConstantCallback);
         }
         
+        // Create a dialog with all global and current scope numeric variables
         else if (result == "Variable") {
             var list = scopes[0].nvars;
             if (scope != 0)
@@ -3269,14 +3290,19 @@ console.log(row);
         }
     }
     
+    // Callback for write and writeln expressions
     function wexprCallback(result) {
+        // Cancel
         if (result == null)
             return;
+        
+        // If text chosen, "retype" the expression, and create a dialog box for a text expression
         else if (result == "Text") {
             $(clickedCell).removeClass("write");
             $(clickedCell.addClass("text"));
             createSelector("Text Expression", ["Constant", "Variable", "Function Call", "EXPR + EXPR"], texprCallback);
         }
+        // If numeric chosen, "retype" the expression, and create a dialog box for a numeric expression
         else if (result == "Numeric") {
             $(clickedCell).removeClass("write");
             $(clickedCell.addClass("numeric"));
@@ -3287,22 +3313,28 @@ console.log(row);
         }
     }
     
+    // Callback for text expressions
     function texprCallback(result) {
-        determineScope(clickedCell);
+//        determineScope(clickedCell); rtodo
+        // Cancel
         if (result == null)
             return;
+        // String entry dialog for text constants
         else if (result == "Constant") {
             createStringPad("Text Constant", "Please enter a string constant.", tconstCallback);
         }
+        // Selection box of global and current text variables
         else if (result == "Variable") {
             var list = scopes[0].tvars;
             if (scope != 0)
                 list = list.concat(scopes[scope].tvars);
             createSelector("Text Variables", list, tvarCallback);
         }
+        // Selection box for functions that return a text value
         else if (result == "Function Call") {
             createSelector("Text Functions", tFuns, tfunCallback);
         }
+        // Expand to allow more expressions.
         else if (result == "EXPR + EXPR") {
             clickedCell.text("EXPR");
             editor.addCell(clickedCell, [{text:"&nbsp+&nbsp;"}, {text:"EXPR",type:"expr text scope" + scope}]);
@@ -3310,17 +3342,23 @@ console.log(row);
         }
     }
     
+    // Callback for simple text entry boxes
     function tconstCallback(result) {
+        // Cancel
         if (result == null)
             return;
+        // Update cell contents to "result"
         else {
             clickedCell.text('"' + result + '"');
         }
     }
     
+    // Callback for text variable selection boxes
     function tvarCallback(result) {
+        // Cancel
         if (result == null)
             return;
+        // Update cell contents
         clickedCell.text(result);
     }
     
