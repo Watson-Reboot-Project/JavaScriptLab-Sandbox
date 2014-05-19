@@ -119,11 +119,15 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 	$(document).ready(function() {
             $("#fig" + divID + "OutVarBox").hide(); 
 	 });
+
 	 	
 	// Walk button listener
 	$("#fig" + divID + "Walk").click(function() {
-		if(!checkAssign())
+		if(!checkAssign()){
+			createAlertBox("Error!","Incomplete Assignment",1,dummy);
+			engine.reset();
 			return;
+		}
 		engine.walkButton();
 	});
 	
@@ -132,8 +136,11 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 		console.log("here1");
 		$("#fig" + divID + "OutVarBox").slideUp(function() {
 			console.log("here2");
-			if(!checkAssign())
+			if(!checkAssign()){
+				createAlertBox("Error!","Incomplete Assignment",1,dummy);
+				engine.reset();
 				return;
+			}
 			engine.runButton();
 			slidDown = false;
 		});
@@ -168,7 +175,7 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 	});
 	
 /* end copy from old controller.js*****************/
-	
+
 	var editor;
 	
 	if(!isExplore){
@@ -180,7 +187,7 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 		console.log('figJSFigure-' + exerciseNum + 'Editor');
 		editor.loadEditor('figJSFigure-' + exerciseNum + 'Editor', 'fig' + divID + 'Editor', true);
 	}
-	
+	console.log(editor);
 	var engine = new Engine(divID, chapterName, exerciseNum, editor);
 	
 	var variableCount = 0;									// keeps count of the amount of variables
@@ -690,6 +697,8 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 			cellNum = $(this).index() - 2;
 			clickedCellNum = cellNum;
 		
+
+
             // Handles insertion logic for any cell clicked on that can be modified
             clickHandler();
 //			if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC' || cellVal == 'VOID')
@@ -1379,6 +1388,7 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 			{text:"(", type:"openParen"},
             {text:"EXPR", type:"expr bool scope" + insertionScope},
 			{text:")", type:"closeParen"}]);
+
 			
 		//adds "{"
 		editor.addRow(editor.getSelectedRowIndex(),
@@ -2430,6 +2440,7 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 				else
 					bracketFlag = true;
 			}
+
 console.log(row);
 			if (row[0].indexOf("function") >= 0) rowType.push("functionDeclaration");
 			else if(row[0].indexOf("//") >= 0) rowType.push("comment");
@@ -2763,35 +2774,48 @@ console.log(row);
     // This function handles a click on a cell by checking for key classes to redirect a function
     // to specific handler functions for different insertion cases.
     function clickHandler() {
+
         determineScope(clickedCell);
         console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
+
             vnameHandler();
         else if (clickedCell.hasClass("pname"))
             pnameHandler();
         else if (clickedCell.hasClass("fname"))
+
             fnameHandler();
         else if (clickedCell.hasClass("vtype"))
+
             vtypeHandler();
         else if (clickedCell.hasClass("ptype"))
             ptypeHandler();
         else if (clickedCell.hasClass("ftype"))
+
             ftypeHandler();
         else if (clickedCell.hasClass("aID"))
+
             aIDHandler();
         else if (clickedCell.hasClass("taID"))
+
             taIDHandler();
         else if (clickedCell.hasClass("naID"))
+
             naIDHandler();
         else if (clickedCell.hasClass("varID"))
+
             varIDHandler();
         else if (clickedCell.hasClass("fcall"))
+
             fcallHandler();
         else if (clickedCell.hasClass("size"))
+
             sizeHandler();
         else if (clickedCell.hasClass("index"))
+
             indexHandler();
         else if (clickedCell.hasClass("expr"))
+
             exprHandler();
         else if (clickedCell.hasClass("foParen") || clickedCell.hasClass("fcParen"))
             parenHandler();
@@ -2811,6 +2835,8 @@ console.log(row);
     
     // This function is used to determine the scope of a cell.
     function determineScope(cell) {
+
+
         console.log(cell.attr('class')); // rtodo
         var j = scopeCount;
         // Check all numbers for scopes up to the current max scope (called scopeCount)
@@ -2819,6 +2845,7 @@ console.log(row);
             console.log("Has class scope" + i + "?\n\t" + cell.hasClass("scope" + i));
             if (cell.hasClass(("scope" + i))) {
                 scope = i;
+
                 return;
             }
         }
@@ -2943,6 +2970,7 @@ console.log(row);
 			return;
 		}
         
+
 
         // update the scope for this function and remove it from whichever function list it
         // appears in
@@ -3108,6 +3136,7 @@ console.log(row);
         else {
             console.log("problem in aIDCallback");
         }
+
         
     }
     
@@ -3173,6 +3202,7 @@ console.log(row);
         if (result == null)
             return;
         
+
         // find related expression cell
         var eCell = clickedCell;
         while (!eCell.hasClass("expr"))
@@ -3202,6 +3232,7 @@ console.log(row);
             tlist.concat(scopes[scope].tvars);
         }
 //        $(clickedCell).removeClass("aID"); rtodo
+
         
         // "Type" its associated expression
         if (nlist.indexOf(result) >= 0) {
@@ -3264,6 +3295,7 @@ console.log(row);
         if (result == null)
             return;
         
+
         // Update cell contents with return from dialog
         clickedCell.text(result);
     }
@@ -4049,10 +4081,11 @@ console.log(row);
 		editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, true);
 	}
 	
-//new function - Du
+	//new function - Du
 	//check for any unassigned variable
+	//Does not work for variables that are declared but not assigned
 	function checkAssign(){
-		//array
+		/*//array
 		var arrays = false;
 		//where to start
 		var find = 0;
@@ -4065,6 +4098,8 @@ console.log(row);
 		str += getEditorText();
 		//if there is any ID variable at all return false
 		if(str.indexOf("ID",find) != -1) return false;
+		//if there is any ID variable at all return false
+		if(str.indexOf("EXPR",find) != -1) return false;
 		//while loop that goes through str to look for variables
 		while(true){
 			//if a variable is found check if it is assigned
@@ -4102,7 +4137,7 @@ console.log(row);
 			}else{
 				break;
 			}
-		}
+		}*/
 		//if no error return true
 		return true;
 		console.log(str.indexOf("var",4));

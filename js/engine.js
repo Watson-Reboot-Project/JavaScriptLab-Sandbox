@@ -1,4 +1,8 @@
-function Engine(divID, editor){
+/*
+	A unified JavaScript engine for JavaScript figures and exercises.
+*/
+
+function Engine(divID, chapterName, exerciseNum, editor){
 	var interpreter = null;
 	var thisObj = this;
 	var programArray;
@@ -58,7 +62,7 @@ function Engine(divID, editor){
 			walk();
 		}
 		
-		//ga("send", "event", "javascript", "walk", "exercise" + exerciseNum);
+		ga("send", "event", "javascript", "walk", "exercise" + exerciseNum);
 	}
 	
 	function runButton() {
@@ -77,7 +81,7 @@ function Engine(divID, editor){
 			intervalID = setInterval(walk, 100);
 		}
 		
-		//ga("send", "event", "javascript", "run", "exercise" + exerciseNum);
+		ga("send", "event", "javascript", "run", "exercise" + exerciseNum);
 	}
 	
 	function updateButtons() {
@@ -152,7 +156,7 @@ function Engine(divID, editor){
 			
 			programStr += rowStr;
 			
-			if (rowArr.length >= 2 && rowArr[1].indexOf("var") >= 0) {
+			if ((rowArr.length >= 1 && rowArr[0].indexOf("var") >= 0) || (rowArr.length >= 2 && rowArr[1].indexOf("var") >= 0))  {
 				var start = rowStr.indexOf("/*");
 				var end = rowStr.indexOf("*/");
 				
