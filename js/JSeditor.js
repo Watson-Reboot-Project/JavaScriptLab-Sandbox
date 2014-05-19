@@ -3366,6 +3366,10 @@ console.log(row);
     function tfunCallback(result) {
 //        namesRef.push(result); rtodo
         //        console.log(result); rtodo
+        // Cancel
+        if (result == null)
+            return;
+        
         // Update cell contents
         clickedCell.text(result);
         
@@ -3391,24 +3395,30 @@ console.log(row);
     
     // Callback for numeric expression selection boxes
     function nexprCallback(result) {
-        determineScope(clickedCell);
+//        determineScope(clickedCell); rtodo
+        // Cancel
         if (result == null)
             return;
+        // Create numPad dialog for numeric constant entry
         else if (result == "Constant") {
             createNumPad(null, null, "Numeric Entry", "Please enter a numeric value.", true, 10, nConstantCallback);
         }
+        // Create selection box containing all global and current scope numeric variables
         else if (result == "Variable") {
             var list = scopes[0].nvars;
             if (scope != 0)
                 list = list.concat(scopes[scope].nvars);
             createSelector("Numeric Variables", list, nvarCallback);
         }
+        // Create numeric function selection box
         else if (result == "Function Call") {
             createSelector("Numeric Functions", nFuns, nfunCallback);
         }
+        // Create selection box allowing for numeric expressions
         else if (result == "EXPR") {
             createSelector("Expressions", ["EXPR + EXPR", "EXPR - EXPR", "EXPR * EXPR", "EXPR / EXPR", "EXPR % EXPR", "(EXPR)"], nexprCallback)
         }
+        // Add appropriate cells for numeric expression callbacks
         else if (result == "EXPR + EXPR") {
             editor.addCell(clickedCell, [{text:"&nbsp;+&nbsp;"}, {text:"EXPR", type:"expr numeric scope" + scope}]);
             return;
