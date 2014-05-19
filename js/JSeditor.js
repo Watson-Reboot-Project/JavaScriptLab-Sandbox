@@ -690,8 +690,8 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 			cellNum = $(this).index() - 2;
 			clickedCellNum = cellNum;
 		
-			/* Weston's dialogs */
-                                clickHandler();
+            // Handles insertion logic for any cell clicked on that can be modified
+            clickHandler();
 //			if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC' || cellVal == 'VOID')
 //			{
 //				if (clickRow[cellNum-7] == 'function')
@@ -2760,44 +2760,47 @@ console.log(row);
         clickedCell.text(result);
     }
     
+    // This function handles a click on a cell by checking for key classes to redirect a function
+    // to specific handler functions for different insertion cases.
     function clickHandler() {
-//        printScopes(); rtodo
         determineScope(clickedCell);
         console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
-            vnameHandler(); //mostly implemented?
+            vnameHandler();
         else if (clickedCell.hasClass("pname"))
             pnameHandler();
         else if (clickedCell.hasClass("fname"))
-            fnameHandler(); //mostly implemented?
+            fnameHandler();
         else if (clickedCell.hasClass("vtype"))
-            vtypeHandler(); //mostly implemented?
+            vtypeHandler();
         else if (clickedCell.hasClass("ptype"))
             ptypeHandler();
         else if (clickedCell.hasClass("ftype"))
-            ftypeHandler(); //mostly implemented
+            ftypeHandler();
         else if (clickedCell.hasClass("aID"))
-            aIDHandler(); //mostly implemented
+            aIDHandler();
         else if (clickedCell.hasClass("taID"))
-            taIDHandler(); //mostly implemented
+            taIDHandler();
         else if (clickedCell.hasClass("naID"))
-            naIDHandler(); //mostly implemented
+            naIDHandler();
         else if (clickedCell.hasClass("varID"))
-            varIDHandler(); //mostly implemented
+            varIDHandler();
         else if (clickedCell.hasClass("fcall"))
-            fcallHandler();  //mostly implemented
+            fcallHandler();
         else if (clickedCell.hasClass("size"))
-            sizeHandler(); //mostly implemented
+            sizeHandler();
         else if (clickedCell.hasClass("index"))
-            indexHandler(); //mostly implemented
+            indexHandler();
         else if (clickedCell.hasClass("expr"))
-            exprHandler(); //mostly implemented
+            exprHandler();
         else if (clickedCell.hasClass("foParen") || clickedCell.hasClass("fcParen"))
             parenHandler();
         else if (clickedCell.hasClass("pID"))
             pIDHandler();
     }
     
+    // This function is used to replace parameter ID's with either constants or variables
+    // for function calls that have parameters.
     function pIDHandler() {
         if (clickedCell.hasClass("text"))
             createSelector("Text Parameter Selection", ["Constant", "Variable"], texprCallback);
@@ -2805,31 +2808,40 @@ console.log(row);
             createSelector("Numeric Parameter Selection", ["Constant", "Variable"], nexprCallback);
     }
     
+    
+    // This function is used to determine the scope of a cell.
     function determineScope(cell) {
-//        determine the scope of the clicked cell (todo)
-//        console.log("Supposed to determine scope here"); rtodo
-        console.log(cell.attr('class'));
+        console.log(cell.attr('class')); // rtodo
         var j = scopeCount;
+        // Check all numbers for scopes up to the current max scope (called scopeCount)
+        // and sets the scope variable to reflect the scope of the cell passed in.
         for (i=0;i<=j;i++) {
             console.log("Has class scope" + i + "?\n\t" + cell.hasClass("scope" + i));
             if (cell.hasClass(("scope" + i))) {
                 scope = i;
-                console.log(scope); //rtodo
                 return;
             }
         }
     }
     
+    // This function is the callback for handling the return of the string pad spawned for
+    // naming a variable.
     function vnameCallback(result) {
-        determineScope(clickedCell);
+        determineScope(clickedCell); //rtodo
+        
+        // just return if cancel was clicked.
         if (result == null){
             return;
 		}
+        
+        // create an alert if the name is already in use
         else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
         }
+        
+        // create an alert if a reserved word was entered
         else if (resWords.indexOf(result) >= 0) {
 			if(result == '')
 				result = "Empty String";
@@ -2838,6 +2850,8 @@ console.log(row);
             return;
         }
         else {
+            
+            // Check for any invalid characters.
 			if( /^[a-zA-Z]+$/.test(result[0]) == true){
 				if(/^[a-zA-Z0-9]+$/.test(result) == false){
 					createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
@@ -2847,19 +2861,30 @@ console.log(row);
 				createAlertBox("Invalid Character",result+" is invalid!",1,dummy);
 				return;
 			}
+            
+            // update the namesUsed list for the scope object this variable is associated with
             scopes[scope].namesUsed.push(result);
+            
+            // Call varExists to remove the old name (if it has one) from the lists it
+            // appears in
             if (clickedCell.hasClass("array")) {
                 varExists(clickedCell.text().concat("[]"), scope);
             }
             else {
                 varExists(clickedCell.text(), scope);
             }
+            
+            // update the cell to contain the new name
             clickedCell.text(result);
             if (scopes.length > 1)
                 determineScope(clickedCell);
+
+            // find the cell that contains this variable's type.
             var tCell = clickedCell;
             while (!(tCell.hasClass("vtype")))
                 tCell = tCell.next();
+            
+            // add to the correct lists
             if (tCell.hasClass("array")) {
                 if (tCell.text() == 'TEXT')
                     scopes[scope].tvars.push(result.concat("[]"));
@@ -2877,19 +2902,27 @@ console.log(row);
                     scopes[scope].unvars.push(result);
             }
         }
-        printScopes();
+        printScopes(); //rtodo
     }
     
+    // This function is the callback for handling the return of the string pad spawned for
+    // naming a function.
     function fnameCallback(result) {
-        determineScope(clickedCell);
-        console.log(scope);
+        determineScope(clickedCell); //rtodo
+//        console.log(scope);
+        
+        // just return if cancel was clicked.
         if (result == null)
             return;
+        
+        // check whether the name is in use already
         else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
         }
+        
+        // check for reserved words
         else if (resWords.indexOf(result) >= 0) {
 			if(result == '')
 				result = "Empty String";
@@ -2899,6 +2932,7 @@ console.log(row);
             return;
         }
 		
+        // check for any invalid characters
         if( /^[a-zA-Z]+$/.test(result[0]) == true){
 			if(/^[a-zA-Z0-9]+$/.test(result) == false){
 				createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
@@ -2910,35 +2944,47 @@ console.log(row);
 		}
         
 
-        
+        // update the scope for this function and remove it from whichever function list it
+        // appears in
         if (clickedCell.text() != 'ID') {
             funExists(clickedCell.text());
             scopeAlter(clickedCell.text(), result);
         }
         else {
-//            scopes.push(new Scope(result));
+//            scopes.push(new Scope(result)); rtodo
             scopeAlter(scope,result);
-//            printScopes();
+//            printScopes(); rtodo
         }
+        
+        // update the cell with the new name
         clickedCell.text(result);
+        
+        // find the cell that contains the return type
         var tCell = clickedCell;
         while (!(tCell.hasClass("ftype")))
             tCell = tCell.next();
+        
+        // add the function to the proper function list
         if (tCell.text() == 'Text')
             tFuns.push(result);
         else if (tCell.text() == 'Numeric')
             nFuns.push(result);
         else if (tCell.text() == 'Void')
             vFuns.push(result);
-        console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns + "\nNamesUsed: " + namesUsed);
-        printScopes();
+//        console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns + "\nNamesUsed: " + namesUsed);
+ //        printScopes(); rtodo
     }
     
+    // Function to handle setting or resetting the type of a variable
     function vtypeCallback(result) {
+        
+        // return if cancel was clicked
         if (result == null)
             return;
         
-        determineScope(clickedCell);
+        determineScope(clickedCell); // rtodo
+        
+        // update the cell with the new type
         clickedCell.text(result);
 //        console.log(result); rtodo
         
@@ -2975,14 +3021,16 @@ console.log(row);
         }
 //        testing log
 //        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
-        printScopes();
+        printScopes(); //rtodo
     }
     
+    // function for setting or resetting a function's return type
     function ftypeCallback(result) {
-        determineScope(clickedCell);
+//        determineScope(clickedCell); rtodo
         if (result == null)
             return;
         
+        // update the cell with the new type
         clickedCell.text(result);
         
         //        locate the function's name
@@ -3003,39 +3051,52 @@ console.log(row);
                 vFuns.push(nCell.text());
             }
         }
-        scopes[scope].namesUsed.push(nCell.text());
-        console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns);
+//        scopes[scope].namesUsed.push(nCell.text());
+//        console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns); rtodo
     }
     
+    // function for handling the selection of an assignment ID
     function aIDCallback(result) {
+        
+        // return if cancel was clicked
         if (result == null)
             return;
         
+        // if the cell already had contents, remove the old variable from the names referenced
+        // list
         if (clickedCell.text() != 'ID') {
             namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
         }
         
+        // Handle selection of an array variable
         if (result[result.length-1] == ']') {
             var str = result.substring(0,(result.length-1));
             clickedCell.text(str);
             editor.addCell(clickedCell,[{text:"index", type:"index"}, {text:"]"}]);
         }
+        // Handle selection of non-array
         else {
             clickedCell.text(result);
         }
+        // update references array
         namesRef.push(result);
+        
+        // build arrays of variables for determining type
         var nlist = scopes[0].nvars;
         var tlist = scopes[0].tvars;
         if (scope != 0) {
             nlist.concat(scopes[scope].nvars);
             tlist.concat(scopes[scope].tvars);
         }
+        // remove the generic assignment class
         $(clickedCell).removeClass("aID");
         
+        // find the associated expression for the assignment
         var eCell = clickedCell;
         while (!eCell.hasClass("expr"))
             eCell = eCell.next();
         
+        // add typing to the expression
         if (nlist.indexOf(result) >= 0) {
             $(clickedCell).addClass("naID");
             $(eCell).addClass("numeric");
@@ -3047,14 +3108,15 @@ console.log(row);
         else {
             console.log("problem in aIDCallback");
         }
-//        console.log($(clickedCell).attr('class')); //rtodo
         
     }
     
+    // text assignment callback
     function taIDCallback(result) {
         if (result == null)
             return;
         
+        // remove old reference
         if (clickedCell.text() != 'ID') {
             namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
         }
@@ -3063,19 +3125,25 @@ console.log(row);
             clickedCell.text(str);
             editor.addCell(clickedCell,[{text:"index", type:"index"}, {text:"]"}]);
         }
+        // update cell contents
         else {
             clickedCell.text(result);
         }
+        // push new reference
         namesRef.push(result);
     }
     
+    // numeric assignmentid callback
     function naIDCallback(result) {
         if (result == null)
             return;
         
+        // remove old references
         if (clickedCell.text() != 'ID') {
             namesRef.splice(namesRef.indexOf(clickedCell.text()),1);
         }
+        
+        // update cell contents
         if (result[result.length-1] == ']') {
             var str = result.substring(0,(result.length-1));
             clickedCell.text(str);
@@ -3086,6 +3154,7 @@ console.log(row);
         }
         namesRef.push(result);
         
+        // update the remaining two cells if this is the initial ID of a FOR declaration
         if (clickedCell.hasClass("iforID")) {
             var x = 2;
             var fCell = clickedCell;
@@ -3099,11 +3168,12 @@ console.log(row);
         }
     }
     
+    // variable ID callback
     function varIDCallback(result) {
         if (result == null)
             return;
         
-        
+        // find related expression cell
         var eCell = clickedCell;
         while (!eCell.hasClass("expr"))
             eCell = eCell.next();
