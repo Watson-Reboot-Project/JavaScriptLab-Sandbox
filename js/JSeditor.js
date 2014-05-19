@@ -3394,12 +3394,22 @@ console.log(row);
         clickedCell.text(result);
     }
     
+    // Callback for text function selections
     function tfunCallback(result) {
-        namesRef.push(result);
+//        namesRef.push(result); rtodo
         //        console.log(result); rtodo
+        // Cancel
+        if (result == null)
+            return;
+        
+        // Update cell contents
         clickedCell.text(result);
+        
+        // Add parentheses
         editor.addCell(clickedCell, [{text:"(", type:"openParen"}, {text:")", type:"closeParen"}]);
-        var fcalled = scopes[getFunction(result)];
+        
+        // Fetch the proper scope object and add and "type" parameters
+        var fcalled = getFunction(result);
         if (fcalled.param.length == 0)
             return;
         else {
@@ -3415,25 +3425,32 @@ console.log(row);
         }
     }
     
+    // Callback for numeric expression selection boxes
     function nexprCallback(result) {
-        determineScope(clickedCell);
+//        determineScope(clickedCell); rtodo
+        // Cancel
         if (result == null)
             return;
+        // Create numPad dialog for numeric constant entry
         else if (result == "Constant") {
             createNumPad(null, null, "Numeric Entry", "Please enter a numeric value.", true, 10, nConstantCallback);
         }
+        // Create selection box containing all global and current scope numeric variables
         else if (result == "Variable") {
             var list = scopes[0].nvars;
             if (scope != 0)
                 list = list.concat(scopes[scope].nvars);
             createSelector("Numeric Variables", list, nvarCallback);
         }
+        // Create numeric function selection box
         else if (result == "Function Call") {
             createSelector("Numeric Functions", nFuns, nfunCallback);
         }
+        // Create selection box allowing for numeric expressions
         else if (result == "EXPR") {
             createSelector("Expressions", ["EXPR + EXPR", "EXPR - EXPR", "EXPR * EXPR", "EXPR / EXPR", "EXPR % EXPR", "(EXPR)"], nexprCallback)
         }
+        // Add appropriate cells for numeric expression callbacks
         else if (result == "EXPR + EXPR") {
             editor.addCell(clickedCell, [{text:"&nbsp;+&nbsp;"}, {text:"EXPR", type:"expr numeric scope" + scope}]);
             return;
@@ -3454,11 +3471,19 @@ console.log(row);
             editor.addCell(clickedCell, [{text:"&nbsp;%&nbsp;"}, {text:"EXPR", type:"expr numeric scope" + scope}]);
             return;
         }
+        else if (result == "(EXPR)") {
+            editor.addCell(clickedCell.prev(), [{text:"("}]);
+            editor.addCell(clickedCell, [{text:")"}]);
+            return;
+        }
     }
     
+    // Callback for numeric text variables
     function nvarCallback(result) {
+        // Cancel
         if (result == null)
             return;
+        // Update cell contents, adding cells for indexes if chosen variable is an array
         if (result[result.length-1] == ']') {
             var str = result.substring(0,(result.length-1));
             clickedCell.text(str);
@@ -3469,12 +3494,22 @@ console.log(row);
         }
     }
     
+    // Callback for numeric function selection boxes
     function nfunCallback(result) {
-        namesRef.push(result);
+//        namesRef.push(result); rtodo
         //        console.log(result); rtodo
+        // Cancel
+        if (result == null)
+            return;
+        
+        // Update cell contents
         clickedCell.text(result);
+        // Add parentheses for function call
         editor.addCell(clickedCell, [{text:"(", type:"openParen"}, {text:")", type:"closeParen"}]);
-        var fcalled = scopes[getFunction(result)];
+        
+        // Fetch appropriate scope object
+        var fcalled = getFunction(result);
+        // Add and type any cells for parameters
         if (fcalled.param.length == 0)
             return;
         else {
@@ -3490,10 +3525,15 @@ console.log(row);
         }
     }
     
+    // Callback for boolean expression selection boxes
     function bexprCallback(result) {
-        determineScope(clickedCell);
+//        determineScope(clickedCell); rtodo
+        // Cancel
         if (result == null)
             return;
+        
+        // For each case, update the current cell with to be a Variable ID for Boolean
+        // Comparisons. Add cells for remaining part of comparison
         else if (result == "EXPR == EXPR") {
             $(clickedCell).removeClass("bool");
             $(clickedCell).removeClass("expr");
@@ -3538,38 +3578,50 @@ console.log(row);
         }
     }
     
+    // Callback for parenthesis click
     function parenCallback(result) {
-        determineScope(clickedCell);
-//        console.log(scope);
+//        determineScope(clickedCell); rtodo
+//        console.log(scope); rtodo
+        // Find the current number of parameters for the function's scope
         var pnum = getpnum(scope);
-//        console.log(pnum);
+//        console.log(pnum); rtodo
+        // Cancel
         if (result == null)
             return;
         else if (!result)
             return;
+        // Find closing parenthesis
         while(!clickedCell.hasClass('fcParen')){
             clickedCell = clickedCell.next();
         }
+        // Go back one cell
         clickedCell = clickedCell.prev();
+        // If the cell before the closing parenthesis is an end for a parameter type, add a comma and space
         if (clickedCell.text() == "*/") {
             editor.addCell(clickedCell,[{text: ",&nbsp;"}]);
             clickedCell = clickedCell.next();
         }
-//        console.log("add parameter?");
+//        console.log("add parameter?"); // rtodo
+        // Now add the cells for a new parameter
         editor.addCell(clickedCell,
                        [{text:"ID", type: "pname scope" + scope + " p" + pnum},
                         {text:"&nbsp;/*", type: "datatype"},
                         {text:"TYPE", type: "datatype ptype scope" + scope + " p" + pnum},
                         {text:"*/", type: "datatype"}]
                        );
+        // update the scope object to show that this parameter is not yet typed
         scopes[scope].param.push("untyped");
     }
     
+    // Callback for naming a parameter from a string entry dialog
     function pnameCallback(result) {
-        determineScope(clickedCell);
+//        determineScope(clickedCell); rtodo
+        // Cancel
         if (result == null){
             return;
 		}
+        
+        // Check for any invalid naming cases
         else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
@@ -3592,14 +3644,19 @@ console.log(row);
 				createAlertBox("Invalid Character",result+" is invalid!",1,dummy);
 				return;
 			}
+            // update the scope object to know the new name is in use
             scopes[scope].namesUsed.push(result);
+            // remove old name from any lists
             varExists(clickedCell.text(), scope);
+            // update the cell contents
             clickedCell.text(result);
-            if (scopes.length > 1)
-                determineScope(clickedCell);
+//            if (scopes.length > 1) rtodo
+//                determineScope(clickedCell); rtodo
+            // Locate the cell with this param's type
             var tCell = clickedCell;
             while (!(tCell.hasClass("ptype")))
                 tCell = tCell.next();
+            // update the correct variable list in the scope object
             if (tCell.text() == 'Text')
                 scopes[scope].tvars.push(result);
             else if (tCell.text() == 'Numeric')
@@ -3607,9 +3664,9 @@ console.log(row);
             else
                 scopes[scope].unvars.push(result);
         }
-//        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
-//        console.log("namesUsed: " + namesUsed);
-        printScopes();
+//        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars); rtodo
+//        console.log("namesUsed: " + namesUsed); rtodo
+//        printScopes(); rtodo
     }
     
     function ptypeCallback(result) {
