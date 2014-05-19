@@ -3362,12 +3362,18 @@ console.log(row);
         clickedCell.text(result);
     }
     
+    // Callback for text function selections
     function tfunCallback(result) {
-        namesRef.push(result);
+//        namesRef.push(result); rtodo
         //        console.log(result); rtodo
+        // Update cell contents
         clickedCell.text(result);
+        
+        // Add parentheses
         editor.addCell(clickedCell, [{text:"(", type:"openParen"}, {text:")", type:"closeParen"}]);
-        var fcalled = scopes[getFunction(result)];
+        
+        // Fetch the proper scope object and add and "type" parameters
+        var fcalled = getFunction(result);
         if (fcalled.param.length == 0)
             return;
         else {
@@ -3383,6 +3389,7 @@ console.log(row);
         }
     }
     
+    // Callback for numeric expression selection boxes
     function nexprCallback(result) {
         determineScope(clickedCell);
         if (result == null)
