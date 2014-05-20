@@ -32,6 +32,7 @@ function Engine(divID, chapterName, exerciseNum, editor){
 	this.walkButton = walkButton;
 	this.runButton = runButton;
 	this.updateVariables = updateVariables;
+	this.reset = reset;
 	
 	var green = "#5CB85C";
 	var greenHover = "#47A447";
@@ -62,7 +63,7 @@ function Engine(divID, chapterName, exerciseNum, editor){
 			walk();
 		}
 		
-		ga("send", "event", "javascript", "walk", "exercise" + exerciseNum);
+		//ga("send", "event", "javascript", "walk", "exercise" + exerciseNum);
 	}
 	
 	function runButton() {
@@ -81,7 +82,7 @@ function Engine(divID, chapterName, exerciseNum, editor){
 			intervalID = setInterval(walk, 100);
 		}
 		
-		ga("send", "event", "javascript", "run", "exercise" + exerciseNum);
+		//ga("send", "event", "javascript", "run", "exercise" + exerciseNum);
 	}
 	
 	function updateButtons() {

@@ -125,7 +125,8 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 	$("#fig" + divID + "Walk").click(function() {
 		if(!checkAssign()){
 			createAlertBox("Error!","Incomplete Assignment",1,dummy);
-			engine.reset();
+			editor.selectAndHighlightRowByIndex(editor.getRowCount()-1);
+			editor.clearHighlighting();
 			return;
 		}
 		engine.walkButton();
@@ -138,7 +139,8 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 			console.log("here2");
 			if(!checkAssign()){
 				createAlertBox("Error!","Incomplete Assignment",1,dummy);
-				engine.reset();
+				editor.selectAndHighlightRowByIndex(editor.getRowCount()-1);
+				editor.clearHighlighting();
 				return;
 			}
 			engine.runButton();
@@ -179,7 +181,7 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 	var editor;
 	
 	if(!isExplore){
-		editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, true);
+		editor = new Editor("fig" + divID + "Editor", chapterName, exerciseNum, true, true, 1, true, true, false);
 		editor.loadEditor('figcontainer-exer' + exerciseNum + 'Editor', 'fig' + divID + 'Editor', true);
 	}
 	else{
@@ -388,7 +390,7 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 		}
 		//if we clicked anywhere else, probably on the code table
 		else{
-                                console.log("Hi?");
+            //console.log("Hi?");
 			var cellVal = $(this).text();					// grab the cell value of clicked cell
 			var cellNum = $(this).index();					// grab the cell number of clicked cell
 			var rowNum = ($(this).parent().parent().parent().parent().parent().index());	// grab row number in codeTable of clicked cell
@@ -686,237 +688,12 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 			if (editor.getSelectedRowIndex() == rowNum) return;			// the selected row was clicked? do nothing
 			if (rowNum < variableCount) return;		// we don't allow users to move into variables section
 
-			// if the cell value is a blank (5 non-breaking spaces '\xA0'), we try to move to that location
-		/*			if (cellVal == '\xA0\xA0\xA0\xA0\xA0') {
-				var innerTable = codeTable.rows[rowNum].cells[0].children[0];		// grab the inner table of this row
-				if (checkValidRow(innerTable.rows[0], rowNum) == false) return;		// check to see if this is a valid position
-				moveToLine(rowNum);												// move to line if we make it here
-			}
-		*/
 			//reset the cellNum and subtract 2 to work with editor.rowToArray()
 			cellNum = $(this).index() - 2;
 			clickedCellNum = cellNum;
 		
-
-
             // Handles insertion logic for any cell clicked on that can be modified
             clickHandler();
-//			if (cellVal == 'TYPE' || cellVal == 'TEXT' || cellVal == 'NUMERIC' || cellVal == 'VOID')
-//			{
-//				if (clickRow[cellNum-7] == 'function')
-//				{
-//					console.log("looking at a function type");
-//					if (foundIn(clickRow[cellNum-5], namesRef))
-//					{
-//						console.log("Can't change type. Is reffed.\n");
-//					}
-//					else
-//					{
-//						console.log("not reffed.");
-//						if (foundIn(clickRow[cellNum-5], namesUsed))
-//						{
-//							console.log("used.");
-//							delN(clickRow[cellNum-5], nFuns);
-//							delN(clickRow[cellNum-5], tFuns);
-//							delN(clickRow[cellNum-5], vFuns);
-//							delN(clickRow[cellNum-5], namesUsed);
-//							createSelector("Select Type", ftypes, ftypeConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(ftypes, "ftype");
-//		//                            $("#selector").dialog('open');
-//						}
-//						else
-//						{
-//							console.log("not used.");
-//							createSelector("Select Type", ftypes, ftypeConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(ftypes, "ftype");
-//		//                            $("#selector").dialog('open');
-//						}
-//					}
-//				}
-//				else if (clickRow[cellNum-5] == 'var')
-//				{
-//					console.log("HERE");
-//					if (foundIn(clickRow[cellNum-3], namesRef))
-//					{
-//						console.log("Can't change type. Is reffed.\n");
-//					}
-//					else
-//					{
-//						console.log("not reffed.");
-//						if (foundIn(clickRow[cellNum-3], namesUsed))
-//						{
-//							console.log("used.");
-//							delN(clickRow[cellNum-3], nvars);
-//							delN(clickRow[cellNum-3], tvars);
-//							delN(clickRow[cellNum-3], namesUsed);
-//							createSelector("Select Type", vtypes, typeConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(vtypes, "type");
-//		//                            $("#selector").dialog('open');
-//						}
-//						else
-//						{
-//							console.log("not used.");
-//							createSelector("Select Type", vtypes, typeConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(vtypes, "type");
-//		//                            $("#selector").dialog('open');
-//						}
-//						
-//						if(clickRow[cellNum-3] != 'ID' && !foundIn(clickRow[cellNum-3], namesRef)){
-//							namesUsed.push(clickRow[cellNum-3]);
-//						}
-//					}
-//				}
-//				else if (clickRow[cellNum-11] == 'var')
-//				{
-//					console.log("array?");
-//					if (foundIn(clickRow[cellNum-9].concat("[]"), namesRef))
-//					{
-//						console.log("Can't change type. Is reffed.\n");
-//					}
-//					else
-//					{
-//						console.log("not reffed.");
-//						if (foundIn(clickRow[cellNum-9].concat("[]"), namesUsed))
-//						{
-//							console.log("used.");
-//							delN(clickRow[cellNum-9].concat("[]"), nvars);
-//							delN(clickRow[cellNum-9].concat("[]"), tvars);
-//							delN(clickRow[cellNum-9].concat("[]"), namesUsed);
-//							createSelector("Select Type", vtypes, typeConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(vtypes, "type");
-//		//                            $("#selector").dialog('open');
-//						}
-//						else
-//						{
-//							console.log("not used.");
-//							createSelector("Select Type", vtypes, typeConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(vtypes, "type");
-//		//                            $("#selector").dialog('open');
-//						}
-//					}
-//				}
-//			}
-//			if (cellVal == 'EXPR')
-//			{
-//				switch (exprtype())
-//				{
-//					case ('PRINT'):
-//							console.log('print');
-//							createSelector("Print Type Selection", wtypes, exprConfirm);
-//							//dialog openSelector("Print Types", wtypes).done(function(returned) { exprConfirm(returned); returnToNormalColor(); });
-//							break;
-//					case ('BOOL'):
-//							console.log("bool");
-//							createSelector("Comparison Type Selection", btypes, boolConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(btypes, "bool");
-//		//                            $("#selector").dialog('open');
-//							break;
-//					case ('TEXT ASSIGNMENT'):
-//							createSelector("Text Selection", tExpr, exprSelConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(tExpr, "expr");
-//		//                            $("#selector").dialog('open');
-//						break;
-//					case ('NUMERIC ASSIGNMENT'):
-//							createSelector("Numeric Selection", nExpr, exprSelConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(nExpr, "expr");
-//		//                            $("#selector").dialog('open');
-//							break;
-//					case ('PROMPTMSG'):
-//							createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(["text constant", "text variable"], "expr");
-//		//                            $("#selector").dialog('open');
-//						break;
-//					case ('PROMPTDFLT'):
-//							createSelector("Prompt", ["text constant", "text variable"], exprSelConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(["text constant", "text variable"], "expr");
-//		//                            $("#selector").dialog('open');
-//						break;
-//					case ('PARSEDFLT'):
-//							createNumPad(null, null, "Default", "Enter a default value for this prompt.", true, 10, enterNum);
-//							//dialog openNumPad(null,null,"Enter default value", "some text", false, 10).done(function(result) {clickedCell.textContent = result; });
-//							
-//						break;
-//					case ('NUMERIC COMPARISON'):
-//							createSelector("Comparison Type Selection?", nExpr, exprSelConfirm);
-//		//                            $("#selector").empty();
-//		//                            generateSelectionHTML(nExpr, "expr")
-//		//                            $("#selector").dialog('open');
-//						break;
-//					case ('RETURN'):
-//							createSelector("What type?????", wtypes, exprConfirm);
-//							//dialog openSelector("What type?", wtypes).done(function(returned) { exprConfirm(returned); });
-//							break;
-//					default:
-//						break;
-//				}
-////			}
-//			if (cellVal == 'ID' && cellNum > 1 && foundIn(clickRow[cellNum-2],compKeys))
-//			{
-//				//Choosing the left side of a comparison in a while or if
-//				createSelector("Choose an identifier.", namesUsed, idConfirm);
-//			}
-//			else if (cellVal == 'ID' && cellNum > 1 && clickRow[cellNum-2] == 'function')
-//			{
-//				//Assigning an identifier to a function
-//				createStringPad("Function ID", "Please name the function.", fIDconfirm);
-//			}
-//			else if (cellVal == 'FUNCTION') {
-//				//Calling a function
-//				createSelector("Function Call", ftypes, fcallType);
-//			}
-//			else if (cellVal == 'SIZE')
-//			{
-//				//Choosing a size for an Array
-//				createNumPad(0,null,"Array Size", "Enter a size for the array.", false, 10, enterNum);
-//			}
-			/*Weston edit end*/
-//			else if (cellVal == 'ID' && clickRow[1] == 'for' && cellNum == 3)
-//			{
-////				console.log("for id");s
-//				createSelector("Counter Selection", nvars, forId);
-//			}
-//			else if (cellVal == 'ID' && clickRow.indexOf('var') >= 0) {
-//				createStringPad("Variable ID", "Please name the variable", nameDialogConfirm);
-//			}
-//			else if (cellVal == 'ID' && clickRow[cellNum+2] == '=')
-//			{
-//				createSelector("Choose a variable to assign.", namesUsed, idConfirm);
-//			}
-//            if (cellVal == 'index')
-//            {
-//                createSelector("Constant or Variable?", ["Constant", "Variable"], indexConfirm);
-//            }
-//			 if((clickedCell.hasClass('openParen') || clickedCell.hasClass('closeParen')) && (clickRow.indexOf('function') >= 0) && (clickRow.indexOf('ID') != 2)){
-//                while(!clickedCell.hasClass('closeParen')){
-//                    clickedCell = clickedCell.next();
-//                }
-//                clickedCell = clickedCell.prev();
-//                if (clickedCell.text() == "*/") {
-//                    editor.addCell(clickedCell,[{text: ",&nbsp;"}]);
-//                    clickedCell = clickedCell.next();
-//                }
-//				console.log("add parameter?");
-//                editor.addCell(clickedCell,
-//                               [{text:"ID", type: "parameter"},
-//                                {text:"&nbsp;/*", type: "datatype"},
-//                                {text:"TYPE", type: "datatype paramType"},
-//                                {text:"*/", type: "datatype"}]
-//                );
-//			}
-//                if (clickedCell.hasClass('paramType')) {
-//                    createSelector("Type options", vtypes, paramTypeConfirm);
-//                }
 		}
 		
 		return false;
@@ -2778,44 +2555,32 @@ console.log(row);
         determineScope(clickedCell);
         console.log($(clickedCell).attr('class'));
         if (clickedCell.hasClass("vname"))
-
             vnameHandler();
         else if (clickedCell.hasClass("pname"))
             pnameHandler();
         else if (clickedCell.hasClass("fname"))
-
             fnameHandler();
         else if (clickedCell.hasClass("vtype"))
-
             vtypeHandler();
         else if (clickedCell.hasClass("ptype"))
             ptypeHandler();
         else if (clickedCell.hasClass("ftype"))
-
             ftypeHandler();
         else if (clickedCell.hasClass("aID"))
-
             aIDHandler();
         else if (clickedCell.hasClass("taID"))
-
             taIDHandler();
         else if (clickedCell.hasClass("naID"))
-
             naIDHandler();
         else if (clickedCell.hasClass("varID"))
-
             varIDHandler();
         else if (clickedCell.hasClass("fcall"))
-
             fcallHandler();
         else if (clickedCell.hasClass("size"))
-
             sizeHandler();
         else if (clickedCell.hasClass("index"))
-
             indexHandler();
         else if (clickedCell.hasClass("expr"))
-
             exprHandler();
         else if (clickedCell.hasClass("foParen") || clickedCell.hasClass("fcParen"))
             parenHandler();
@@ -3703,7 +3468,7 @@ console.log(row);
     
 //    function that handles the naming of variables and arrays
     function vnameHandler() {
-//        console.log("naming a var"); //rtodo
+        console.log("naming a var"); //rtodo
         if (clickedCell.hasClass("array")) {
 //            if the cell doesn't contain 'id', the name already exists somewhere,
 //            so we need to make sure it isn't referenced before attempting to change it
@@ -4142,62 +3907,22 @@ console.log(row);
 	//check for any unassigned variable
 	//Does not work for variables that are declared but not assigned
 	function checkAssign(){
-		/*//array
-		var arrays = false;
+		var str = '';
 		//where to start
 		var find = 0;
 		//where the id is located
 		var cha = 4;
-		//store the code
-		str = '';
-		//the variable
-		id = '';
 		str += getEditorText();
 		//if there is any ID variable at all return false
 		if(str.indexOf("ID",find) != -1) return false;
-		//if there is any ID variable at all return false
+		//if there is any EXPR unassigned return false
 		if(str.indexOf("EXPR",find) != -1) return false;
-		//while loop that goes through str to look for variables
-		while(true){
-			//if a variable is found check if it is assigned
-			if(str.indexOf("var",find) != -1){
-				//get the var location
-				find = str.indexOf("var",find);
-				//get the variable it into id
-				while(true){
-					//';' for normal variables ' ' for array variables
-					if(str.charAt(find+cha) != ';' && str.charAt(find+cha) != ' '){
-						if(str.charAt(find+cha) != ' ') arrays = true;
-						id += str.charAt(find+cha);
-						cha++;
-					}else{
-						break;
-					}
-				}
-				//print id out
-				console.log(id);
-
-				//search for the id if found return and find more variables, if not exit and return false
-				if(str.search(id+" = ") != -1){
-					if(arrays){
-						console.log("got it");
-						if(str.search(id+"\\[") == -1){ return false;}
-						arrays = false;
-					}
-					find = find + cha;
-					cha = 4;
-					id = '';
-				}else{
-					console.log("exit");
-					return false;
-				}
-			}else{
-				break;
-			}
-		}*/
+		//array checking
+		if(str.indexOf("SIZE",find) != -1) return false;
+		//type checking
+		if(str.indexOf("TYPE",find) != -1) return false;
 		//if no error return true
 		return true;
-		console.log(str.indexOf("var",4));
 	}
 	//end function - Du
 }
