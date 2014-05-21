@@ -261,6 +261,8 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
     var scope = 0;
     var scopes = [];
     var scopeCount = 0;
+    var scopeInx = 0;
+    var returnType;
     scopes.push(new Scope("global", 0));
 	
 	init();					// initialize some important stuff
@@ -376,7 +378,7 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
                                 programStart--;
             determineInsertionScope(insertRowNum);
             determineVarinx(insertRowNum);
-                                console.log("program start: " + programStart);
+            console.log("program start: " + programStart);
 			/*
 			// If all condition is passed move to the specified line
 			if (insertRowNum > selRow) {
@@ -604,12 +606,12 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 //									var index = tvars.indexOf(varName);
 //									tvars.splice(index, 1);
                                 if (arrayName) {
-                                    var index = scopes[scope].tvars.indexOf(arrayName);
-                                    scopes[scope].tvars.splice(index,1);
+                                    var index = scopes[scopeInx].tvars.indexOf(arrayName);
+                                    scopes[scopeInx].tvars.splice(index,1);
                                 }
                                 else {
-                                    var index = scopes[scope].tvars.indexOf(varName);
-                                    scopes[scope].tvars.splice(index,1);
+                                    var index = scopes[scopeInx].tvars.indexOf(varName);
+                                    scopes[scopeInx].tvars.splice(index,1);
                                 }
 							}
 							// If we are removing a numeric variable then remove the variable from the numeric variable list
@@ -617,29 +619,29 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 //									var index = nvars.indexOf(varName);
 //									nvars.splice(index, 1);
                                 if (arrayName) {
-                                    var index = scopes[scope].nvars.indexOf(arrayName);
-                                    scopes[scope].nvars.splice(index,1);
+                                    var index = scopes[scopeInx].nvars.indexOf(arrayName);
+                                    scopes[scopeInx].nvars.splice(index,1);
                                 }
                                 else {
-                                    var index = scopes[scope].nvars.indexOf(varName);
-                                    scopes[scope].nvars.splice(index,1);
+                                    var index = scopes[scopeInx].nvars.indexOf(varName);
+                                    scopes[scopeInx].nvars.splice(index,1);
                                 }
 							}
                             if (varType === "TYPE") {
                                 console.log(arrayName);
                                 if (arrayName) {
-                                    var index = scopes[scope].unvars.indexOf(arrayName);
-                                    scopes[scope].unvars.splice(index,1);
+                                    var index = scopes[scopeInx].unvars.indexOf(arrayName);
+                                    scopes[scopeInx].unvars.splice(index,1);
                                 }
                                 else {
-                                    var index = scopes[scope].unvars.indexOf(varName);
-                                    scopes[scope].unvars.splice(index,1);
+                                    var index = scopes[scopeInx].unvars.indexOf(varName);
+                                    scopes[scopeInx].unvars.splice(index,1);
                                 }
                             }
 							
 							//remove the variable name from namesUsed and varsNamed
 //							varsNamed.splice(varsNamed.indexOf(varName), 1);
-							scopes[scope].namesUsed.splice(scopes[scope].namesUsed.indexOf(varName), 1);
+							scopes[scopeInx].namesUsed.splice(scopes[scopeInx].namesUsed.indexOf(varName), 1);
 							
                             if (scope == 0) {
                                 variableCount--;
@@ -1043,12 +1045,20 @@ function JSEditor(divID, chapterName, exerciseNum, isExplore) {
 		}
 		else if (element == "return") {
 			//adds "return EXPR;"
-			editor.addRow(editor.getSelectedRowIndex(),
-				[{text:indentStr},
-				{text:"return", type:"keyword"},
-				{text:"&nbsp;"},
-                {text:"EXPR", type:"expr return scope" + insertionScope},
-				{text:";"}]);
+            if (returnType != null) {
+                editor.addRow(editor.getSelectedRowIndex(),
+                              [{text:indentStr},
+                               {text:"return", type:"keyword"},
+                               {text:"&nbsp;"},
+                               {text:"EXPR", type:"expr " + returnType +" scope" + insertionScope},
+                               {text:";"}]);
+            }
+            else {
+                editor.addRow(editor.getSelectedRowIndex(),
+                              [{text:indentStr},
+                               {text:"return", type:"keyword"},
+                               {text:";"}]);
+            }
 		}
 
 		//selectRow(selRow+1);				// increase the selected row by one
@@ -2610,7 +2620,7 @@ console.log(row);
             console.log("Has class scope" + i + "?\n\t" + cell.hasClass("scope" + i));
             if (cell.hasClass(("scope" + i))) {
                 scope = i;
-
+                determineScopeInx();
                 return;
             }
         }
@@ -2627,7 +2637,7 @@ console.log(row);
 		}
         
         // create an alert if the name is already in use
-        else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
+        else if (scopes[scopeInx].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
@@ -2655,7 +2665,7 @@ console.log(row);
 			}
             
             // update the namesUsed list for the scope object this variable is associated with
-            scopes[scope].namesUsed.push(result);
+            scopes[scopeInx].namesUsed.push(result);
             
             // Call varExists to remove the old name (if it has one) from the lists it
             // appears in
@@ -2679,19 +2689,19 @@ console.log(row);
             // add to the correct lists
             if (tCell.hasClass("array")) {
                 if (tCell.text() == 'TEXT')
-                    scopes[scope].tvars.push(result.concat("[]"));
+                    scopes[scopeInx].tvars.push(result.concat("[]"));
                 else if (tCell.text() == 'NUMERIC')
-                    scopes[scope].nvars.push(result.concat("[]"));
+                    scopes[scopeInx].nvars.push(result.concat("[]"));
                 else
-                    scopes[scope].unvars.push(result.concat("[]"));
+                    scopes[scopeInx].unvars.push(result.concat("[]"));
             }
             else {
                 if (tCell.text() == 'TEXT')
-                    scopes[scope].tvars.push(result);
+                    scopes[scopeInx].tvars.push(result);
                 else if (tCell.text() == 'NUMERIC')
-                    scopes[scope].nvars.push(result);
+                    scopes[scopeInx].nvars.push(result);
                 else
-                    scopes[scope].unvars.push(result);
+                    scopes[scopeInx].unvars.push(result);
             }
         }
         printScopes(); //rtodo
@@ -2708,7 +2718,7 @@ console.log(row);
             return;
         
         // check whether the name is in use already
-        else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
+        else if (scopes[scopeInx].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
             //create alert name used todo
             return;
@@ -2758,11 +2768,11 @@ console.log(row);
             tCell = tCell.next();
         
         // add the function to the proper function list
-        if (tCell.text() == 'Text')
+        if (tCell.text() == 'TEXT')
             tFuns.push(result);
-        else if (tCell.text() == 'Numeric')
+        else if (tCell.text() == 'NUMERIC')
             nFuns.push(result);
-        else if (tCell.text() == 'Void')
+        else if (tCell.text() == 'VOID')
             vFuns.push(result);
 //        console.log("FunctionList: " + functionList + "\ntFuns:" + tFuns + "\nnFuns:" + nFuns + "\nvFuns: " + vFuns + "\nNamesUsed: " + namesUsed);
  //        printScopes(); rtodo
@@ -2794,9 +2804,9 @@ console.log(row);
             if (clickedCell.hasClass("array")) {
                 varExists(nCell.text().concat("[]"), scope);
                 if (result == 'TEXT')
-                    scopes[scope].tvars.push(nCell.text().concat("[]"));
+                    scopes[scopeInx].tvars.push(nCell.text().concat("[]"));
                 else if (result == 'NUMERIC')
-                    scopes[scope].nvars.push(nCell.text().concat("[]"));
+                    scopes[scopeInx].nvars.push(nCell.text().concat("[]"));
                 else
                     console.log("WHAT DID YOU DO?!?!?");
             }
@@ -2804,13 +2814,13 @@ console.log(row);
             else {
                 varExists(nCell.text(), scope);
                 if (result == 'TEXT')
-                    scopes[scope].tvars.push(nCell.text());
+                    scopes[scopeInx].tvars.push(nCell.text());
                 else if (result == 'NUMERIC')
-                    scopes[scope].nvars.push(nCell.text());
+                    scopes[scopeInx].nvars.push(nCell.text());
                 else
                     console.log("WHAT DID YOU DO?!?!?");
             }
-            scopes[scope].namesUsed.push(nCell.text());
+            scopes[scopeInx].namesUsed.push(nCell.text());
         }
 //        testing log
 //        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars);
@@ -2878,8 +2888,8 @@ console.log(row);
         var nlist = scopes[0].nvars;
         var tlist = scopes[0].tvars;
         if (scope != 0) {
-            nlist.concat(scopes[scope].nvars);
-            tlist.concat(scopes[scope].tvars);
+            nlist.concat(scopes[scopeInx].nvars);
+            tlist.concat(scopes[scopeInx].tvars);
         }
         // remove the generic assignment class
         $(clickedCell).removeClass("aID");
@@ -2993,8 +3003,8 @@ console.log(row);
         var nlist = scopes[0].nvars;
         var tlist = scopes[0].tvars;
         if (scope != 0) {
-            nlist.concat(scopes[scope].nvars);
-            tlist.concat(scopes[scope].tvars);
+            nlist.concat(scopes[scopeInx].nvars);
+            tlist.concat(scopes[scopeInx].tvars);
         }
 //        $(clickedCell).removeClass("aID"); rtodo
 
@@ -3082,7 +3092,7 @@ console.log(row);
         else if (result == "Variable") {
             var list = scopes[0].nvars;
             if (scope != 0)
-                list = list.concat(scopes[scope].nvars);
+                list = list.concat(scopes[scopeInx].nvars);
             createSelector("Numeric Variables", list, nvarCallback);
         }
     }
@@ -3124,7 +3134,7 @@ console.log(row);
         else if (result == "Variable") {
             var list = scopes[0].tvars;
             if (scope != 0)
-                list = list.concat(scopes[scope].tvars);
+                list = list.concat(scopes[scopeInx].tvars);
             createSelector("Text Variables", list, tvarCallback);
         }
         // Selection box for functions that return a text value
@@ -3204,7 +3214,7 @@ console.log(row);
         else if (result == "Variable") {
             var list = scopes[0].nvars;
             if (scope != 0)
-                list = list.concat(scopes[scope].nvars);
+                list = list.concat(scopes[scopeInx].nvars);
             createSelector("Numeric Variables", list, nvarCallback);
         }
         // Create numeric function selection box
@@ -3345,28 +3355,29 @@ console.log(row);
     
     // Callback for parenthesis click
     function parenCallback(result) {
-//        determineScope(clickedCell); rtodo
-//        console.log(scope); rtodo
         // Find the current number of parameters for the function's scope
         var pnum = getpnum(scope);
-//        console.log(pnum); rtodo
+        
         // Cancel
         if (result == null)
             return;
         else if (!result)
             return;
+        
         // Find closing parenthesis
         while(!clickedCell.hasClass('fcParen')){
             clickedCell = clickedCell.next();
         }
+        
         // Go back one cell
         clickedCell = clickedCell.prev();
+        
         // If the cell before the closing parenthesis is an end for a parameter type, add a comma and space
         if (clickedCell.text() == "*/") {
             editor.addCell(clickedCell,[{text: ",&nbsp;"}]);
             clickedCell = clickedCell.next();
         }
-//        console.log("add parameter?"); // rtodo
+        
         // Now add the cells for a new parameter
         editor.addCell(clickedCell,
                        [{text:"ID", type: "pname scope" + scope + " p" + pnum},
@@ -3374,32 +3385,31 @@ console.log(row);
                         {text:"TYPE", type: "datatype ptype scope" + scope + " p" + pnum},
                         {text:"*/", type: "datatype"}]
                        );
+        
         // update the scope object to show that this parameter is not yet typed
-        scopes[scope].param.push("untyped");
+        scopes[scopeInx].param.push("untyped");
     }
     
     // Callback for naming a parameter from a string entry dialog
     function pnameCallback(result) {
-//        determineScope(clickedCell); rtodo
         // Cancel
         if (result == null){
             return;
 		}
         
         // Check for any invalid naming cases
-        else if (scopes[scope].namesUsed.indexOf(result) >= 0) {
+        else if (scopes[scopeInx].namesUsed.indexOf(result) >= 0) {
 			createAlertBox("Invalid Character",result+" is in used!",1,dummy);
-            //create alert name used todo
             return;
         }
         else if (resWords.indexOf(result) >= 0) {
 			if(result == '')
 				result = "Empty String";
 			createAlertBox("Invalid Entry",result+" is Reserved",1,dummy);
-            //create alert is reserved word todo
             return;
         }
         else {
+            // ensure valid alphanumeric starting with a letter
 			if( /^[a-zA-Z]+$/.test(result[0]) == true){
 				if(/^[a-zA-Z0-9]+$/.test(result) == false){
 					createAlertBox("Invalid Character","Please use only alphabetical letters!",1,dummy);
@@ -3409,72 +3419,72 @@ console.log(row);
 				createAlertBox("Invalid Character",result+" is invalid!",1,dummy);
 				return;
 			}
+            
             // update the scope object to know the new name is in use
-            scopes[scope].namesUsed.push(result);
+            scopes[scopeInx].namesUsed.push(result);
+            
             // remove old name from any lists
             varExists(clickedCell.text(), scope);
+            
             // update the cell contents
             clickedCell.text(result);
-//            if (scopes.length > 1) rtodo
-//                determineScope(clickedCell); rtodo
+            
             // Locate the cell with this param's type
             var tCell = clickedCell;
             while (!(tCell.hasClass("ptype")))
                 tCell = tCell.next();
+            
             // update the correct variable list in the scope object
             if (tCell.text() == 'Text')
-                scopes[scope].tvars.push(result);
+                scopes[scopeInx].tvars.push(result);
             else if (tCell.text() == 'Numeric')
-                scopes[scope].nvars.push(result);
+                scopes[scopeInx].nvars.push(result);
             else
-                scopes[scope].unvars.push(result);
+                scopes[scopeInx].unvars.push(result);
         }
-//        console.log(scopes[scope].name + ":\n\ttvars: " + scopes[scope].tvars + "\n\tnvars: " + scopes[scope].nvars + "\n\tunvars: " + scopes[scope].unvars); rtodo
-//        console.log("namesUsed: " + namesUsed); rtodo
-//        printScopes(); rtodo
     }
     
+    // callback for type selection boxes when selecting a parameter's type
     function ptypeCallback(result) {
+        //Cancel
         if (result == null)
             return;
-        determineScope(clickedCell);
+        
+        // Determine the parameter index of the parameter being typed in its function's params array
         var pnum = determinepnum();
-//        console.log(pnum);
+        
+        // Update cell contents
         clickedCell.text(result);
-        //        console.log(result); rtodo
         
         //        locate cell containing variable name
         var nCell = clickedCell;
         while (!nCell.hasClass("pname"))
             nCell = nCell.prev();
         
-        //        console.log(nCell.text()); rtodo
         //        if it has a name, remove it from the list it's in, and put it back in the proper list
         if (nCell.text() != 'ID') {
             varExists(nCell.text(), scope);
             if (result == 'Text') {
-                scopes[scope].tvars.push(nCell.text());
-                scopes[scope].param[pnum] = 'text';
+                scopes[scopeInx].tvars.push(nCell.text());
+                scopes[scopeInx].param[pnum] = 'text';
             }
             else if (result == 'Numeric') {
-                scopes[scope].nvars.push(nCell.text());
-                scopes[scope].param[pnum] = 'numeric';
+                scopes[scopeInx].nvars.push(nCell.text());
+                scopes[scopeInx].param[pnum] = 'numeric';
             }
             else
                 console.log("WHAT DID YOU DO?!?!?");
         }
-        printScopes();
     }
     
 //    function that handles the naming of variables and arrays
     function vnameHandler() {
-        console.log("naming a var"); //rtodo
+        // Handle the array case
         if (clickedCell.hasClass("array")) {
 //            if the cell doesn't contain 'id', the name already exists somewhere,
 //            so we need to make sure it isn't referenced before attempting to change it
             if (clickedCell.text() != 'ID') {
                 if (varReffed(clickedCell.text().concat("[]"))) {
-                    //create alert todo
                     return;
                 }
             }
@@ -3498,17 +3508,21 @@ console.log(row);
         }
     }
     
+    // Function that handles naming a parameter
     function pnameHandler() {
+        
+        // Make sure the variable hasn't been referenced
         if (clickedCell.text() != 'ID')
             if (varReffed(clickedCell.text())) {
                 //create alert todo
                 return;
             }
+        // Provide string entry pad for naming the param
         createStringPad("Parameter Name", "Please give the parameter a name.", pnameCallback);
     }
     
+    // Function that handles naming functions
     function fnameHandler() {
-//        console.log("Naming a function"); rtodo
 //        abort if the function has already been referenced
         if (clickedCell.text() != 'ID') {
             if (varReffed(clickedCell.text())) {
@@ -3516,17 +3530,19 @@ console.log(row);
                 return;
             }
         }
+        // Provide string entry pad
         createStringPad("Function Name", "Please give the function a name.", fnameCallback);
     }
     
+    // Function that handles "typing" variables
     function vtypeHandler() {
+        // Handle the array case
         if (clickedCell.hasClass("array")) {
-//            console.log("typing an array"); rtodo
+            
 //            locate the cell containing this var's name
             var nCell = clickedCell;
             while (!nCell.hasClass("vname"))
                 nCell = nCell.prev();
-//            console.log(nCell.text()); rtodo
             
 //            check if the variable is reffed, and abort if it is
             if (nCell.text() != 'ID') {
@@ -3560,10 +3576,8 @@ console.log(row);
         }
     }
     
+    // Function that handles "typing" parameters
     function ptypeHandler() {
-//        console.log("typing a param"); rtodo
-        
-        
         //            locate the cell containing this var's name
         var nCell = clickedCell;
         while (!nCell.hasClass("pname"))
@@ -3599,78 +3613,89 @@ console.log(row);
         createSelector("Function Types", ftypes, ftypeCallback);
     }
     
+    // Function that handles clicks on ID for left side of assignments
     function aIDHandler() {
-//        console.log("choosing a variable to assign"); //rtodo
-        determineScope(clickedCell);
+        // Build a list of global and current scope variables
         var list = scopes[0].tvars.concat(scopes[0].nvars);
         if (scope != 0)
-            list = list.concat(scopes[scope].tvars.concat(scopes[scope].nvars));
+            list = list.concat(scopes[scopeInx].tvars.concat(scopes[scopeInx].nvars));
+        
+        // Make a selector for the list of available variables
         createSelector("Variables", list, aIDCallback);
     }
     
+    // Function that handles clicks on ID for text assignments
     function taIDHandler() {
-//        console.log("choosing a text var to assign"); //rtodo
-        determineScope(clickedCell);
+        // Build a list of global and current scope text variables
         var list = scopes[0].tvars;
         if (scope != 0)
-            list = list.concat(scopes[scope].tvars);
+            list = list.concat(scopes[scopeInx].tvars);
+        
+        // Make a selector for the list of appropriate variables
         createSelector("Variables", list, taIDCallback);
     }
     
+    // Function that handles clicks on ID for numeric assignments
     function naIDHandler() {
-//        console.log("choosing a numeric var to assign"); //rtodo
-        determineScope(clickedCell);
+        // Build a list of global and current scope numeric variables
         var list = scopes[0].nvars;
         if (scope != 0)
-            list = list.concat(scopes[scope].nvars);
+            list = list.concat(scopes[scopeInx].nvars);
+        
+        // Make a selector for the list of appropriate variables
         createSelector("Variables", list, naIDCallback);
     }
     
+    // Function that handles clicks on ID for left side of Boolean expressions
     function varIDHandler() {
-//        console.log("choosing a var to be used in a boolean condition");
-        determineScope(clickedCell);
-        
+        // Find associated expression cell
         var eCell = clickedCell;
         while (!eCell.hasClass("expr"))
             eCell = eCell.next();
         
+        // Build a list of global and current scope variables
         var list;
         if (eCell.text() == "EXPR") {
             list = scopes[0].tvars.concat(scopes[0].nvars);
             if (scope != 0)
-                list = list.concat(scopes[scope].tvars.concat(scopes[scope].nvars));
+                list = list.concat(scopes[scopeInx].tvars.concat(scopes[scopeInx].nvars));
         }
         else {
             if (eCell.hasClass("text")) {
                 list = scopes[0].tvars;
                 if (scope != 0)
-                    list = list.concat(scopes[scope].tvars);
+                    list = list.concat(scopes[scopeInx].tvars);
             }
             else if (eCell.hasClass("numeric")) {
                 list = scopes[0].nvars;
                 if (scope != 0)
-                    list = list.concat(scopes[scope].nvars);
+                    list = list.concat(scopes[scopeInx].nvars);
             }
         }
+        // Open a selector for that list of variables
         createSelector("Variables", list, varIDCallback);
     }
     
+    // Function that handles clicks on FUNCTION (only void functions will be valid)
     function fcallHandler() {
-//        console.log("choosing a function to call");
+        // Create selector for void functions
         createSelector("Void Functions", vFuns, fcallCallback);
     }
     
+    // Function that handles clicking on an size cell (set size of an array in its declaration)
     function sizeHandler() {
-//        console.log("need to insert a numeric constant"); rtodo
+        // Create numpad for sizing the array
         createNumPad(0, null, "Size Entry", "Set the size of your array.", 0, 10, nConstantCallback);
     }
     
+    // Function that handles choosing an index to reference
     function indexHandler() {
+        // Create a selector for choosing between constant and variable
         createSelector("Index Options", ["Constant", "Variable"], indexCallback);
     }
     
+    // Function that handles clicks on EXPR and spawns appropriate selection boxes
     function exprHandler() {
-//        console.log("this will handle expression clicks"); rtodo
         if (clickedCell.hasClass("write"))
             createSelector("Write Expression", ["Text", "Numeric"], wexprCallback);
         else if (clickedCell.hasClass("text"))
@@ -3681,86 +3706,77 @@ console.log(row);
             createSelector("Boolean Expression", btypes, bexprCallback);
     }
     
+    // Function that handles clicking on a parenthesis
     function parenHandler() {
+        // Dialog box. Asks if user wants to add a parameter to a function
         createAlertBox("Parameters", "Add another parameter?", 0, parenCallback);
     }
     
+    // Function that handles the existance of a variable
     function varExists(name, scope) {
-//        console.log(name + " " + scope);
-//        console.log(scopes[scope].tvars);
-//        console.log(scopes[scope].nvars);
-//        console.log(scopes[scope].unvars);
-        printScopes();
+        // create a variable to hold the name that can be different for arrays
         var tname = name;
         if (name[name.length-1] == "]") {
             console.log("ARRAY");
             tname = name.substring(0,(name.length-2));
             console.log(tname);
         }
-        console.log(tname);
-        if (scopes[scope].tvars.indexOf(name) >= 0)
-            scopes[scope].tvars.splice(scopes[scope].tvars.indexOf(name), 1);
-        else if (scopes[scope].nvars.indexOf(name) >= 0)
-            scopes[scope].nvars.splice(scopes[scope].nvars.indexOf(name), 1);
-        else if (scopes[scope].unvars.indexOf(name) >= 0)
-            scopes[scope].unvars.splice(scopes[scope].unvars.indexOf(name), 1);
-        if (scopes[scope].namesUsed.indexOf(tname) >= 0)
-            scopes[scope].namesUsed.splice(scopes[scope].namesUsed.indexOf(tname), 1);
         
-//        var j = scopes.length;
-//        for (i=0;i<j;i++) {
-//            if (scopes[i].tvars.indexOf(name) >= 0) {
-//                console.log("text var exists"); // rtodo
-//                scopes[i].tvars.splice(scopes[i].tvars.indexOf(name), 1);
-//                return;
-//            }
-//            else if (scopes[i].nvars.indexOf(name) >= 0) {
-//                console.log("numeric var exists"); //rtodo
-//                scopes[i].nvars.splice(scopes[i].nvars.indexOf(name), 1);
-//                return;
-//            }
-//            else if (scopes[i].unvars.indexOf(name) >= 0) {
-//                scopes[i].unvars.splice(scopes[i].unvars.indexOf(name), 1);
-//                return;
-//            }
-//        }
+        // Remove the variable from the lists it's in.
+        if (scopes[scopeInx].tvars.indexOf(name) >= 0)
+            scopes[scopeInx].tvars.splice(scopes[scopeInx].tvars.indexOf(name), 1);
+        else if (scopes[scopeInx].nvars.indexOf(name) >= 0)
+            scopes[scopeInx].nvars.splice(scopes[scopeInx].nvars.indexOf(name), 1);
+        else if (scopes[scopeInx].unvars.indexOf(name) >= 0)
+            scopes[scopeInx].unvars.splice(scopes[scopeInx].unvars.indexOf(name), 1);
+        if (scopes[scopeInx].namesUsed.indexOf(tname) >= 0)
+            scopes[scopeInx].namesUsed.splice(scopes[scopeInx].namesUsed.indexOf(tname), 1);
     }
     
+    // Function that determines what parameter is being changed
     function determinepnum() {
+        // Find out the max number for the params list
         var j = getpnum(scope);
+        
+        // From 0 to the max, if pX is part of the cell's class
+        // return X as the parameter's index
         for (i = 0; i< j+1;i++) {
             if (clickedCell.hasClass("p" + i))
                 return i;
         }
     }
     
+    // Function that handles the existance of a function name (when it is being changed)
     function funExists(name) {
+        // Remove the name from the lists it's in
         if (tFuns.indexOf(name) >= 0)
             tFuns.splice(tFuns.indexOf(name),1);
         else if (nFuns.indexOf(name) >= 0)
             nFuns.splice(nFuns.indexOf(name),1);
         else if (vFuns.indexOf(name) >= 0)
             vFuns.splice(vFuns.indexOf(name),1);
-//        else if (namesUsed.indexOf(name) >=1)
-//            namesUsed.splice(namesUsed.indexOf(name),1);
     }
     
+    // Function that is called to alter the scope object that the function is associated with
     function scopeAlter(oldName,newName) {
-//        console.log(oldName + " " + newName);
+        // determine upper limit
         var j = scopes.length;
+        // Remove the old name from the list of names used in the global scope
         if (scopes[0].namesUsed.indexOf(oldName) >= 0)
             scopes[0].namesUsed.splice(namesUsed.indexOf(oldName),1);
+        // push the new name to names used in global scope
         scopes[0].namesUsed.push(newName);
+        // locate the proper scope object, and change its name
         for (i=1; i < j; i++) {
             if (scopes[i].name == oldName) {
                 scopes[i].name = newName;
-                printScopes();
                 return;
             }
                 
         }
     }
     
+    // A function used for debugging purposes. Prints out all of the information about all scope objects.
     function printScopes() {
         var j = scopes.length;
         for (i=0;i<j;i++) {
@@ -3774,6 +3790,7 @@ console.log(row);
         }
     }
     
+    // Checks for a name in the namesRef array
     function varReffed(name) {
         //need to check whether var is in list of referenced variables (todo?)
 //        console.log("going to check if the var is reffed");
@@ -3781,33 +3798,43 @@ console.log(row);
             return true;
     }
     
+    // Function that determines the scope that is being inserted into and determines what the return type for that scope is
     function determineInsertionScope(insertRowNum) {
-        console.log("determining insertion scope starting at " + insertRowNum + "!");
-//        console.log(insertRowNum + "vs start at " + programStart);
+        // if inserting past the program start, insertion scope is 0 (global) and return type is null
         if (insertRowNum > (programStart-1)) {
-            console.log("global!");
             insertionScope = 0;
-            console.log("insertionScope: " + insertionScope);
+            returnType = null;
             return;
         }
         var row;
-        var rowContents;
+        // Go up row by row until the function declaration is found
         for(var i = insertRowNum; i >= 0; i--){
-//            rowContents = editor.rowToArrayHtml(i);
+            // grab row's cells as DOM objects
             row = editor.rowToDOMArray(i);
-//            console.log(rowContents);
+            // Function declaration will be longer than 3 cells
             if (row.length > 3) {
+                // The cell that will determine it is a function declaration is cell 4, a function's name
                 var cell = row[4];
-//                console.log($(cell).attr('class'));
-//                console.log("Has class fname?\n\t" + $(cell).hasClass("fname"));
                 if($(cell).hasClass("fname")){
-//                    console.log("Had fname. let's check for stuff and things")
+                    // Find the cell containing the function's return type and set the returnType variable
+                    var tcell = cell;
+                    while (!$(tcell).hasClass("ftype"))
+                        tcell = $(tcell).next();
+                    if ($(tcell).text() == "TEXT") {
+                        returnType = "text";
+                    }
+                    else if ($(tcell).text() == "NUMERIC") {
+                        returnType = "numeric";
+                    }
+                    else if ($(tcell).text() == "VOID") {
+                        returnType = null;
+                    }
+                    
+                    // From 1 to max (scopeCount) check for scopeX
                     var j = scopeCount;
                     for (k = 1; k <= j; k++) {
-//                        console.log("Has class scope" + k + "?\n\t" + $(cell).hasClass("scope" + k));
                         if ($(cell).hasClass("scope" + k)) {
                             insertionScope = k;
-                            console.log("insertionScope: " + insertionScope);
                             return;
                         }
                     }
@@ -3816,30 +3843,27 @@ console.log(row);
         }
     }
     
+    // Function that determines what index to insert a variable at
     function determineVarinx(insertRowNum) {
+        // if currently in main program, the index will be at the bottom of the existing global variable list
         if (insertRowNum > (programStart - 1)) {
+            // length of the variable list plus 3 for comments and blank line
             varinx = variableCount + 3;
-            console.log("should be a global var");
-            console.log("last variable row index" + varinx);
             return;
         }
+        // Go up row by row until a variable is found or a function declaration is found
         var row;
         for (i = insertRowNum; i>=0; i--) {
-//            console.log("for loop: " + i);
             row = editor.rowToArrayHtml(i);
-//            console.log(row);
             if (row.length > 3) {
-//                console.log(row[0]);
+                // If function is found first, row to insert variable at is two forward (this one and curly brace)
                 if (row[0] == 'function') {
                     varinx = i + 2;
-//                    if (variableCount == 0)
-//                        varinx+=2;
-                    console.log("last variable row index" + varinx);
                     return;
                 }
+                // If variable is found first, row to insert variable at is one forward (this one)
                 else if (row[0] == 'var') {
                     varinx = i + 1;
-                    console.log("last variable row index" + varinx);
                     return;
                 }
             }
@@ -3847,6 +3871,7 @@ console.log(row);
         
     }
     
+    // Function that fetches a scope object by its name
     function getFunction(fname) {
         for (i=0;i<scopes.length;i++) {
             if (scopes[i].name == fname)
@@ -3854,10 +3879,21 @@ console.log(row);
         }
     }
     
+    // Function that fetches the number of total parameters a function has by its scope number
     function getpnum(scope) {
         for (i = 0; i<scopes.length;i++) {
             if (scopes[i].scopenum == scope) {
                 return (scopes[i].param.length);
+            }
+        }
+    }
+    
+    // Function that determines the index of a scope in the scopes array
+    function determineScopeInx() {
+        for (i=0;i<scopes.length;i++) {
+            if (scopes[i].scopenum == scope) {
+                scopeInx = i;
+                return;
             }
         }
     }
@@ -3919,6 +3955,7 @@ console.log(row);
 		if(str.indexOf("EXPR",find) != -1) return false;
 		//array checking
 		if(str.indexOf("SIZE",find) != -1) return false;
+        if(str.indexOf("index",find) != -1) return false;
 		//type checking
 		if(str.indexOf("TYPE",find) != -1) return false;
 		//if no error return true
